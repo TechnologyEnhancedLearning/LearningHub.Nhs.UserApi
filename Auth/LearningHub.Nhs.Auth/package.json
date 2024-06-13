@@ -22,7 +22,7 @@
     "babel-polyfill": "^6.26.0",
     "concurrently": "^7.2.0",
     "core-js": "^3.6.5",
-    "nhsuk-frontend": "^7.0.0",
+    "nhsuk-frontend": "^8.2.0",
     "node": "^12.19.1"
   },
   "devDependencies": {
