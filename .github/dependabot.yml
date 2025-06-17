@@ -29,27 +29,7 @@ updates:
       - dependency-name: "LearningHub.Nhs.Models*"
       - dependency-name: "LearningHub.Nhs.Caching*"
       - dependency-name: "NHSUKViewComponents.Web*"
-      # Ignore some updates to the package
-      - dependency-name: "Microsoft.VisualStudio.Web.CodeGeneration.Design"
-        versions: [">9.0.0"]
-      - dependency-name: "Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation"
-        versions: [">9.0.0"]
-      - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-        versions: [">9.0.0"]
-      - dependency-name: "Microsoft.AspNetCore.Authentication.JwtBearer"
-        versions: [">9.0.0"]
-      - dependency-name: "Microsoft.AspNetCore.Authentication.OpenIdConnect"
-        versions: [">9.0.0"]
-      - dependency-name: "Microsoft.AspNetCore.Mvc.NewtonsoftJson"
-        versions: [">9.0.0"]
-      - dependency-name: "Microsoft.EntityFrameworkCore"
-        versions: [">9.0.0"]
-      - dependency-name: "Microsoft.EntityFrameworkCore.SqlServer"
-        versions: [">9.0.0"]
-      - dependency-name: "Microsoft.Extensions.Caching.StackExchangeRedis"
-        versions: [">9.0.0"]
-      - dependency-name: "Microsoft.Extensions.Logging.Console"
-        versions: [">9.0.0"]
+      # Ignore some updates to the package      
       - dependency-name: "MockQueryable.Moq"
         versions: [">5.0.0"]  
       - dependency-name: "Selenium.WebDriver.ChromeDriver"
