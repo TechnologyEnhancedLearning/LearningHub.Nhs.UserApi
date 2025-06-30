@@ -1,8 +1,10 @@
 ﻿namespace LearningHub.Nhs.UserApi.Services
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Net;
+    using System.Net.Http;
     using System.Net.Mail;
     using System.Security.Cryptography;
     using System.Text;
@@ -13,6 +15,7 @@
     using elfhHub.Nhs.Models.Enums;
     using elfhHub.Nhs.Models.Validation;
     using LearningHub.Nhs.Models.Entities.External;
+    using LearningHub.Nhs.Models.GovNotifyMessaging;
     using LearningHub.Nhs.Models.Validation;
     using LearningHub.Nhs.UserApi.Repository;
     using LearningHub.Nhs.UserApi.Repository.Interface;
@@ -21,6 +24,7 @@
     using LearningHub.Nhs.UserApi.Services.Models;
     using LearningHub.Nhs.UserApi.Shared.Configuration;
     using Microsoft.Extensions.Options;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// The registration service.
@@ -50,6 +54,7 @@
         private readonly IEmailLogRepository emailLogRepository;
         private readonly IUserGroupTypeInputValidationRepository userGroupTypeInputValidationRepository;
         private readonly Settings settings;
+        private readonly IOpenApiHttpClient openApiHttpClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RegistrationService"/> class.
@@ -76,6 +81,7 @@
         /// <param name="emailLogRepository">The email log repository.</param>
         /// <param name="userGroupTypeInputValidationRepository">The userGroupType Input Validation repository.</param>
         /// <param name="settings">The settings.</param>
+        /// <param name="openApiHttpClient">The openApiHttpClient.</param>
         public RegistrationService(
              IElfhUserRepository elfhUserRepository,
              IUserGroupTypeInputValidationRepository userGroupTypeInputValidationRepository,
@@ -98,7 +104,8 @@
              IExternalSystemRepository externalSystemRepository,
              IUserExternalSystemRepository userExternalSystemRepository,
              Repository.Interface.LH.IExternalSystemUserRepository externalSystemUserRepository,
-             IIpCountryLookupRepository ipCountryLookupRepository)
+             IIpCountryLookupRepository ipCountryLookupRepository,
+             IOpenApiHttpClient openApiHttpClient)
         {
             this.userService = userService;
             this.medicalCouncilService = medicalCouncilService;
@@ -122,6 +129,7 @@
             this.userGroupTypeInputValidationRepository = userGroupTypeInputValidationRepository;
             this.ipCountryLookupRepository = ipCountryLookupRepository;
             this.settings = settings.Value;
+            this.openApiHttpClient = openApiHttpClient;
         }
 
         /// <inheritdoc/>
@@ -341,53 +349,70 @@
 
                 if (registrationRequest.IsExternalUser == false)
                 {
-                    // Send registration confirmation email
-                    /* This code was duplicated in the elfhHub.Nhs.Services.UserService.SendAdminPasswordResetEmail method, but tweaked for that email template.
-                     * The GenerateUserPasswordValidationToken method (and its child methods) were all directly copied into the UserService. This is
-                     * definitely a candidate for turning into a shared component after RR. */
                     var expiryMinutes = (int)(await this.systemSettingRepository.GetByIdAsync((int)SystemSettingEnum.PasswordValidationExpiryUserDefault)).IntValue;
                     UserPasswordValidationTokenExtended userPasswordValidationToken = this.GenerateUserPasswordValidationToken(expiryMinutes, userId);
                     await this.userPasswordValidationTokenRepository.CreateAsync(userId, userPasswordValidationToken);
 
-                    string websiteEmailsFrom = (await this.tenantSmtpRepository.GetByIdAsync(this.settings.LearningHubTenantId)).From;
-                    EmailTemplate emailTemplate = await this.emailTemplateRepository.GetByTypeAndTenantAsync((int)EmailTemplateTypeEnum.SuccessEmail_New, this.settings.LearningHubTenantId);
-                    string bodyText = emailTemplate.Body;
-                    bodyText = bodyText.Replace("[FullName]", (newUser.FirstName + " " + newUser.LastName).ToTitleCase());
-                    bodyText = bodyText.Replace("[FirstName]", newUser.FirstName.ToTitleCase());
-                    bodyText = bodyText.Replace("[PasswordValidateUrl]", userPasswordValidationToken.ValidateUrl);
-                    string resetUrl = this.settings.LearningHubUrl + userPasswordValidationToken.HashedToken;
-                    //// emailTemplate.Body = emailTemplate.Body.Replace("[LHValidateURL]", resetUrl);
+                    var personalisation = new Dictionary<string, dynamic>();
+                    personalisation["name"] = (newUser.FirstName + " " + newUser.LastName).ToTitleCase();
+                    personalisation["username"] = newUser.UserName;
 
-                    bodyText = bodyText.Replace("[TimeLimit]", GenericHelper.GetPasswordTimeoutString(expiryMinutes));
-                    bodyText = bodyText.Replace("[ResetPasswordUrl]", userPasswordValidationToken.PasswordResetUrl);
-                    bodyText = bodyText.Replace("[LogInUrl]", userPasswordValidationToken.LogOnUrl);
-                    bodyText = bodyText.Replace("[UserName]", newUser.UserName);
-                    bodyText = bodyText.Replace("[TenantUrl]", this.settings.LearningHubUrl);
-
-                    Tenant tenant = await this.tenantRepository.GetByIdAsync(this.settings.LearningHubTenantId);
-                    bodyText = bodyText.Replace("[TenantUrl]", this.settings.LearningHubUrl);
-                    if (!string.IsNullOrEmpty(tenant.QuickStartGuideUrl))
+                    var emailRequest = new EmailRequest
                     {
-                        bodyText = bodyText.Replace("[QuickStartGuideUrl]", tenant.QuickStartGuideUrl);
-                    }
-
-                    if (!string.IsNullOrEmpty(tenant.SupportFormUrl))
-                    {
-                        bodyText = bodyText.Replace("[SupportFormUrl]", tenant.SupportFormUrl);
-                    }
-
-                    EmailLog emailLog = new EmailLog()
-                    {
-                        EmailTemplateId = emailTemplate.Id,
-                        FromEmailAddress = websiteEmailsFrom,
-                        ToUserId = userId,
-                        ToEmailAddress = registrationRequest.EmailAddress,
-                        Subject = emailTemplate.Subject,
-                        Body = bodyText,
-                        TenantId = this.settings.LearningHubTenantId,
-                        Priority = 1,
+                        Recipient = registrationRequest.EmailAddress,
+                        TemplateId = "fc3752d7-4c04-4d40-87fd-ad1264072ae9",
+                        Personalisation = personalisation,
                     };
-                    await this.emailLogRepository.CreateAsync(userId, emailLog);
+
+                    var client = this.openApiHttpClient.GetClient();
+
+                    using var reqContent = new StringContent(JsonConvert.SerializeObject(emailRequest), Encoding.UTF8, "application/json");
+
+                    await client.PostAsync("GovNotifyMessage/SendEmail", reqContent).ConfigureAwait(false);
+
+                    ////var expiryMinutes = (int)(await this.systemSettingRepository.GetByIdAsync((int)SystemSettingEnum.PasswordValidationExpiryUserDefault)).IntValue;
+                    ////UserPasswordValidationTokenExtended userPasswordValidationToken = this.GenerateUserPasswordValidationToken(expiryMinutes, userId);
+                    ////await this.userPasswordValidationTokenRepository.CreateAsync(userId, userPasswordValidationToken);
+
+                    ////string websiteEmailsFrom = (await this.tenantSmtpRepository.GetByIdAsync(this.settings.LearningHubTenantId)).From;
+                    ////EmailTemplate emailTemplate = await this.emailTemplateRepository.GetByTypeAndTenantAsync((int)EmailTemplateTypeEnum.SuccessEmail_New, this.settings.LearningHubTenantId);
+                    ////string bodyText = emailTemplate.Body;
+                    ////bodyText = bodyText.Replace("[FullName]", (newUser.FirstName + " " + newUser.LastName).ToTitleCase());
+                    ////bodyText = bodyText.Replace("[FirstName]", newUser.FirstName.ToTitleCase());
+                    ////bodyText = bodyText.Replace("[PasswordValidateUrl]", userPasswordValidationToken.ValidateUrl);
+                    ////string resetUrl = this.settings.LearningHubUrl + userPasswordValidationToken.HashedToken;
+                    ////// emailTemplate.Body = emailTemplate.Body.Replace("[LHValidateURL]", resetUrl);
+
+                    ////bodyText = bodyText.Replace("[TimeLimit]", GenericHelper.GetPasswordTimeoutString(expiryMinutes));
+                    ////bodyText = bodyText.Replace("[ResetPasswordUrl]", userPasswordValidationToken.PasswordResetUrl);
+                    ////bodyText = bodyText.Replace("[LogInUrl]", userPasswordValidationToken.LogOnUrl);
+                    ////bodyText = bodyText.Replace("[UserName]", newUser.UserName);
+                    ////bodyText = bodyText.Replace("[TenantUrl]", this.settings.LearningHubUrl);
+
+                    ////Tenant tenant = await this.tenantRepository.GetByIdAsync(this.settings.LearningHubTenantId);
+                    ////bodyText = bodyText.Replace("[TenantUrl]", this.settings.LearningHubUrl);
+                    ////if (!string.IsNullOrEmpty(tenant.QuickStartGuideUrl))
+                    ////{
+                    ////    bodyText = bodyText.Replace("[QuickStartGuideUrl]", tenant.QuickStartGuideUrl);
+                    ////}
+
+                    ////if (!string.IsNullOrEmpty(tenant.SupportFormUrl))
+                    ////{
+                    ////    bodyText = bodyText.Replace("[SupportFormUrl]", tenant.SupportFormUrl);
+                    ////}
+
+                    ////EmailLog emailLog = new EmailLog()
+                    ////{
+                    ////    EmailTemplateId = emailTemplate.Id,
+                    ////    FromEmailAddress = websiteEmailsFrom,
+                    ////    ToUserId = userId,
+                    ////    ToEmailAddress = registrationRequest.EmailAddress,
+                    ////    Subject = emailTemplate.Subject,
+                    ////    Body = bodyText,
+                    ////    TenantId = this.settings.LearningHubTenantId,
+                    ////    Priority = 1,
+                    ////};
+                    ////await this.emailLogRepository.CreateAsync(userId, emailLog);
                 }
             }
 
