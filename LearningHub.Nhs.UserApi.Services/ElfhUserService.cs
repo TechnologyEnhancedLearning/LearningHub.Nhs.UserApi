@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Net.Http;
     using System.Security.Cryptography;
     using System.Text;
     using System.Threading;
@@ -14,6 +15,7 @@
     using elfhHub.Nhs.Models.Entities;
     using elfhHub.Nhs.Models.Enums;
     using LearningHub.Nhs.Models.Common;
+    using LearningHub.Nhs.Models.GovNotifyMessaging;
     using LearningHub.Nhs.Models.OpenAthens;
     using LearningHub.Nhs.Models.Validation;
     using LearningHub.Nhs.UserApi.Repository;
@@ -59,6 +61,7 @@
         private readonly IElfhRedisCache elfhCache;
         private readonly IMapper mapper;
         private readonly ILogger<ElfhUserService> logger;
+        private readonly IOpenApiHttpClient openApiHttpClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ElfhUserService"/> class.
@@ -86,6 +89,7 @@
         /// <param name="elfhCache">The ELFH cache.</param>
         /// <param name="mapper">The mapper.</param>
         /// <param name="logger">The logger.</param>
+        /// <param name="openApiHttpClient">The openApiHttpClient.</param>
         public ElfhUserService(
             IElfhUserRepository elfhUserRepository,
             IUserGroupRepository userGroupRepository,
@@ -109,7 +113,8 @@
             IOptions<Settings> settings,
             IElfhRedisCache elfhCache,
             IMapper mapper,
-            ILogger<ElfhUserService> logger)
+            ILogger<ElfhUserService> logger,
+            IOpenApiHttpClient openApiHttpClient)
         {
             this.elfhUserRepository = elfhUserRepository;
             this.userGroupRepository = userGroupRepository;
@@ -134,6 +139,7 @@
             this.elfhCache = elfhCache;
             this.mapper = mapper;
             this.logger = logger;
+            this.openApiHttpClient = openApiHttpClient;
         }
 
         /// <inheritdoc/>
@@ -662,42 +668,63 @@
                 return new LearningHubValidationResult(false, $"userId {userId} not found.");
             }
 
-            // Send registration confirmation email
-            /* This code was copied from the RegistrationService.RegisterUser method and tweaked for this email template.
-             * The GenerateUserPasswordValidationToken method (and its child methods) are all direct copies of those found in
-             * the RegistrationService. This is definitely a candidate for turning into a shared component after RR. */
             var expiryMinutes = (int)(await this.systemSettingRepository.GetByIdAsync((int)SystemSettingEnum.PasswordValidationExpiryAdminDefault)).IntValue;
             UserPasswordValidationTokenExtended userPasswordValidationToken = this.GenerateUserPasswordValidationToken(expiryMinutes, userId);
             await this.userPasswordValidationTokenRepository.CreateAsync(userId, userPasswordValidationToken);
 
-            string websiteEmailsFrom = (await this.tenantSmtpRepository.GetByIdAsync(this.settings.Value.LearningHubTenantId)).From;
-            EmailTemplate emailTemplate = await this.emailTemplateRepository.GetByTypeAndTenantAsync((int)EmailTemplateTypeEnum.AdminPasswordValidateEmail, this.settings.Value.LearningHubTenantId);
-            string bodyText = emailTemplate.Body;
-            bodyText = bodyText.Replace("[FullName]", (user.FirstName + " " + user.LastName).ToTitleCase());
-            bodyText = bodyText.Replace("[FirstName]", user.FirstName.ToTitleCase());
-            bodyText = bodyText.Replace("[UserName]", user.UserName);
-            bodyText = bodyText.Replace("[PasswordValidateUrl]", userPasswordValidationToken.ValidateUrl);
-            bodyText = bodyText.Replace("[TimeLimit]", $"{expiryMinutes / 60} hours");
-            bodyText = bodyText.Replace("[TenantUrl]", this.settings.Value.LearningHubUrl);
+            var personalisation = new Dictionary<string, dynamic>();
+            personalisation["name"] = (user.FirstName + " " + user.LastName).ToTitleCase();
+            personalisation["username"] = user.UserName;
 
-            Tenant tenant = await this.tenantRepository.GetByIdAsync(this.settings.Value.LearningHubTenantId);
-            if (!string.IsNullOrEmpty(tenant.SupportFormUrl))
+            var emailRequest = new EmailRequest
             {
-                bodyText = bodyText.Replace("[SupportFormUrl]", tenant.SupportFormUrl);
-            }
-
-            EmailLog emailLog = new EmailLog()
-            {
-                EmailTemplateId = emailTemplate.Id,
-                FromEmailAddress = websiteEmailsFrom,
-                ToUserId = userId,
-                ToEmailAddress = user.EmailAddress,
-                Subject = emailTemplate.Subject,
-                Body = bodyText,
-                TenantId = this.settings.Value.LearningHubTenantId,
-                Priority = 1,
+                Recipient = user.EmailAddress,
+                TemplateId = "a6574e74-8769-417b-90ef-c4a4a1be5250",
+                Personalisation = personalisation,
             };
-            await this.emailLogRepository.CreateAsync(userId, emailLog);
+
+            var client = this.openApiHttpClient.GetClient();
+
+            using var reqContent = new StringContent(JsonConvert.SerializeObject(emailRequest), Encoding.UTF8, "application/json");
+
+            await client.PostAsync("GovNotifyMessage/SendEmail", reqContent).ConfigureAwait(false);
+
+            ////// Send registration confirmation email
+            /////* This code was copied from the RegistrationService.RegisterUser method and tweaked for this email template.
+            //// * The GenerateUserPasswordValidationToken method (and its child methods) are all direct copies of those found in
+            //// * the RegistrationService. This is definitely a candidate for turning into a shared component after RR. */
+            ////var expiryMinutes = (int)(await this.systemSettingRepository.GetByIdAsync((int)SystemSettingEnum.PasswordValidationExpiryAdminDefault)).IntValue;
+            ////UserPasswordValidationTokenExtended userPasswordValidationToken = this.GenerateUserPasswordValidationToken(expiryMinutes, userId);
+            ////await this.userPasswordValidationTokenRepository.CreateAsync(userId, userPasswordValidationToken);
+
+            ////string websiteEmailsFrom = (await this.tenantSmtpRepository.GetByIdAsync(this.settings.Value.LearningHubTenantId)).From;
+            ////EmailTemplate emailTemplate = await this.emailTemplateRepository.GetByTypeAndTenantAsync((int)EmailTemplateTypeEnum.AdminPasswordValidateEmail, this.settings.Value.LearningHubTenantId);
+            ////string bodyText = emailTemplate.Body;
+            ////bodyText = bodyText.Replace("[FullName]", (user.FirstName + " " + user.LastName).ToTitleCase());
+            ////bodyText = bodyText.Replace("[FirstName]", user.FirstName.ToTitleCase());
+            ////bodyText = bodyText.Replace("[UserName]", user.UserName);
+            ////bodyText = bodyText.Replace("[PasswordValidateUrl]", userPasswordValidationToken.ValidateUrl);
+            ////bodyText = bodyText.Replace("[TimeLimit]", $"{expiryMinutes / 60} hours");
+            ////bodyText = bodyText.Replace("[TenantUrl]", this.settings.Value.LearningHubUrl);
+
+            ////Tenant tenant = await this.tenantRepository.GetByIdAsync(this.settings.Value.LearningHubTenantId);
+            ////if (!string.IsNullOrEmpty(tenant.SupportFormUrl))
+            ////{
+            ////    bodyText = bodyText.Replace("[SupportFormUrl]", tenant.SupportFormUrl);
+            ////}
+
+            ////EmailLog emailLog = new EmailLog()
+            ////{
+            ////    EmailTemplateId = emailTemplate.Id,
+            ////    FromEmailAddress = websiteEmailsFrom,
+            ////    ToUserId = userId,
+            ////    ToEmailAddress = user.EmailAddress,
+            ////    Subject = emailTemplate.Subject,
+            ////    Body = bodyText,
+            ////    TenantId = this.settings.Value.LearningHubTenantId,
+            ////    Priority = 1,
+            ////};
+            ////await this.emailLogRepository.CreateAsync(userId, emailLog);
 
             return new LearningHubValidationResult(true);
         }
@@ -711,39 +738,60 @@
                 return;
             }
 
-            // Copied from the above SendAdminPasswordResetEmail
             var expiryMinutes = (int)(await this.systemSettingRepository.GetByIdAsync((int)SystemSettingEnum.PasswordValidationExpiryAdminDefault)).IntValue;
             UserPasswordValidationTokenExtended userPasswordValidationToken = this.GenerateUserPasswordValidationToken(expiryMinutes, user.Id);
             await this.userPasswordValidationTokenRepository.CreateAsync(user.Id, userPasswordValidationToken);
 
-            string websiteEmailsFrom = (await this.tenantSmtpRepository.GetByIdAsync(this.settings.Value.LearningHubTenantId)).From;
-            EmailTemplate emailTemplate = await this.emailTemplateRepository.GetByTypeAndTenantAsync((int)EmailTemplateTypeEnum.AdminPasswordValidateEmail, this.settings.Value.LearningHubTenantId);
-            string bodyText = emailTemplate.Body;
-            bodyText = bodyText.Replace("[FullName]", (user.FirstName + " " + user.LastName).ToTitleCase());
-            bodyText = bodyText.Replace("[FirstName]", user.FirstName.ToTitleCase());
-            bodyText = bodyText.Replace("[UserName]", user.UserName);
-            bodyText = bodyText.Replace("[PasswordValidateUrl]", userPasswordValidationToken.ValidateUrl);
-            bodyText = bodyText.Replace("[TimeLimit]", (expiryMinutes / 60).ToString() + " hours");
-            bodyText = bodyText.Replace("[TenantUrl]", this.settings.Value.LearningHubUrl);
+            var personalisation = new Dictionary<string, dynamic>();
+            personalisation["name"] = (user.FirstName + " " + user.LastName).ToTitleCase();
+            personalisation["username"] = user.UserName;
 
-            Tenant tenant = await this.tenantRepository.GetByIdAsync(this.settings.Value.LearningHubTenantId);
-            if (!string.IsNullOrEmpty(tenant.SupportFormUrl))
+            var emailRequest = new EmailRequest
             {
-                bodyText = bodyText.Replace("[SupportFormUrl]", tenant.SupportFormUrl);
-            }
-
-            EmailLog emailLog = new EmailLog()
-            {
-                EmailTemplateId = emailTemplate.Id,
-                FromEmailAddress = websiteEmailsFrom,
-                ToUserId = user.Id,
-                ToEmailAddress = user.EmailAddress,
-                Subject = emailTemplate.Subject,
-                Body = bodyText,
-                TenantId = this.settings.Value.LearningHubTenantId,
-                Priority = 1,
+                Recipient = user.EmailAddress,
+                TemplateId = "a6574e74-8769-417b-90ef-c4a4a1be5250",
+                Personalisation = personalisation,
             };
-            await this.emailLogRepository.CreateAsync(user.Id, emailLog);
+
+            var client = this.openApiHttpClient.GetClient();
+
+            using var reqContent = new StringContent(JsonConvert.SerializeObject(emailRequest), Encoding.UTF8, "application/json");
+
+            await client.PostAsync("GovNotifyMessage/SendEmail", reqContent).ConfigureAwait(false);
+
+            ////// Copied from the above SendAdminPasswordResetEmail
+            ////var expiryMinutes = (int)(await this.systemSettingRepository.GetByIdAsync((int)SystemSettingEnum.PasswordValidationExpiryAdminDefault)).IntValue;
+            ////UserPasswordValidationTokenExtended userPasswordValidationToken = this.GenerateUserPasswordValidationToken(expiryMinutes, user.Id);
+            ////await this.userPasswordValidationTokenRepository.CreateAsync(user.Id, userPasswordValidationToken);
+
+            ////string websiteEmailsFrom = (await this.tenantSmtpRepository.GetByIdAsync(this.settings.Value.LearningHubTenantId)).From;
+            ////EmailTemplate emailTemplate = await this.emailTemplateRepository.GetByTypeAndTenantAsync((int)EmailTemplateTypeEnum.AdminPasswordValidateEmail, this.settings.Value.LearningHubTenantId);
+            ////string bodyText = emailTemplate.Body;
+            ////bodyText = bodyText.Replace("[FullName]", (user.FirstName + " " + user.LastName).ToTitleCase());
+            ////bodyText = bodyText.Replace("[FirstName]", user.FirstName.ToTitleCase());
+            ////bodyText = bodyText.Replace("[UserName]", user.UserName);
+            ////bodyText = bodyText.Replace("[PasswordValidateUrl]", userPasswordValidationToken.ValidateUrl);
+            ////bodyText = bodyText.Replace("[TimeLimit]", (expiryMinutes / 60).ToString() + " hours");
+            ////bodyText = bodyText.Replace("[TenantUrl]", this.settings.Value.LearningHubUrl);
+
+            ////Tenant tenant = await this.tenantRepository.GetByIdAsync(this.settings.Value.LearningHubTenantId);
+            ////if (!string.IsNullOrEmpty(tenant.SupportFormUrl))
+            ////{
+            ////    bodyText = bodyText.Replace("[SupportFormUrl]", tenant.SupportFormUrl);
+            ////}
+
+            ////EmailLog emailLog = new EmailLog()
+            ////{
+            ////    EmailTemplateId = emailTemplate.Id,
+            ////    FromEmailAddress = websiteEmailsFrom,
+            ////    ToUserId = user.Id,
+            ////    ToEmailAddress = user.EmailAddress,
+            ////    Subject = emailTemplate.Subject,
+            ////    Body = bodyText,
+            ////    TenantId = this.settings.Value.LearningHubTenantId,
+            ////    Priority = 1,
+            ////};
+            ////await this.emailLogRepository.CreateAsync(user.Id, emailLog);
         }
 
         /// <inheritdoc/>

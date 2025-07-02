@@ -22,7 +22,7 @@ try
     builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
     builder.Host.UseNLog();
 
-    builder.Services.ConfigureServices(builder.Configuration);
+    builder.Services.ConfigureServices(builder.Configuration, builder.Environment);
 
     var app = builder.Build();
 
