@@ -543,6 +543,7 @@
                 null,
                 null,
                 null,
+                null,
                 null);
 
             var role = await userService.GetUserRoleAsync(1);
@@ -571,6 +572,7 @@
             var userService = new ElfhUserService(
                 null,
                 userGroupRepositoryMock.Object,
+                null,
                 null,
                 null,
                 null,
@@ -836,6 +838,7 @@
                 null,
                 null,
                 null,
+                null,
                 null);
 
             var role = await userService.GetUserRoleAsync(1);
@@ -885,6 +888,7 @@
                 null,
                 null,
                 this.NewMapper(),
+                null,
                 null);
 
             await userService.UpdateUserSecurityQuestions(userSecurityQuestions, userId);
@@ -936,6 +940,7 @@
                 null,
                 null,
                 this.NewMapper(),
+                null,
                 null);
 
             await userService.UpdateUserSecurityQuestions(userSecurityQuestions, userId);
@@ -977,6 +982,7 @@
                 this.elfhCacheSettingOptions,
                 elfhCacheMock.Object,
                 this.NewMapper(),
+                null,
                 null);
 
             await userService.InvalidateElfhUserCacheAsync(123456, "test.user", CancellationToken.None);
