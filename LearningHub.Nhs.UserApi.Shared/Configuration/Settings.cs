@@ -49,5 +49,10 @@
         /// Gets or sets the security questions required.
         /// </summary>
         public int SecurityQuestionsRequired { get; set; }
+
+        /// <summary>
+        /// Gets or sets the GovNotifyTemplates.
+        /// </summary>
+        public GovNotifyTemplates GovNotifyTemplates { get; set; }
     }
 }

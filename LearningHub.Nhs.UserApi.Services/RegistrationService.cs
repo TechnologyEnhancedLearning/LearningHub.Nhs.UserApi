@@ -354,13 +354,14 @@
                     await this.userPasswordValidationTokenRepository.CreateAsync(userId, userPasswordValidationToken);
 
                     var personalisation = new Dictionary<string, dynamic>();
-                    personalisation["name"] = (newUser.FirstName + " " + newUser.LastName).ToTitleCase();
+                    personalisation["name"] = newUser.FirstName;
                     personalisation["username"] = newUser.UserName;
+                    personalisation["password"] = userPasswordValidationToken.ValidateUrl;
 
                     var emailRequest = new EmailRequest
                     {
                         Recipient = registrationRequest.EmailAddress,
-                        TemplateId = "fc3752d7-4c04-4d40-87fd-ad1264072ae9",
+                        TemplateId = this.settings.GovNotifyTemplates.NHSLearningHubRegistration,
                         Personalisation = personalisation,
                     };
 

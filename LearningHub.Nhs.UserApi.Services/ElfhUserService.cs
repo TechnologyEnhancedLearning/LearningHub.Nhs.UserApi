@@ -673,13 +673,14 @@
             await this.userPasswordValidationTokenRepository.CreateAsync(userId, userPasswordValidationToken);
 
             var personalisation = new Dictionary<string, dynamic>();
-            personalisation["name"] = (user.FirstName + " " + user.LastName).ToTitleCase();
+            personalisation["name"] = user.FirstName;
             personalisation["username"] = user.UserName;
+            personalisation["new password"] = userPasswordValidationToken.ValidateUrl;
 
             var emailRequest = new EmailRequest
             {
                 Recipient = user.EmailAddress,
-                TemplateId = "a6574e74-8769-417b-90ef-c4a4a1be5250",
+                TemplateId = this.settings.Value.GovNotifyTemplates.ForgottenUsernameOrPassword,
                 Personalisation = personalisation,
             };
 
@@ -743,13 +744,14 @@
             await this.userPasswordValidationTokenRepository.CreateAsync(user.Id, userPasswordValidationToken);
 
             var personalisation = new Dictionary<string, dynamic>();
-            personalisation["name"] = (user.FirstName + " " + user.LastName).ToTitleCase();
+            personalisation["name"] = user.FirstName;
             personalisation["username"] = user.UserName;
+            personalisation["new password"] = userPasswordValidationToken.ValidateUrl;
 
             var emailRequest = new EmailRequest
             {
                 Recipient = user.EmailAddress,
-                TemplateId = "a6574e74-8769-417b-90ef-c4a4a1be5250",
+                TemplateId = this.settings.Value.GovNotifyTemplates.ForgottenUsernameOrPassword,
                 Personalisation = personalisation,
             };
 
