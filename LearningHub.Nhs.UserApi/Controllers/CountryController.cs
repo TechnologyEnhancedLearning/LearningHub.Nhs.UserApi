@@ -83,5 +83,33 @@
             var list = await this.countryService.GetFilteredAsync(filter);
             return this.Ok(list);
         }
+
+        /// <summary>
+        /// Get a list of Uk Country records.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        [HttpGet]
+        [Route("GetAllUKCountries")]
+        public async Task<IActionResult> GetAllUKCountries()
+        {
+            var list = await this.countryService.GetAllUKCountries();
+            return this.Ok(list);
+        }
+
+        /// <summary>
+        /// Get a list of non Uk Country records.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        [HttpGet]
+        [Route("GetAllNonUKCountries")]
+        public async Task<IActionResult> GetAllNonUKCountries()
+        {
+            var list = await this.countryService.GetAllNonUKCountries();
+            return this.Ok(list);
+        }
     }
 }
