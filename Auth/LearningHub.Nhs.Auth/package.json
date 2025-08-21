@@ -21,7 +21,7 @@
   "dependencies": {
     "babel-polyfill": "^6.26.0",
     "concurrently": "^7.2.0",
-    "core-js": "^3.45.0",
+    "core-js": "^3.45.1",
     "nhsuk-frontend": "^7.0.0",
     "node": "^22"
   },
