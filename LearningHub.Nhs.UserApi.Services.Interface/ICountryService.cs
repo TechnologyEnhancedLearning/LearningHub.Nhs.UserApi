@@ -39,5 +39,21 @@
         /// The <see cref="Task"/>.
         /// </returns>
         Task<List<GenericListViewModel>> GetFilteredAsync(string filter);
+
+        /// <summary>
+        /// The get all.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        Task<List<GenericListViewModel>> GetAllUKCountries();
+
+        /// <summary>
+        /// The get all.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        Task<List<GenericListViewModel>> GetAllNonUKCountries();
     }
 }
