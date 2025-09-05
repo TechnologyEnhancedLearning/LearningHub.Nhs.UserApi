@@ -980,10 +980,7 @@
             user.FirstName = personalDetailsViewModel.FirstName;
             user.LastName = personalDetailsViewModel.LastName;
             user.PreferredName = personalDetailsViewModel.PreferredName;
-            if (!string.IsNullOrEmpty(personalDetailsViewModel.SecondaryEmailAddress))
-            {
-                user.AltEmailAddress = personalDetailsViewModel.SecondaryEmailAddress;
-            }
+            user.AltEmailAddress = personalDetailsViewModel.SecondaryEmailAddress;
 
             await this.elfhUserRepository.UpdateAsync(currentUserId, user);
         }
