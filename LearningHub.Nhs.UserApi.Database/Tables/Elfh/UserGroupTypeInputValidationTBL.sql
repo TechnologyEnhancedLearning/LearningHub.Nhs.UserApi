@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[userGroupTypeInputValidationTBL](
+﻿CREATE TABLE [elfh].[userGroupTypeInputValidationTBL](
 	[userGroupTypeInputValidationId] [int] IDENTITY(1,1) NOT NULL,
 	[userGroupId] [int] NOT NULL,
 	[userGroupTypePrefix] [nvarchar](10) NOT NULL,
@@ -22,18 +22,18 @@ PRIMARY KEY CLUSTERED
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[userGroupTypeInputValidationTBL] ADD  DEFAULT (N'USR TYP:') FOR [userGroupTypePrefix]
+ALTER TABLE [elfh].[userGroupTypeInputValidationTBL] ADD  DEFAULT (N'USR TYP:') FOR [userGroupTypePrefix]
 GO
 
-ALTER TABLE [dbo].[userGroupTypeInputValidationTBL] ADD  DEFAULT ((0)) FOR [deleted]
+ALTER TABLE [elfh].[userGroupTypeInputValidationTBL] ADD  DEFAULT ((0)) FOR [deleted]
 GO
 
-ALTER TABLE [dbo].[userGroupTypeInputValidationTBL] ADD  DEFAULT (sysdatetimeoffset()) FOR [amendDate]
+ALTER TABLE [elfh].[userGroupTypeInputValidationTBL] ADD  DEFAULT (sysdatetimeoffset()) FOR [amendDate]
 GO
 
-ALTER TABLE [dbo].[userGroupTypeInputValidationTBL] ADD  DEFAULT (sysdatetimeoffset()) FOR [createdDate]
+ALTER TABLE [elfh].[userGroupTypeInputValidationTBL] ADD  DEFAULT (sysdatetimeoffset()) FOR [createdDate]
 GO
 
-ALTER TABLE [dbo].[userGroupTypeInputValidationTBL]  WITH CHECK ADD  CONSTRAINT [FK_userGroupTypeInputValidationTBL_amendUserTBL] FOREIGN KEY([amendUserId])
-REFERENCES [dbo].[userTBL] ([userId])
+ALTER TABLE [elfh].[userGroupTypeInputValidationTBL]  WITH CHECK ADD  CONSTRAINT [FK_userGroupTypeInputValidationTBL_amendUserTBL] FOREIGN KEY([amendUserId])
+REFERENCES [hub].[User] ([Id])
 GO

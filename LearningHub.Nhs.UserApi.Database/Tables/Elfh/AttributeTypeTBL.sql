@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[attributeTypeTBL](
+﻿CREATE TABLE [elfh].[attributeTypeTBL](
 	[attributeTypeId] [int] NOT NULL,
 	[attributeTypeName] [nvarchar](50) NOT NULL,
 	[deleted] [bit] NOT NULL,
@@ -11,8 +11,8 @@
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[attributeTypeTBL] ADD  DEFAULT ((0)) FOR [deleted]
+ALTER TABLE [elfh].[attributeTypeTBL] ADD  DEFAULT ((0)) FOR [deleted]
 GO
 
-ALTER TABLE [dbo].[attributeTypeTBL] ADD  DEFAULT (sysdatetimeoffset()) FOR [amendDate]
+ALTER TABLE [elfh].[attributeTypeTBL] ADD  DEFAULT (sysdatetimeoffset()) FOR [amendDate]
 GO

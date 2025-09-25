@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[tenantUrlTBL](
+﻿CREATE TABLE [elfh].[tenantUrlTBL](
 	[tenantUrlId] [int] IDENTITY(1,1) NOT NULL,
 	[tenantId] [int] NOT NULL,
 	[urlHostName] [nvarchar](128) NOT NULL,
@@ -13,12 +13,12 @@
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[tenantUrlTBL] ADD  DEFAULT ((0)) FOR [useHostForAuth]
+ALTER TABLE [elfh].[tenantUrlTBL] ADD  DEFAULT ((0)) FOR [useHostForAuth]
 GO
 
-ALTER TABLE [dbo].[tenantUrlTBL]  WITH CHECK ADD  CONSTRAINT [FK_tenantUrlTBL_tenantTBL] FOREIGN KEY([tenantId])
-REFERENCES [dbo].[tenantTBL] ([tenantId])
+ALTER TABLE [elfh].[tenantUrlTBL]  WITH CHECK ADD  CONSTRAINT [FK_tenantUrlTBL_tenantTBL] FOREIGN KEY([tenantId])
+REFERENCES [elfh].[tenantTBL] ([tenantId])
 GO
 
-ALTER TABLE [dbo].[tenantUrlTBL] CHECK CONSTRAINT [FK_tenantUrlTBL_tenantTBL]
+ALTER TABLE [elfh].[tenantUrlTBL] CHECK CONSTRAINT [FK_tenantUrlTBL_tenantTBL]
 GO

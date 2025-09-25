@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[systemSettingTBL](
+﻿CREATE TABLE [elfh].[systemSettingTBL](
 	[systemSettingId] [int] NOT NULL,
 	[systemSettingName] [nvarchar](50) NOT NULL,
 	[intValue] [int] NULL,
@@ -15,10 +15,10 @@
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[systemSettingTBL] ADD  DEFAULT ((0)) FOR [deleted]
+ALTER TABLE [elfh].[systemSettingTBL] ADD  DEFAULT ((0)) FOR [deleted]
 GO
 
-ALTER TABLE [dbo].[systemSettingTBL] ADD  DEFAULT (sysdatetimeoffset()) FOR [amendDate]
+ALTER TABLE [elfh].[systemSettingTBL] ADD  DEFAULT (sysdatetimeoffset()) FOR [amendDate]
 GO
 
 

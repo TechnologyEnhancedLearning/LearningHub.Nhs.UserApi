@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[jobRoleTBL](
+﻿CREATE TABLE [elfh].[jobRoleTBL](
 	[jobRoleId] [int] IDENTITY(1,1) NOT NULL,
 	[staffGroupId] [int] NULL,
 	[jobRoleName] [nvarchar](100) NOT NULL,
@@ -14,22 +14,22 @@
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[jobRoleTBL] ADD  CONSTRAINT [DF_jobRoleTBL_deleted]  DEFAULT ((0)) FOR [deleted]
+ALTER TABLE [elfh].[jobRoleTBL] ADD  CONSTRAINT [DF_jobRoleTBL_deleted]  DEFAULT ((0)) FOR [deleted]
 GO
 
-ALTER TABLE [dbo].[jobRoleTBL] ADD  CONSTRAINT [DF_jobRoleTBL_amendDate]  DEFAULT (sysdatetimeoffset()) FOR [amendDate]
+ALTER TABLE [elfh].[jobRoleTBL] ADD  CONSTRAINT [DF_jobRoleTBL_amendDate]  DEFAULT (sysdatetimeoffset()) FOR [amendDate]
 GO
 
-ALTER TABLE [dbo].[jobRoleTBL]  WITH CHECK ADD  CONSTRAINT [FK_jobRoleTBL_medicalCouncilTBL] FOREIGN KEY([medicalCouncilId])
-REFERENCES [dbo].[medicalCouncilTBL] ([medicalCouncilId])
+ALTER TABLE [elfh].[jobRoleTBL]  WITH CHECK ADD  CONSTRAINT [FK_jobRoleTBL_medicalCouncilTBL] FOREIGN KEY([medicalCouncilId])
+REFERENCES [elfh].[medicalCouncilTBL] ([medicalCouncilId])
 GO
 
-ALTER TABLE [dbo].[jobRoleTBL] CHECK CONSTRAINT [FK_jobRoleTBL_medicalCouncilTBL]
+ALTER TABLE [elfh].[jobRoleTBL] CHECK CONSTRAINT [FK_jobRoleTBL_medicalCouncilTBL]
 GO
 
-ALTER TABLE [dbo].[jobRoleTBL]  WITH CHECK ADD  CONSTRAINT [FK_jobRoleTBL_staffGroupTBL] FOREIGN KEY([staffGroupId])
-REFERENCES [dbo].[staffGroupTBL] ([staffGroupId])
+ALTER TABLE [elfh].[jobRoleTBL]  WITH CHECK ADD  CONSTRAINT [FK_jobRoleTBL_staffGroupTBL] FOREIGN KEY([staffGroupId])
+REFERENCES [elfh].[staffGroupTBL] ([staffGroupId])
 GO
 
-ALTER TABLE [dbo].[jobRoleTBL] CHECK CONSTRAINT [FK_jobRoleTBL_staffGroupTBL]
+ALTER TABLE [elfh].[jobRoleTBL] CHECK CONSTRAINT [FK_jobRoleTBL_staffGroupTBL]
 GO

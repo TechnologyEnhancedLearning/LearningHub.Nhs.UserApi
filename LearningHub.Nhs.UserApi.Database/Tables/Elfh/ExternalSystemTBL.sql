@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[externalSystemTBL](
+﻿CREATE TABLE [elfh].[externalSystemTBL](
 	[externalSystemId] [int] IDENTITY(1,1) NOT NULL,
 	[externalSystemName] [nvarchar](50) NOT NULL,
 	[url] [nvarchar](256) NULL,
@@ -23,9 +23,9 @@
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[externalSystemTBL] ADD  CONSTRAINT [DF_externalSystemTBL_RestrictToSSO]  DEFAULT ((0)) FOR [restrictToSSO]
+ALTER TABLE [elfh].[externalSystemTBL] ADD  CONSTRAINT [DF_externalSystemTBL_RestrictToSSO]  DEFAULT ((0)) FOR [restrictToSSO]
 GO
 
-ALTER TABLE [dbo].[externalSystemTBL] ADD  DEFAULT ('') FOR [code]
+ALTER TABLE [elfh].[externalSystemTBL] ADD  DEFAULT ('') FOR [code]
 GO
 

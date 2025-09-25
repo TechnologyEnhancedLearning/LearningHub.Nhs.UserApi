@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[tenantSmtpTBL](
+﻿CREATE TABLE [elfh].[tenantSmtpTBL](
 	[tenantId] [int] NOT NULL,
 	[deliveryMethod] [nvarchar](128) NOT NULL,
 	[pickupDirectoryLocation] [nvarchar](256) NULL,

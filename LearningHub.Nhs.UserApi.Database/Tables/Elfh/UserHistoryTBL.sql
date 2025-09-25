@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[userHistoryTBL](
+﻿CREATE TABLE [elfh].[userHistoryTBL](
 	[userHistoryId] [int] IDENTITY(1,1) NOT NULL,
 	[userHistoryTypeId] [int] NOT NULL,
 	[userId] [int] NOT NULL,
@@ -11,15 +11,15 @@ PRIMARY KEY CLUSTERED
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[userHistoryTBL] ADD  DEFAULT (sysdatetimeoffset()) FOR [createdDate]
+ALTER TABLE [elfh].[userHistoryTBL] ADD  DEFAULT (sysdatetimeoffset()) FOR [createdDate]
 GO
 
-ALTER TABLE [dbo].[userHistoryTBL] ADD  DEFAULT ((0)) FOR [tenantId]
+ALTER TABLE [elfh].[userHistoryTBL] ADD  DEFAULT ((0)) FOR [tenantId]
 GO
 
-ALTER TABLE [dbo].[userHistoryTBL]  WITH CHECK ADD  CONSTRAINT [FK_userHistoryTBL_userHistoryTypeTBL] FOREIGN KEY([userHistoryTypeId])
-REFERENCES [dbo].[userHistoryTypeTBL] ([UserHistoryTypeId])
+ALTER TABLE [elfh].[userHistoryTBL]  WITH CHECK ADD  CONSTRAINT [FK_userHistoryTBL_userHistoryTypeTBL] FOREIGN KEY([userHistoryTypeId])
+REFERENCES [elfh].[userHistoryTypeTBL] ([UserHistoryTypeId])
 GO
 
-ALTER TABLE [dbo].[userHistoryTBL] CHECK CONSTRAINT [FK_userHistoryTBL_userHistoryTypeTBL]
+ALTER TABLE [elfh].[userHistoryTBL] CHECK CONSTRAINT [FK_userHistoryTBL_userHistoryTypeTBL]
 GO

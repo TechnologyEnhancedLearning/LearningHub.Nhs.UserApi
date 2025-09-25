@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[tenantTBL](
+﻿CREATE TABLE [elfh].[tenantTBL](
 	[tenantId] [int] NOT NULL,
 	[tenantCode] [nvarchar](20) NOT NULL,
 	[tenantName] [nvarchar](64) NOT NULL,
@@ -25,19 +25,19 @@
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[tenantTBL] ADD  DEFAULT ((0)) FOR [liveChatStatus]
+ALTER TABLE [elfh].[tenantTBL] ADD  DEFAULT ((0)) FOR [liveChatStatus]
 GO
 
-ALTER TABLE [dbo].[tenantTBL] ADD  DEFAULT ((0)) FOR [myElearningDefaultView]
+ALTER TABLE [elfh].[tenantTBL] ADD  DEFAULT ((0)) FOR [myElearningDefaultView]
 GO
 
-ALTER TABLE [dbo].[tenantTBL] ADD  DEFAULT ((0)) FOR [preLoginCatalogueDefaultView]
+ALTER TABLE [elfh].[tenantTBL] ADD  DEFAULT ((0)) FOR [preLoginCatalogueDefaultView]
 GO
 
-ALTER TABLE [dbo].[tenantTBL] ADD  DEFAULT ((0)) FOR [postLoginCatalogueDefaultView]
+ALTER TABLE [elfh].[tenantTBL] ADD  DEFAULT ((0)) FOR [postLoginCatalogueDefaultView]
 GO
 
-ALTER TABLE [dbo].[tenantTBL] ADD  DEFAULT (newid()) FOR [authSecret]
+ALTER TABLE [elfh].[tenantTBL] ADD  DEFAULT (newid()) FOR [authSecret]
 GO
 
 

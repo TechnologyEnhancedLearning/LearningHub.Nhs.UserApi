@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[userRoleUpgradeTBL](
+﻿CREATE TABLE [elfh].[userRoleUpgradeTBL](
 	[userRoleUpgradeId] [int] IDENTITY(1,1) NOT NULL,
 	[userId] [int] NOT NULL,
 	[emailAddress] [nvarchar](100) NOT NULL,
@@ -16,20 +16,20 @@
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[userRoleUpgradeTBL] ADD  DEFAULT ((12)) FOR [userHistoryTypeId]
+ALTER TABLE [elfh].[userRoleUpgradeTBL] ADD  DEFAULT ((12)) FOR [userHistoryTypeId]
 GO
 
-ALTER TABLE [dbo].[userRoleUpgradeTBL]  WITH CHECK ADD  CONSTRAINT [FK_userRoleUpgradeTBL_userHistoryTypeTBL] FOREIGN KEY([userHistoryTypeId])
-REFERENCES [dbo].[userHistoryTypeTBL] ([UserHistoryTypeId])
+ALTER TABLE [elfh].[userRoleUpgradeTBL]  WITH CHECK ADD  CONSTRAINT [FK_userRoleUpgradeTBL_userHistoryTypeTBL] FOREIGN KEY([userHistoryTypeId])
+REFERENCES [elfh].[userHistoryTypeTBL] ([UserHistoryTypeId])
 GO
 
-ALTER TABLE [dbo].[userRoleUpgradeTBL] CHECK CONSTRAINT [FK_userRoleUpgradeTBL_userHistoryTypeTBL]
+ALTER TABLE [elfh].[userRoleUpgradeTBL] CHECK CONSTRAINT [FK_userRoleUpgradeTBL_userHistoryTypeTBL]
 GO
 
-ALTER TABLE [dbo].[userRoleUpgradeTBL]  WITH CHECK ADD  CONSTRAINT [FK_userRoleUpgradeTbl_userTbl] FOREIGN KEY([userId])
-REFERENCES [dbo].[userTBL] ([userId])
+ALTER TABLE [elfh].[userRoleUpgradeTBL]  WITH CHECK ADD  CONSTRAINT [FK_userRoleUpgradeTbl_userTbl] FOREIGN KEY([userId])
+REFERENCES [hub].[User] ([Id])
 GO
 
-ALTER TABLE [dbo].[userRoleUpgradeTBL] CHECK CONSTRAINT [FK_userRoleUpgradeTbl_userTbl]
+ALTER TABLE [elfh].[userRoleUpgradeTBL] CHECK CONSTRAINT [FK_userRoleUpgradeTbl_userTbl]
 GO
 

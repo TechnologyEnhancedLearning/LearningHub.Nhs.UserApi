@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[loginWizardStageTBL](
+﻿CREATE TABLE [elfh].[loginWizardStageTBL](
 	[loginWizardStageId] [int] NOT NULL,
 	[description] [nvarchar](128) NOT NULL,
 	[reasonDisplayText] [nvarchar](1024) NOT NULL,

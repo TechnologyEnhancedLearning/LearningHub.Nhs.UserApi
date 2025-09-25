@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[deaneryTBL](
+﻿CREATE TABLE [elfh].[deaneryTBL](
 	[deaneryId] [int] IDENTITY(1,1) NOT NULL,
 	[deaneryName] [nvarchar](50) NOT NULL,
 	[displayOrder] [int] NOT NULL,

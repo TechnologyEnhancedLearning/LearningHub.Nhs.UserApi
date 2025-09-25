@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[termsAndConditionsTBL](
+﻿CREATE TABLE [elfh].[termsAndConditionsTBL](
 	[termsAndConditionsId] [int] IDENTITY(1,1) NOT NULL,
 	[createdDate] [datetimeoffset](7) NOT NULL,
 	[description] [nvarchar](512) NOT NULL,
@@ -16,12 +16,12 @@
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[termsAndConditionsTBL] ADD  DEFAULT ((1)) FOR [reportable]
+ALTER TABLE [elfh].[termsAndConditionsTBL] ADD  DEFAULT ((1)) FOR [reportable]
 GO
 
-ALTER TABLE [dbo].[termsAndConditionsTBL]  WITH CHECK ADD  CONSTRAINT [FK_termsAndConditionsTBL_tenantTBL] FOREIGN KEY([tenantId])
-REFERENCES [dbo].[tenantTBL] ([tenantId])
+ALTER TABLE [elfh].[termsAndConditionsTBL]  WITH CHECK ADD  CONSTRAINT [FK_termsAndConditionsTBL_tenantTBL] FOREIGN KEY([tenantId])
+REFERENCES [elfh].[tenantTBL] ([tenantId])
 GO
 
-ALTER TABLE [dbo].[termsAndConditionsTBL] CHECK CONSTRAINT [FK_termsAndConditionsTBL_tenantTBL]
+ALTER TABLE [elfh].[termsAndConditionsTBL] CHECK CONSTRAINT [FK_termsAndConditionsTBL_tenantTBL]
 GO

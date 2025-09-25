@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[attributeTBL](
+﻿CREATE TABLE [elfh].[attributeTBL](
 	[attributeId] [int] IDENTITY(1,1) NOT NULL,
 	[attributeTypeId] [int] NOT NULL,
 	[attributeName] [nvarchar](50) NOT NULL,
@@ -14,18 +14,18 @@
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[attributeTBL] ADD  DEFAULT ((0)) FOR [attributeAccess]
+ALTER TABLE [elfh].[attributeTBL] ADD  DEFAULT ((0)) FOR [attributeAccess]
 GO
 
-ALTER TABLE [dbo].[attributeTBL] ADD  DEFAULT ((0)) FOR [deleted]
+ALTER TABLE [elfh].[attributeTBL] ADD  DEFAULT ((0)) FOR [deleted]
 GO
 
-ALTER TABLE [dbo].[attributeTBL] ADD  DEFAULT (sysdatetimeoffset()) FOR [amendDate]
+ALTER TABLE [elfh].[attributeTBL] ADD  DEFAULT (sysdatetimeoffset()) FOR [amendDate]
 GO
 
-ALTER TABLE [dbo].[attributeTBL]  WITH CHECK ADD  CONSTRAINT [FK_attributeTBL_attributeTypeId] FOREIGN KEY([attributeTypeId])
-REFERENCES [dbo].[attributeTypeTBL] ([attributeTypeId])
+ALTER TABLE [elfh].[attributeTBL]  WITH CHECK ADD  CONSTRAINT [FK_attributeTBL_attributeTypeId] FOREIGN KEY([attributeTypeId])
+REFERENCES [elfh].[attributeTypeTBL] ([attributeTypeId])
 GO
 
-ALTER TABLE [dbo].[attributeTBL] CHECK CONSTRAINT [FK_attributeTBL_attributeTypeId]
+ALTER TABLE [elfh].[attributeTBL] CHECK CONSTRAINT [FK_attributeTBL_attributeTypeId]
 GO

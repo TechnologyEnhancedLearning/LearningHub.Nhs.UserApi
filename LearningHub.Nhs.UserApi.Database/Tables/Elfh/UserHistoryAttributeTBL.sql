@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[userHistoryAttributeTBL](
+﻿CREATE TABLE [elfh].[userHistoryAttributeTBL](
 	[userHistoryAttributeId] [int] IDENTITY(1,1) NOT NULL,
 	[userHistoryId] [int] NOT NULL,
 	[attributeId] [int] NOT NULL,
@@ -16,24 +16,24 @@
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[userHistoryAttributeTBL] ADD  CONSTRAINT [DF_userHistoryAttributeTBL_deleted]  DEFAULT ((0)) FOR [deleted]
+ALTER TABLE [elfh].[userHistoryAttributeTBL] ADD  CONSTRAINT [DF_userHistoryAttributeTBL_deleted]  DEFAULT ((0)) FOR [deleted]
 GO
 
-ALTER TABLE [dbo].[userHistoryAttributeTBL] ADD  CONSTRAINT [DF_userHistoryAttributeTBL_amendDate]  DEFAULT (sysdatetimeoffset()) FOR [amendDate]
+ALTER TABLE [elfh].[userHistoryAttributeTBL] ADD  CONSTRAINT [DF_userHistoryAttributeTBL_amendDate]  DEFAULT (sysdatetimeoffset()) FOR [amendDate]
 GO
 
-ALTER TABLE [dbo].[userHistoryAttributeTBL]  WITH CHECK ADD  CONSTRAINT [FK_userHistoryAttributeTBL_attributeId] FOREIGN KEY([attributeId])
-REFERENCES [dbo].[attributeTBL] ([attributeId])
+ALTER TABLE [elfh].[userHistoryAttributeTBL]  WITH CHECK ADD  CONSTRAINT [FK_userHistoryAttributeTBL_attributeId] FOREIGN KEY([attributeId])
+REFERENCES [elfh].[attributeTBL] ([attributeId])
 GO
 
-ALTER TABLE [dbo].[userHistoryAttributeTBL] CHECK CONSTRAINT [FK_userHistoryAttributeTBL_attributeId]
+ALTER TABLE [elfh].[userHistoryAttributeTBL] CHECK CONSTRAINT [FK_userHistoryAttributeTBL_attributeId]
 GO
 
-ALTER TABLE [dbo].[userHistoryAttributeTBL]  WITH CHECK ADD  CONSTRAINT [FK_userHistoryAttributeTBL_userHistoryId] FOREIGN KEY([userHistoryId])
-REFERENCES [dbo].[userHistoryTBL] ([userHistoryId])
+ALTER TABLE [elfh].[userHistoryAttributeTBL]  WITH CHECK ADD  CONSTRAINT [FK_userHistoryAttributeTBL_userHistoryId] FOREIGN KEY([userHistoryId])
+REFERENCES [elfh].[userHistoryTBL] ([userHistoryId])
 GO
 
-ALTER TABLE [dbo].[userHistoryAttributeTBL] CHECK CONSTRAINT [FK_userHistoryAttributeTBL_userHistoryId]
+ALTER TABLE [elfh].[userHistoryAttributeTBL] CHECK CONSTRAINT [FK_userHistoryAttributeTBL_userHistoryId]
 GO
 
 

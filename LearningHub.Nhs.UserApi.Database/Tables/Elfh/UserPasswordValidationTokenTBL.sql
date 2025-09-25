@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[userPasswordValidationTokenTBL](
+﻿CREATE TABLE [elfh].[userPasswordValidationTokenTBL](
 	[userPasswordValidationTokenId] [int] IDENTITY(1,1) NOT NULL,
 	[hashedToken] [nvarchar](128) NOT NULL,
 	[salt] [nvarchar](128) NOT NULL,
@@ -15,19 +15,19 @@ PRIMARY KEY CLUSTERED
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[userPasswordValidationTokenTBL] ADD  DEFAULT (sysdatetimeoffset()) FOR [createdDate]
+ALTER TABLE [elfh].[userPasswordValidationTokenTBL] ADD  DEFAULT (sysdatetimeoffset()) FOR [createdDate]
 GO
 
-ALTER TABLE [dbo].[userPasswordValidationTokenTBL]  WITH CHECK ADD  CONSTRAINT [FK_userPasswordValidationTokenTBL_tenantTBL] FOREIGN KEY([tenantId])
-REFERENCES [dbo].[tenantTBL] ([tenantId])
+ALTER TABLE [elfh].[userPasswordValidationTokenTBL]  WITH CHECK ADD  CONSTRAINT [FK_userPasswordValidationTokenTBL_tenantTBL] FOREIGN KEY([tenantId])
+REFERENCES [elfh].[tenantTBL] ([tenantId])
 GO
 
-ALTER TABLE [dbo].[userPasswordValidationTokenTBL] CHECK CONSTRAINT [FK_userPasswordValidationTokenTBL_tenantTBL]
+ALTER TABLE [elfh].[userPasswordValidationTokenTBL] CHECK CONSTRAINT [FK_userPasswordValidationTokenTBL_tenantTBL]
 GO
 
-ALTER TABLE [dbo].[userPasswordValidationTokenTBL]  WITH CHECK ADD  CONSTRAINT [FK_userPasswordValidationTokenTBL_userTBL] FOREIGN KEY([userId])
-REFERENCES [dbo].[userTBL] ([userId])
+ALTER TABLE [elfh].[userPasswordValidationTokenTBL]  WITH CHECK ADD  CONSTRAINT [FK_userPasswordValidationTokenTBL_userTBL] FOREIGN KEY([userId])
+REFERENCES [hub].[User] ([Id])
 GO
 
-ALTER TABLE [dbo].[userPasswordValidationTokenTBL] CHECK CONSTRAINT [FK_userPasswordValidationTokenTBL_userTBL]
+ALTER TABLE [elfh].[userPasswordValidationTokenTBL] CHECK CONSTRAINT [FK_userPasswordValidationTokenTBL_userTBL]
 GO

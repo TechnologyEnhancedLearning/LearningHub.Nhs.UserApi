@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[userTermsAndConditionsTBL](
+﻿CREATE TABLE [elfh].[userTermsAndConditionsTBL](
 	[userTermsAndConditionsId] [int] IDENTITY(1,1) NOT NULL,
 	[termsAndConditionsId] [int] NOT NULL,
 	[userId] [int] NOT NULL,
@@ -13,16 +13,16 @@
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[userTermsAndConditionsTBL]  WITH CHECK ADD  CONSTRAINT [FK_userTermsAndConditionsTBL_portalUserTBL] FOREIGN KEY([userId])
-REFERENCES [dbo].[userTBL] ([userId])
+ALTER TABLE [elfh].[userTermsAndConditionsTBL]  WITH CHECK ADD  CONSTRAINT [FK_userTermsAndConditionsTBL_portalUserTBL] FOREIGN KEY([userId])
+REFERENCES [hub].[User] ([Id])
 GO
 
-ALTER TABLE [dbo].[userTermsAndConditionsTBL] CHECK CONSTRAINT [FK_userTermsAndConditionsTBL_portalUserTBL]
+ALTER TABLE [elfh].[userTermsAndConditionsTBL] CHECK CONSTRAINT [FK_userTermsAndConditionsTBL_portalUserTBL]
 GO
 
-ALTER TABLE [dbo].[userTermsAndConditionsTBL]  WITH CHECK ADD  CONSTRAINT [FK_userTermsAndConditionsTBL_termsAndConditionsTBL] FOREIGN KEY([termsAndConditionsId])
-REFERENCES [dbo].[termsAndConditionsTBL] ([termsAndConditionsId])
+ALTER TABLE [elfh].[userTermsAndConditionsTBL]  WITH CHECK ADD  CONSTRAINT [FK_userTermsAndConditionsTBL_termsAndConditionsTBL] FOREIGN KEY([termsAndConditionsId])
+REFERENCES [elfh].[termsAndConditionsTBL] ([termsAndConditionsId])
 GO
 
-ALTER TABLE [dbo].[userTermsAndConditionsTBL] CHECK CONSTRAINT [FK_userTermsAndConditionsTBL_termsAndConditionsTBL]
+ALTER TABLE [elfh].[userTermsAndConditionsTBL] CHECK CONSTRAINT [FK_userTermsAndConditionsTBL_termsAndConditionsTBL]
 GO

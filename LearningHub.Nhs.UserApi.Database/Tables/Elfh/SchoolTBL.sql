@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[schoolTBL](
+﻿CREATE TABLE [elfh].[schoolTBL](
 	[schoolId] [int] IDENTITY(1,1) NOT NULL,
 	[deaneryId] [int] NOT NULL,
 	[specialtyId] [int] NOT NULL,
@@ -14,16 +14,16 @@
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[schoolTBL]  WITH CHECK ADD  CONSTRAINT [FK_schoolTBL_deaneryTBL] FOREIGN KEY([deaneryId])
-REFERENCES [dbo].[deaneryTBL] ([deaneryId])
+ALTER TABLE [elfh].[schoolTBL]  WITH CHECK ADD  CONSTRAINT [FK_schoolTBL_deaneryTBL] FOREIGN KEY([deaneryId])
+REFERENCES [elfh].[deaneryTBL] ([deaneryId])
 GO
 
-ALTER TABLE [dbo].[schoolTBL] CHECK CONSTRAINT [FK_schoolTBL_deaneryTBL]
+ALTER TABLE [elfh].[schoolTBL] CHECK CONSTRAINT [FK_schoolTBL_deaneryTBL]
 GO
 
-ALTER TABLE [dbo].[schoolTBL]  WITH CHECK ADD  CONSTRAINT [FK_schoolTBL_specialtyTBL] FOREIGN KEY([specialtyId])
-REFERENCES [dbo].[specialtyTBL] ([specialtyId])
+ALTER TABLE [elfh].[schoolTBL]  WITH CHECK ADD  CONSTRAINT [FK_schoolTBL_specialtyTBL] FOREIGN KEY([specialtyId])
+REFERENCES [elfh].[specialtyTBL] ([specialtyId])
 GO
 
-ALTER TABLE [dbo].[schoolTBL] CHECK CONSTRAINT [FK_schoolTBL_specialtyTBL]
+ALTER TABLE [elfh].[schoolTBL] CHECK CONSTRAINT [FK_schoolTBL_specialtyTBL]
 GO

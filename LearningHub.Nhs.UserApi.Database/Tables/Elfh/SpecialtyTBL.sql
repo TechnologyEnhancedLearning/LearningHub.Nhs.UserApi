@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[specialtyTBL](
+﻿CREATE TABLE [elfh].[specialtyTBL](
 	[specialtyId] [int] IDENTITY(1,1) NOT NULL,
 	[specialtyName] [nvarchar](50) NOT NULL,
 	[displayOrder] [int] NOT NULL,
@@ -12,8 +12,8 @@
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[specialtyTBL] ADD  CONSTRAINT [DF_specialty_deleted]  DEFAULT ((0)) FOR [deleted]
+ALTER TABLE [elfh].[specialtyTBL] ADD  CONSTRAINT [DF_specialty_deleted]  DEFAULT ((0)) FOR [deleted]
 GO
 
-ALTER TABLE [dbo].[specialtyTBL] ADD  CONSTRAINT [DF_specialtyTBL_amendDate]  DEFAULT (sysdatetimeoffset()) FOR [amendDate]
+ALTER TABLE [elfh].[specialtyTBL] ADD  CONSTRAINT [DF_specialtyTBL_amendDate]  DEFAULT (sysdatetimeoffset()) FOR [amendDate]
 GO

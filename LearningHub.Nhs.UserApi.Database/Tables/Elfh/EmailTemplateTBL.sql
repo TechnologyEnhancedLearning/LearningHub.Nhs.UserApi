@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[emailTemplateTBL](
+﻿CREATE TABLE [elfh].[emailTemplateTBL](
 	[emailTemplateId] [int] IDENTITY(1,1) NOT NULL,
 	[emailTemplateTypeId] [int] NOT NULL,
 	[programmeComponentId] [int] NOT NULL,
@@ -16,15 +16,15 @@
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[emailTemplateTBL] ADD  CONSTRAINT [DF_emailTemplateTBL_Deleted]  DEFAULT ((0)) FOR [deleted]
+ALTER TABLE [elfh].[emailTemplateTBL] ADD  CONSTRAINT [DF_emailTemplateTBL_Deleted]  DEFAULT ((0)) FOR [deleted]
 GO
 
-ALTER TABLE [dbo].[emailTemplateTBL] ADD  CONSTRAINT [DF_EmailTemplate_AmendDate]  DEFAULT (sysdatetimeoffset()) FOR [amendDate]
+ALTER TABLE [elfh].[emailTemplateTBL] ADD  CONSTRAINT [DF_EmailTemplate_AmendDate]  DEFAULT (sysdatetimeoffset()) FOR [amendDate]
 GO
 
-ALTER TABLE [dbo].[emailTemplateTBL]  WITH CHECK ADD  CONSTRAINT [FK_emailTemplateTBL_emailTemplateTypeTBL] FOREIGN KEY([emailTemplateTypeId])
-REFERENCES [dbo].[emailTemplateTypeTBL] ([emailTemplateTypeId])
+ALTER TABLE [elfh].[emailTemplateTBL]  WITH CHECK ADD  CONSTRAINT [FK_emailTemplateTBL_emailTemplateTypeTBL] FOREIGN KEY([emailTemplateTypeId])
+REFERENCES [elfh].[emailTemplateTypeTBL] ([emailTemplateTypeId])
 GO
 
-ALTER TABLE [dbo].[emailTemplateTBL] CHECK CONSTRAINT [FK_emailTemplateTBL_emailTemplateTypeTBL]
+ALTER TABLE [elfh].[emailTemplateTBL] CHECK CONSTRAINT [FK_emailTemplateTBL_emailTemplateTypeTBL]
 GO

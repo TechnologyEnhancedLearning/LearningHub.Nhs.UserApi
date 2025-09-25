@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[loginWizardStageActivityTBL](
+﻿CREATE TABLE [elfh].[loginWizardStageActivityTBL](
 	[loginWizardStageActivityId] [int] IDENTITY(1,1) NOT NULL,
 	[loginWizardStageId] [int] NOT NULL,
 	[userId] [int] NOT NULL,
@@ -10,16 +10,16 @@
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[loginWizardStageActivityTBL]  WITH CHECK ADD  CONSTRAINT [FK_loginWizardStageActivityTBL_loginWizardStageTBL] FOREIGN KEY([loginWizardStageId])
-REFERENCES [dbo].[loginWizardStageTBL] ([loginWizardStageId])
+ALTER TABLE [elfh].[loginWizardStageActivityTBL]  WITH CHECK ADD  CONSTRAINT [FK_loginWizardStageActivityTBL_loginWizardStageTBL] FOREIGN KEY([loginWizardStageId])
+REFERENCES [elfh].[loginWizardStageTBL] ([loginWizardStageId])
 GO
 
-ALTER TABLE [dbo].[loginWizardStageActivityTBL] CHECK CONSTRAINT [FK_loginWizardStageActivityTBL_loginWizardStageTBL]
+ALTER TABLE [elfh].[loginWizardStageActivityTBL] CHECK CONSTRAINT [FK_loginWizardStageActivityTBL_loginWizardStageTBL]
 GO
 
-ALTER TABLE [dbo].[loginWizardStageActivityTBL]  WITH CHECK ADD  CONSTRAINT [FK_loginWizardStageActivityTBL_userTBL] FOREIGN KEY([userId])
-REFERENCES [dbo].[userTBL] ([userId])
+ALTER TABLE [elfh].[loginWizardStageActivityTBL]  WITH CHECK ADD  CONSTRAINT [FK_loginWizardStageActivityTBL_userTBL] FOREIGN KEY([userId])
+REFERENCES [hub].[User] ([Id])
 GO
 
-ALTER TABLE [dbo].[loginWizardStageActivityTBL] CHECK CONSTRAINT [FK_loginWizardStageActivityTBL_userTBL]
+ALTER TABLE [elfh].[loginWizardStageActivityTBL] CHECK CONSTRAINT [FK_loginWizardStageActivityTBL_userTBL]
 GO

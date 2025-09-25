@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[gdcRegisterTBL](
+﻿CREATE TABLE [elfh].[gdcRegisterTBL](
 	[reg_number] [nvarchar](50) NOT NULL,
 	[Dentist] [bit] NOT NULL,
 	[Title] [nvarchar](50) NULL,
@@ -29,8 +29,8 @@
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[gdcRegisterTBL] ADD  DEFAULT ((0)) FOR [Dentist]
+ALTER TABLE [elfh].[gdcRegisterTBL] ADD  DEFAULT ((0)) FOR [Dentist]
 GO
 
-ALTER TABLE [dbo].[gdcRegisterTBL] ADD  DEFAULT (sysdatetimeoffset()) FOR [dateProcessed]
+ALTER TABLE [elfh].[gdcRegisterTBL] ADD  DEFAULT (sysdatetimeoffset()) FOR [dateProcessed]
 GO

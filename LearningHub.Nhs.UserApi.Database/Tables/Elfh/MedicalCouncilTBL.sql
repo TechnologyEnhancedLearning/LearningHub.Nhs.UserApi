@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[medicalCouncilTBL](
+﻿CREATE TABLE [elfh].[medicalCouncilTBL](
 	[medicalCouncilId] [int] NOT NULL,
 	[medicalCouncilName] [nvarchar](50) NOT NULL,
 	[medicalCouncilCode] [nvarchar](50) NOT NULL,
@@ -14,11 +14,11 @@
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[medicalCouncilTBL] ADD  CONSTRAINT [DF_medicalCouncilTBL_includeOnCerts]  DEFAULT ((0)) FOR [includeOnCerts]
+ALTER TABLE [elfh].[medicalCouncilTBL] ADD  CONSTRAINT [DF_medicalCouncilTBL_includeOnCerts]  DEFAULT ((0)) FOR [includeOnCerts]
 GO
 
-ALTER TABLE [dbo].[medicalCouncilTBL] ADD  CONSTRAINT [DF_medicalCouncilTBL_deleted]  DEFAULT ((0)) FOR [deleted]
+ALTER TABLE [elfh].[medicalCouncilTBL] ADD  CONSTRAINT [DF_medicalCouncilTBL_deleted]  DEFAULT ((0)) FOR [deleted]
 GO
 
-ALTER TABLE [dbo].[medicalCouncilTBL] ADD  CONSTRAINT [DF_medicalCouncilTBL_amendDate]  DEFAULT (sysdatetimeoffset()) FOR [amendDate]
+ALTER TABLE [elfh].[medicalCouncilTBL] ADD  CONSTRAINT [DF_medicalCouncilTBL_amendDate]  DEFAULT (sysdatetimeoffset()) FOR [amendDate]
 GO

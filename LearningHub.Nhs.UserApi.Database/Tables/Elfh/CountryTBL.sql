@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[countryTBL](
+﻿CREATE TABLE [elfh].[countryTBL](
 	[countryId] [int] IDENTITY(1,1) NOT NULL,
 	[countryName] [nvarchar](50) NULL,
 	[alpha2] [nvarchar](2) NULL,
@@ -16,9 +16,9 @@
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[countryTBL] ADD  DEFAULT ((0)) FOR [EUVatRate]
+ALTER TABLE [elfh].[countryTBL] ADD  DEFAULT ((0)) FOR [EUVatRate]
 GO
 
-ALTER TABLE [dbo].[countryTBL] ADD  CONSTRAINT [DF_countryTBL_displayOrder]  DEFAULT ((0)) FOR [displayOrder]
+ALTER TABLE [elfh].[countryTBL] ADD  CONSTRAINT [DF_countryTBL_displayOrder]  DEFAULT ((0)) FOR [displayOrder]
 GO
 

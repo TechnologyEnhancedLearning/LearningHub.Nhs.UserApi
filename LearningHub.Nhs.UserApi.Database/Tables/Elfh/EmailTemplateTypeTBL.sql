@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[emailTemplateTypeTBL](
+﻿CREATE TABLE [elfh].[emailTemplateTypeTBL](
 	[emailTemplateTypeId] [int] NOT NULL,
 	[emailTemplateTypeName] [nvarchar](50) NOT NULL,
 	[availableTags] [nvarchar](255) NULL,
@@ -12,8 +12,8 @@
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[emailTemplateTypeTBL] ADD  CONSTRAINT [DF_emailTemplateTypeTBL_Deleted]  DEFAULT ((0)) FOR [deleted]
+ALTER TABLE [elfh].[emailTemplateTypeTBL] ADD  CONSTRAINT [DF_emailTemplateTypeTBL_Deleted]  DEFAULT ((0)) FOR [deleted]
 GO
 
-ALTER TABLE [dbo].[emailTemplateTypeTBL] ADD  CONSTRAINT [DF_emailTemplateTypeTBL_AmendDate]  DEFAULT (sysdatetimeoffset()) FOR [amendDate]
+ALTER TABLE [elfh].[emailTemplateTypeTBL] ADD  CONSTRAINT [DF_emailTemplateTypeTBL_AmendDate]  DEFAULT (sysdatetimeoffset()) FOR [amendDate]
 GO

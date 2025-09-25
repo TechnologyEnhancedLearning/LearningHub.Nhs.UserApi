@@ -1,5 +1,5 @@
 ﻿
-CREATE TABLE [dbo].[locationTBL](
+CREATE TABLE [elfh].[locationTBL](
 	[locationId] [int] NOT NULL,
 	[locationCode] [nvarchar](50) NOT NULL,
 	[locationName] [nvarchar](200) NOT NULL,
@@ -45,73 +45,73 @@ CREATE TABLE [dbo].[locationTBL](
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[locationTBL] ADD  DEFAULT ((0)) FOR [locationTypeId]
+ALTER TABLE [elfh].[locationTBL] ADD  DEFAULT ((0)) FOR [locationTypeId]
 GO
 
-ALTER TABLE [dbo].[locationTBL] ADD  CONSTRAINT [DF_locationTBL_Acute]  DEFAULT ((0)) FOR [acute]
+ALTER TABLE [elfh].[locationTBL] ADD  CONSTRAINT [DF_locationTBL_Acute]  DEFAULT ((0)) FOR [acute]
 GO
 
-ALTER TABLE [dbo].[locationTBL] ADD  CONSTRAINT [DF_locationTBL_Ambulance]  DEFAULT ((0)) FOR [ambulance]
+ALTER TABLE [elfh].[locationTBL] ADD  CONSTRAINT [DF_locationTBL_Ambulance]  DEFAULT ((0)) FOR [ambulance]
 GO
 
-ALTER TABLE [dbo].[locationTBL] ADD  CONSTRAINT [DF_locationTBL_Mental]  DEFAULT ((0)) FOR [mental]
+ALTER TABLE [elfh].[locationTBL] ADD  CONSTRAINT [DF_locationTBL_Mental]  DEFAULT ((0)) FOR [mental]
 GO
 
-ALTER TABLE [dbo].[locationTBL] ADD  CONSTRAINT [DF_locationTBL_Care]  DEFAULT ((0)) FOR [care]
+ALTER TABLE [elfh].[locationTBL] ADD  CONSTRAINT [DF_locationTBL_Care]  DEFAULT ((0)) FOR [care]
 GO
 
-ALTER TABLE [dbo].[locationTBL] ADD  CONSTRAINT [DF_locationTBL_MainHosp]  DEFAULT ((0)) FOR [mainHosp]
+ALTER TABLE [elfh].[locationTBL] ADD  CONSTRAINT [DF_locationTBL_MainHosp]  DEFAULT ((0)) FOR [mainHosp]
 GO
 
-ALTER TABLE [dbo].[locationTBL] ADD  CONSTRAINT [DF_locationTBL_Active]  DEFAULT ((1)) FOR [active]
+ALTER TABLE [elfh].[locationTBL] ADD  CONSTRAINT [DF_locationTBL_Active]  DEFAULT ((1)) FOR [active]
 GO
 
-ALTER TABLE [dbo].[locationTBL] ADD  CONSTRAINT [DF_locationTBL_ImportExclusion]  DEFAULT ((0)) FOR [importExclusion]
+ALTER TABLE [elfh].[locationTBL] ADD  CONSTRAINT [DF_locationTBL_ImportExclusion]  DEFAULT ((0)) FOR [importExclusion]
 GO
 
-ALTER TABLE [dbo].[locationTBL] ADD  CONSTRAINT [DF_locationTBL_created]  DEFAULT (sysdatetimeoffset()) FOR [created]
+ALTER TABLE [elfh].[locationTBL] ADD  CONSTRAINT [DF_locationTBL_created]  DEFAULT (sysdatetimeoffset()) FOR [created]
 GO
 
-ALTER TABLE [dbo].[locationTBL] ADD  CONSTRAINT [DF_locationTBL_updated]  DEFAULT (sysdatetimeoffset()) FOR [updated]
+ALTER TABLE [elfh].[locationTBL] ADD  CONSTRAINT [DF_locationTBL_updated]  DEFAULT (sysdatetimeoffset()) FOR [updated]
 GO
 
-ALTER TABLE [dbo].[locationTBL] ADD  DEFAULT ((0)) FOR [iguId]
+ALTER TABLE [elfh].[locationTBL] ADD  DEFAULT ((0)) FOR [iguId]
 GO
 
-ALTER TABLE [dbo].[locationTBL] ADD  DEFAULT ((0)) FOR [letbId]
+ALTER TABLE [elfh].[locationTBL] ADD  DEFAULT ((0)) FOR [letbId]
 GO
 
-ALTER TABLE [dbo].[locationTBL] ADD  DEFAULT ((0)) FOR [ccgId]
+ALTER TABLE [elfh].[locationTBL] ADD  DEFAULT ((0)) FOR [ccgId]
 GO
 
-ALTER TABLE [dbo].[locationTBL] ADD  DEFAULT ((0)) FOR [healthServiceId]
+ALTER TABLE [elfh].[locationTBL] ADD  DEFAULT ((0)) FOR [healthServiceId]
 GO
 
-ALTER TABLE [dbo].[locationTBL] ADD  DEFAULT ((0)) FOR [healthBoardId]
+ALTER TABLE [elfh].[locationTBL] ADD  DEFAULT ((0)) FOR [healthBoardId]
 GO
 
-ALTER TABLE [dbo].[locationTBL] ADD  DEFAULT ((0)) FOR [primaryTrustId]
+ALTER TABLE [elfh].[locationTBL] ADD  DEFAULT ((0)) FOR [primaryTrustId]
 GO
 
-ALTER TABLE [dbo].[locationTBL] ADD  DEFAULT ((0)) FOR [secondaryTrustId]
+ALTER TABLE [elfh].[locationTBL] ADD  DEFAULT ((0)) FOR [secondaryTrustId]
 GO
 
-ALTER TABLE [dbo].[locationTBL] ADD  DEFAULT ((0)) FOR [islandId]
+ALTER TABLE [elfh].[locationTBL] ADD  DEFAULT ((0)) FOR [islandId]
 GO
 
-ALTER TABLE [dbo].[locationTBL] ADD  DEFAULT ((0)) FOR [otherNHSOrganisationId]
+ALTER TABLE [elfh].[locationTBL] ADD  DEFAULT ((0)) FOR [otherNHSOrganisationId]
 GO
 
-ALTER TABLE [dbo].[locationTBL]  WITH CHECK ADD  CONSTRAINT [FK_locationTBL_countryTBL] FOREIGN KEY([countryId])
-REFERENCES [dbo].[countryTBL] ([countryId])
+ALTER TABLE [elfh].[locationTBL]  WITH CHECK ADD  CONSTRAINT [FK_locationTBL_countryTBL] FOREIGN KEY([countryId])
+REFERENCES [elfh].[countryTBL] ([countryId])
 GO
 
-ALTER TABLE [dbo].[locationTBL] CHECK CONSTRAINT [FK_locationTBL_countryTBL]
+ALTER TABLE [elfh].[locationTBL] CHECK CONSTRAINT [FK_locationTBL_countryTBL]
 GO
 
-ALTER TABLE [dbo].[locationTBL]  WITH CHECK ADD  CONSTRAINT [FK_locationTBL_locationTypeTBL] FOREIGN KEY([locationTypeId])
-REFERENCES [dbo].[locationTypeTBL] ([locationTypeID])
+ALTER TABLE [elfh].[locationTBL]  WITH CHECK ADD  CONSTRAINT [FK_locationTBL_locationTypeTBL] FOREIGN KEY([locationTypeId])
+REFERENCES [elfh].[locationTypeTBL] ([locationTypeID])
 GO
 
-ALTER TABLE [dbo].[locationTBL] CHECK CONSTRAINT [FK_locationTBL_locationTypeTBL]
+ALTER TABLE [elfh].[locationTBL] CHECK CONSTRAINT [FK_locationTBL_locationTypeTBL]
 GO

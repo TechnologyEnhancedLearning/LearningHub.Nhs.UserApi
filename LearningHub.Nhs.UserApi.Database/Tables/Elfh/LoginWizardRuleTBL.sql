@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[loginWizardRuleTBL](
+﻿CREATE TABLE [elfh].[loginWizardRuleTBL](
 	[loginWizardRuleId] [int] NOT NULL,
 	[loginWizardStageId] [int] NOT NULL,
 	[loginWizardRuleCategoryId] [int] NOT NULL,
@@ -17,9 +17,9 @@
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[loginWizardRuleTBL]  WITH CHECK ADD  CONSTRAINT [FK_loginWizardRuleTBL_loginWizardStageTBL] FOREIGN KEY([loginWizardStageId])
-REFERENCES [dbo].[loginWizardStageTBL] ([loginWizardStageId])
+ALTER TABLE [elfh].[loginWizardRuleTBL]  WITH CHECK ADD  CONSTRAINT [FK_loginWizardRuleTBL_loginWizardStageTBL] FOREIGN KEY([loginWizardStageId])
+REFERENCES [elfh].[loginWizardStageTBL] ([loginWizardStageId])
 GO
 
-ALTER TABLE [dbo].[loginWizardRuleTBL] CHECK CONSTRAINT [FK_loginWizardRuleTBL_loginWizardStageTBL]
+ALTER TABLE [elfh].[loginWizardRuleTBL] CHECK CONSTRAINT [FK_loginWizardRuleTBL_loginWizardStageTBL]
 GO

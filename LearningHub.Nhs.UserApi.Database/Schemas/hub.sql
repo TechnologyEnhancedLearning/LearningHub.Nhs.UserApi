@@ -1,3 +1,3 @@
-﻿CREATE SCHEMA [elfh]
+﻿CREATE SCHEMA [hub]
     AUTHORIZATION [dbo];
 GO

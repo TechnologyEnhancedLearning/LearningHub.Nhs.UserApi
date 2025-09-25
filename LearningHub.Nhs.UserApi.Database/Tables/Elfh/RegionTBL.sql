@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[regionTBL](
+﻿CREATE TABLE [elfh].[regionTBL](
 	[regionId] [int] NOT NULL,
 	[regionName] [nvarchar](100) NOT NULL,
 	[displayOrder] [int] NOT NULL,
@@ -12,5 +12,5 @@
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[regionTBL] ADD  CONSTRAINT [DF_regionTbl_deleted]  DEFAULT ((0)) FOR [deleted]
+ALTER TABLE [elfh].[regionTBL] ADD  CONSTRAINT [DF_regionTbl_deleted]  DEFAULT ((0)) FOR [deleted]
 GO

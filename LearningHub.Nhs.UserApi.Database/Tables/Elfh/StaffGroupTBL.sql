@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[staffGroupTBL](
+﻿CREATE TABLE [elfh].[staffGroupTBL](
 	[staffGroupId] [int] IDENTITY(1,1) NOT NULL,
 	[staffGroupName] [nvarchar](50) NOT NULL,
 	[displayOrder] [int] NOT NULL,
@@ -13,5 +13,5 @@
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[staffGroupTBL] ADD  CONSTRAINT [DF_staffGroupTBL_internalUsersOnly]  DEFAULT ((0)) FOR [internalUsersOnly]
+ALTER TABLE [elfh].[staffGroupTBL] ADD  CONSTRAINT [DF_staffGroupTBL_internalUsersOnly]  DEFAULT ((0)) FOR [internalUsersOnly]
 GO

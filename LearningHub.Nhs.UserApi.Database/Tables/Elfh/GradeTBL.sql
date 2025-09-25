@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[gradeTBL](
+﻿CREATE TABLE [elfh].[gradeTBL](
 	[gradeId] [int] IDENTITY(1,1) NOT NULL,
 	[gradeName] [nvarchar](50) NOT NULL,
 	[displayOrder] [int] NOT NULL,
@@ -12,9 +12,9 @@
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[gradeTBL] ADD  CONSTRAINT [DF_gradeTBL_deleted]  DEFAULT ((0)) FOR [deleted]
+ALTER TABLE [elfh].[gradeTBL] ADD  CONSTRAINT [DF_gradeTBL_deleted]  DEFAULT ((0)) FOR [deleted]
 GO
 
-ALTER TABLE [dbo].[gradeTBL] ADD  CONSTRAINT [DF_gradeTBL_amendDate]  DEFAULT (sysdatetimeoffset()) FOR [amendDate]
+ALTER TABLE [elfh].[gradeTBL] ADD  CONSTRAINT [DF_gradeTBL_amendDate]  DEFAULT (sysdatetimeoffset()) FOR [amendDate]
 GO
 

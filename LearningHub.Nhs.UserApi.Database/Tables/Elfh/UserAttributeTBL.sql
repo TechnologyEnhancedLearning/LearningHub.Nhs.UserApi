@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[userAttributeTBL](
+﻿CREATE TABLE [elfh].[userAttributeTBL](
 	[userAttributeId] [int] IDENTITY(1,1) NOT NULL,
 	[userId] [int] NOT NULL,
 	[attributeId] [int] NOT NULL,
@@ -16,22 +16,22 @@
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[userAttributeTBL] ADD  DEFAULT ((0)) FOR [deleted]
+ALTER TABLE [elfh].[userAttributeTBL] ADD  DEFAULT ((0)) FOR [deleted]
 GO
 
-ALTER TABLE [dbo].[userAttributeTBL] ADD  DEFAULT (sysdatetimeoffset()) FOR [amendDate]
+ALTER TABLE [elfh].[userAttributeTBL] ADD  DEFAULT (sysdatetimeoffset()) FOR [amendDate]
 GO
 
-ALTER TABLE [dbo].[userAttributeTBL]  WITH CHECK ADD  CONSTRAINT [FK_userAttributeTBL_attributeId] FOREIGN KEY([attributeId])
-REFERENCES [dbo].[attributeTBL] ([attributeId])
+ALTER TABLE [elfh].[userAttributeTBL]  WITH CHECK ADD  CONSTRAINT [FK_userAttributeTBL_attributeId] FOREIGN KEY([attributeId])
+REFERENCES [elfh].[attributeTBL] ([attributeId])
 GO
 
-ALTER TABLE [dbo].[userAttributeTBL] CHECK CONSTRAINT [FK_userAttributeTBL_attributeId]
+ALTER TABLE [elfh].[userAttributeTBL] CHECK CONSTRAINT [FK_userAttributeTBL_attributeId]
 GO
 
-ALTER TABLE [dbo].[userAttributeTBL]  WITH CHECK ADD  CONSTRAINT [FK_userAttributeTBL_userId] FOREIGN KEY([userId])
-REFERENCES [dbo].[userTBL] ([userId])
+ALTER TABLE [elfh].[userAttributeTBL]  WITH CHECK ADD  CONSTRAINT [FK_userAttributeTBL_userId] FOREIGN KEY([userId])
+REFERENCES [hub].[User] ([Id])
 GO
 
-ALTER TABLE [dbo].[userAttributeTBL] CHECK CONSTRAINT [FK_userAttributeTBL_userId]
+ALTER TABLE [elfh].[userAttributeTBL] CHECK CONSTRAINT [FK_userAttributeTBL_userId]
 GO

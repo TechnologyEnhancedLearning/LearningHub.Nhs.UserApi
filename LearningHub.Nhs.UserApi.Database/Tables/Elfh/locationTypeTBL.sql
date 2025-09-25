@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[locationTypeTBL](
+﻿CREATE TABLE [elfh].[locationTypeTBL](
 	[locationTypeID] [int] IDENTITY(1,1) NOT NULL,
 	[locationType] [nvarchar](50) NOT NULL,
 	[countryId] [int] NULL,
@@ -13,22 +13,22 @@
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[locationTypeTBL] ADD  DEFAULT ((0)) FOR [healthService]
+ALTER TABLE [elfh].[locationTypeTBL] ADD  DEFAULT ((0)) FOR [healthService]
 GO
 
-ALTER TABLE [dbo].[locationTypeTBL] ADD  DEFAULT ((0)) FOR [healthBoard]
+ALTER TABLE [elfh].[locationTypeTBL] ADD  DEFAULT ((0)) FOR [healthBoard]
 GO
 
-ALTER TABLE [dbo].[locationTypeTBL] ADD  DEFAULT ((0)) FOR [primaryTrust]
+ALTER TABLE [elfh].[locationTypeTBL] ADD  DEFAULT ((0)) FOR [primaryTrust]
 GO
 
-ALTER TABLE [dbo].[locationTypeTBL] ADD  DEFAULT ((0)) FOR [secondaryTrust]
+ALTER TABLE [elfh].[locationTypeTBL] ADD  DEFAULT ((0)) FOR [secondaryTrust]
 GO
 
-ALTER TABLE [dbo].[locationTypeTBL]  WITH CHECK ADD  CONSTRAINT [FK_locationTypeTBL_countryTBL] FOREIGN KEY([countryId])
-REFERENCES [dbo].[countryTBL] ([countryId])
+ALTER TABLE [elfh].[locationTypeTBL]  WITH CHECK ADD  CONSTRAINT [FK_locationTypeTBL_countryTBL] FOREIGN KEY([countryId])
+REFERENCES [elfh].[countryTBL] ([countryId])
 GO
 
-ALTER TABLE [dbo].[locationTypeTBL] CHECK CONSTRAINT [FK_locationTypeTBL_countryTBL]
+ALTER TABLE [elfh].[locationTypeTBL] CHECK CONSTRAINT [FK_locationTypeTBL_countryTBL]
 GO
 
