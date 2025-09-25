@@ -28,7 +28,7 @@
         /// </param>
         protected void InternalMap(EntityTypeBuilder<GdcRegister> modelBuilder)
         {
-            modelBuilder.ToTable("gdcRegisterTBL", "dbo")
+            modelBuilder.ToTable("gdcRegisterTBL", "elfh")
                 .HasKey(e => e.RegNumber);
 
             modelBuilder.Property(e => e.RegNumber)

@@ -17,7 +17,7 @@
         /// </param>
         protected override void InternalMap(EntityTypeBuilder<LoginWizardStage> modelBuilder)
         {
-            modelBuilder.ToTable("loginWizardStageTBL", "dbo");
+            modelBuilder.ToTable("loginWizardStageTBL", "elfh");
 
             modelBuilder.Property(e => e.Id).HasColumnName("loginWizardStageId");
 

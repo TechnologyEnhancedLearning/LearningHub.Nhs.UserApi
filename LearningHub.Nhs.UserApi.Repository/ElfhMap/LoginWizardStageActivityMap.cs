@@ -28,7 +28,7 @@
         /// </param>
         protected void InternalMap(EntityTypeBuilder<LoginWizardStageActivity> modelBuilder)
         {
-            modelBuilder.ToTable("loginWizardStageActivityTBL", "dbo").HasKey(e => e.Id);
+            modelBuilder.ToTable("loginWizardStageActivityTBL", "elfh").HasKey(e => e.Id);
             modelBuilder.Property(e => e.Id).HasColumnName("loginWizardStageActivityId");
             modelBuilder.Property(e => e.LoginWizardStageId).HasColumnName("loginWizardStageId");
             modelBuilder.Property(e => e.UserId).HasColumnName("userId");

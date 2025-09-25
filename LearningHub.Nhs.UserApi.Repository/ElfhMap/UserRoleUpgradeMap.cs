@@ -15,7 +15,7 @@
         /// <param name="modelBuilder">The model builder.</param>
         protected override void InternalMap(EntityTypeBuilder<UserRoleUpgrade> modelBuilder)
         {
-            modelBuilder.ToTable("UserRoleUpgradeTBL", "dbo");
+            modelBuilder.ToTable("UserRoleUpgradeTBL", "elfh");
 
             modelBuilder.Property(e => e.Id).HasColumnName("userRoleUpgradeId");
 

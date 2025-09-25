@@ -24,7 +24,7 @@
         /// <param name="modelBuilder">The model builder.</param>
         protected static void InternalMap(EntityTypeBuilder<UserHistory> modelBuilder)
         {
-            modelBuilder.ToTable("UserHistoryTBL", "dbo");
+            modelBuilder.ToTable("UserHistoryTBL", "elfh");
 
             modelBuilder.Property(e => e.Id).HasColumnName("UserHistoryId");
 

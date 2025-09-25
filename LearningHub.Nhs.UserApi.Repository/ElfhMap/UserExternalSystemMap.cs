@@ -17,11 +17,13 @@
         /// </param>
         protected override void InternalMap(EntityTypeBuilder<UserExternalSystem> modelBuilder)
         {
-            modelBuilder.ToTable("userExternalSystemTBL", "dbo");
+            modelBuilder.ToTable("ExternalSystemUser", "external");
 
-            modelBuilder.Property(e => e.Id).HasColumnName("userExternalSystemId");
+            modelBuilder.Property(e => e.Id).HasColumnName("Id");
 
             modelBuilder.Property(e => e.UserId);
+
+            modelBuilder.Property(e => e.Deleted);
 
             modelBuilder.Property(e => e.ExternalSystemId);
 

@@ -17,7 +17,7 @@
         /// </param>
         protected override void InternalMap(EntityTypeBuilder<TenantSmtp> modelBuilder)
         {
-            modelBuilder.ToTable("tenantSmtpTBL", "dbo");
+            modelBuilder.ToTable("tenantSmtpTBL", "elfh");
 
             modelBuilder.Property(e => e.Id).HasColumnName("tenantId");
             modelBuilder.Property(e => e.DeliveryMethod).HasColumnName("deliveryMethod");

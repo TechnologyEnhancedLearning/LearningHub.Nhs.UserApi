@@ -17,7 +17,7 @@
         /// </param>
         protected override void InternalMap(EntityTypeBuilder<JobRole> modelBuilder)
         {
-            modelBuilder.ToTable("jobRoleTBL", "dbo");
+            modelBuilder.ToTable("jobRoleTBL", "elfh");
 
             modelBuilder.Property(e => e.Id)
                 .HasColumnName("jobRoleId")

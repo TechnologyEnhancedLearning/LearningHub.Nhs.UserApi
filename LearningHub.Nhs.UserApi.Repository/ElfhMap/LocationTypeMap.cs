@@ -28,7 +28,7 @@
         /// </param>
         protected void InternalMap(EntityTypeBuilder<LocationType> modelBuilder)
         {
-            modelBuilder.ToTable("locationTypeTBL", "dbo");
+            modelBuilder.ToTable("locationTypeTBL", "elfh");
 
             modelBuilder.Property(e => e.Id)
                 .HasColumnName("locationTypeID");

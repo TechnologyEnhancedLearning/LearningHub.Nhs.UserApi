@@ -17,7 +17,7 @@
         /// </param>
         protected override void InternalMap(EntityTypeBuilder<ExternalSystem> modelBuilder)
         {
-            modelBuilder.ToTable("externalSystemTBL", "dbo");
+            modelBuilder.ToTable("externalSystemTBL", "elfh");
 
             modelBuilder.Property(e => e.Id).HasColumnName("externalSystemId");
 

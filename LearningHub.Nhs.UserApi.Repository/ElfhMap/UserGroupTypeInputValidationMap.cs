@@ -17,7 +17,7 @@
         /// </param>
         protected override void InternalMap(EntityTypeBuilder<UserGroupTypeInputValidation> modelBuilder)
         {
-            modelBuilder.ToTable("userGroupTypeInputValidationTBL", "dbo");
+            modelBuilder.ToTable("userGroupTypeInputValidationTBL", "elfh");
 
             modelBuilder.Property(e => e.Id).HasColumnName("userGroupTypeInputValidationId");
 

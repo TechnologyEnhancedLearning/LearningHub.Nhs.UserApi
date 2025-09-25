@@ -15,9 +15,9 @@
         /// <param name="modelBuilder">The model builder.</param>
         protected override void InternalMap(EntityTypeBuilder<UserUserGroup> modelBuilder)
         {
-            modelBuilder.ToTable("UserUserGroupTBL", "dbo");
+            modelBuilder.ToTable("UserUserGroup", "hub");
 
-            modelBuilder.Property(e => e.Id).HasColumnName("userUserGroupId");
+            modelBuilder.Property(e => e.Id).HasColumnName("Id");
 
             modelBuilder.Property(e => e.UserId).HasColumnName("UserId");
 

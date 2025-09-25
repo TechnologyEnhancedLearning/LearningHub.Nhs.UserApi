@@ -15,7 +15,7 @@
         /// <param name="modelBuilder">The model builder.</param>
         protected override void InternalMap(EntityTypeBuilder<UserHistoryAttribute> modelBuilder)
         {
-            modelBuilder.ToTable("userHistoryAttributeTBL", "dbo");
+            modelBuilder.ToTable("userHistoryAttributeTBL", "elfh");
 
             modelBuilder.Property(e => e.Id).HasColumnName("userHistoryAttributeId");
 

@@ -15,25 +15,17 @@
         /// <param name="modelBuilder">The model builder.</param>
         protected override void InternalMap(EntityTypeBuilder<User> modelBuilder)
         {
-            modelBuilder.ToTable("userTBL", "dbo");
+            modelBuilder.ToTable("user", "hub");
 
-            modelBuilder.Property(e => e.Id).HasColumnName("userId");
+            modelBuilder.Property(e => e.Id).HasColumnName("Id");
 
             modelBuilder.Property(e => e.Active).HasColumnName("active");
-
-            modelBuilder.Property(e => e.ActiveComponentHierarchyDate).HasColumnName("activeComponentHierarchyDate");
-
-            modelBuilder.Property(e => e.ActiveComponentHierarchyId).HasColumnName("activeComponentHierarchyId");
 
             modelBuilder.Property(e => e.ActiveFromDate).HasColumnName("activeFromDate");
 
             modelBuilder.Property(e => e.ActiveToDate).HasColumnName("activeToDate");
 
             modelBuilder.Property(e => e.AdminRequestUserLogout).HasColumnName("adminRequestUserLogout");
-
-            modelBuilder.Property(e => e.AltEmailAddress)
-                .HasColumnName("altEmailAddress")
-                .HasMaxLength(100);
 
             modelBuilder.Property(e => e.AmendDate).HasColumnName("amendDate");
 
@@ -43,24 +35,9 @@
 
             modelBuilder.Property(e => e.CreatedDate).HasColumnName("createdDate");
 
-            modelBuilder.Property(e => e.Deleted).HasColumnName("deleted");
-
-            modelBuilder.Property(e => e.EmailAddress)
-                .IsRequired()
-                .HasColumnName("emailAddress")
-                .HasMaxLength(100);
-
-            modelBuilder.Property(e => e.FirstName)
-                .IsRequired()
-                .HasColumnName("firstName")
-                .HasMaxLength(50);
+            modelBuilder.Property(e => e.Deleted);
 
             modelBuilder.Property(e => e.LastLoginWizardCompleted).HasColumnName("lastLoginWizardCompleted");
-
-            modelBuilder.Property(e => e.LastName)
-                .IsRequired()
-                .HasColumnName("lastName")
-                .HasMaxLength(50);
 
             modelBuilder.Property(e => e.LoginTimes).HasColumnName("loginTimes");
 
@@ -98,7 +75,7 @@
 
             modelBuilder.Property(e => e.UserName)
                 .IsRequired()
-                .HasColumnName("userName")
+                .HasColumnName("UserName")
                 .HasMaxLength(50);
         }
     }

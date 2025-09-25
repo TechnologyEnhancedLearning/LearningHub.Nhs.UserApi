@@ -28,7 +28,7 @@
         /// </param>
         protected void InternalMap(EntityTypeBuilder<UserPasswordValidationToken> modelBuilder)
         {
-            modelBuilder.ToTable("UserPasswordValidationTokenTBL", "dbo");
+            modelBuilder.ToTable("UserPasswordValidationTokenTBL", "elfh");
 
             modelBuilder.Property(e => e.Id).HasColumnName("userPasswordValidationTokenId");
 

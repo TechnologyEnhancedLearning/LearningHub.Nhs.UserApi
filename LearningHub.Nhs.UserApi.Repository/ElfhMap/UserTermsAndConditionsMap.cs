@@ -17,7 +17,7 @@
         /// </param>
         protected override void InternalMap(EntityTypeBuilder<UserTermsAndConditions> modelBuilder)
         {
-            modelBuilder.ToTable("UserTermsAndConditionsTBL", "dbo");
+            modelBuilder.ToTable("UserTermsAndConditionsTBL", "elfh");
 
             modelBuilder.Property(e => e.Id).HasColumnName("userTermsAndConditionsId");
             modelBuilder.Property(e => e.TermsAndConditionsId).HasColumnName("termsAndConditionsId");

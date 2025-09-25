@@ -15,25 +15,20 @@
         /// <param name="modelBuilder">The model builder.</param>
         protected override void InternalMap(EntityTypeBuilder<UserGroup> modelBuilder)
         {
-            modelBuilder.ToTable("UserGroupTBL", "dbo");
+            modelBuilder.ToTable("UserGroup", "hub");
 
             modelBuilder.Property(e => e.Id)
-                .HasColumnName("userGroupId")
+                .HasColumnName("Id")
                 .ValueGeneratedNever();
 
-            modelBuilder.Property(e => e.Code)
-                .HasColumnName("UserGroupCode")
-                .HasMaxLength(50)
-                .IsUnicode(false);
-
             modelBuilder.Property(e => e.Description)
-                .HasColumnName("UserGroupDescription")
+                .HasColumnName("Description")
                 .HasMaxLength(255)
                 .IsUnicode(false);
 
             modelBuilder.Property(e => e.Name)
                 .IsRequired()
-                .HasColumnName("UserGroupName")
+                .HasColumnName("Name")
                 .HasMaxLength(100)
                 .IsUnicode(false);
 

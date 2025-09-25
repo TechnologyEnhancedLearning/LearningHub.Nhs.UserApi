@@ -17,7 +17,7 @@
         /// </param>
         protected override void InternalMap(EntityTypeBuilder<AttributeType> builder)
         {
-            builder.ToTable("attributeTypeTBL", "dbo");
+            builder.ToTable("attributeTypeTBL", "elfh");
 
             builder.Property(p => p.Id)
                 .HasColumnName("attributeTypeId")

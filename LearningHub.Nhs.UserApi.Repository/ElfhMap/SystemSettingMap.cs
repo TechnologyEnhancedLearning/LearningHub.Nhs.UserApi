@@ -17,7 +17,7 @@
         /// </param>
         protected override void InternalMap(EntityTypeBuilder<SystemSetting> modelBuilder)
         {
-            modelBuilder.ToTable("systemSettingTBL", "dbo");
+            modelBuilder.ToTable("systemSettingTBL", "elfh");
 
             modelBuilder.Property(e => e.Id).HasColumnName("systemSettingId");
             modelBuilder.Property(e => e.Name).HasColumnName("systemSettingName");

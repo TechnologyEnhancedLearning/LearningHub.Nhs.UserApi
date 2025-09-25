@@ -28,7 +28,7 @@
         /// </param>
         protected void InternalMap(EntityTypeBuilder<IpCountryLookup> modelBuilder)
         {
-            modelBuilder.ToTable("ipCountryLookupTBL", "dbo").HasNoKey();
+            modelBuilder.ToTable("ipCountryLookupTBL", "elfh").HasNoKey();
 
             modelBuilder.Property(e => e.FromIp).HasColumnName("fromIP");
 

@@ -28,7 +28,7 @@
         /// </param>
         protected void InternalMap(EntityTypeBuilder<GmcLrmp> modelBuilder)
         {
-            modelBuilder.ToTable("gmclrmpTBL", "dbo")
+            modelBuilder.ToTable("gmclrmpTBL", "elfh")
                 .HasKey(e => e.GmcRefNo);
 
             modelBuilder.Property(e => e.GmcRefNo)
