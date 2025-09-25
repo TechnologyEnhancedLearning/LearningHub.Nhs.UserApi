@@ -17,7 +17,7 @@ BEGIN
 			elfhuser.userName,			
 			ISNULL(elfhuser.passwordHash, '') AS 'passwordHash',				
 			elfhuser.RestrictToSSO,
-			elfhuser.active,
+			up.Active,
 			elfhuser.activeFromDate,
 			elfhuser.activeToDate,			
 			elfhuser.passwordLifeCounter,
@@ -32,6 +32,8 @@ BEGIN
 			elfh.userAttributeTBL userAttrib 
 		 INNER Join 
 			elfh.attributeTBL attrib ON userAttrib.attributeId = attrib.attributeId AND lower(attrib.attributeName) = 'openathens_userid' AND userAttrib.deleted = 0 	  
+		INNER join
+		    hub.UserProfile up ON elfh.Id = up.Id
 		WHERE
 			userAttrib.userId = elfhuser.Id
 		) userAttribData

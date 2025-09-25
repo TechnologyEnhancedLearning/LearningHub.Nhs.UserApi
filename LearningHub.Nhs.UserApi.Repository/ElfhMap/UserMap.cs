@@ -19,8 +19,6 @@
 
             modelBuilder.Property(e => e.Id).HasColumnName("Id");
 
-            modelBuilder.Property(e => e.Active).HasColumnName("active");
-
             modelBuilder.Property(e => e.ActiveFromDate).HasColumnName("activeFromDate");
 
             modelBuilder.Property(e => e.ActiveToDate).HasColumnName("activeToDate");

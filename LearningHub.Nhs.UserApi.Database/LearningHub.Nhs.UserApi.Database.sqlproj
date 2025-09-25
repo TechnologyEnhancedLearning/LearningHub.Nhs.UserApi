@@ -75,6 +75,7 @@
     <Build Include="Schemas\hub.sql" />
     <Build Include="Tables\Hub\User.sql" />
     <Build Include="Tables\Elfh\userHistoryTypeTBL.sql" />
+    <Build Include="Tables\Hub\UserProfile.sql" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\Elfh\GmcLrmp.sql" />

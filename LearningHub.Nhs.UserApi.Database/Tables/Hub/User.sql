@@ -5,25 +5,20 @@
 	[registrationCode] [nvarchar](50) NULL,
 	[activeFromDate] [datetimeoffset](7) NULL,
 	[activeToDate] [datetimeoffset](7) NULL,
-	[active] [bit] NOT NULL,
 	[passwordHash] [nvarchar](255) NULL,
-	[mustChangeNextLogin] [bit] NOT NULL,
-	[passwordLifeCounter] [int] NOT NULL,
-	[securityLifeCounter] [int] NOT NULL,
+	[mustChangeNextLogin] [bit] NULL,
+	[passwordLifeCounter] [int] NULL,
+	[securityLifeCounter] [int] NULL,
 	[RemoteLoginKey] [nvarchar](50) NULL,
 	[RemoteLoginGuid] [uniqueidentifier] NULL,
 	[RemoteLoginStart] [datetimeoffset](7) NULL,
-	[RestrictToSSO] [bit] NOT NULL,
-	[activeComponentHierarchyId] [int] NULL,
-	[activeComponentHierarchyDate] [datetimeoffset](7) NULL,
-	[createdDate] [datetimeoffset](7) NOT NULL,
-	[loginTimes] [int] NOT NULL,
-	[loginWizardInProgress] [bit] NOT NULL,
+	[RestrictToSSO] [bit] NULL,
+	[loginTimes] [int] NULL,
+	[loginWizardInProgress] [bit] NULL,
 	[lastLoginWizardCompleted] [datetimeoffset](7) NULL,
 	[primaryUserEmploymentId] [int] NULL,
 	[regionId] [int] NULL,
-	[preferredTenantId] [int] NOT NULL,
-	[adminRequestUserLogout] [bit] NOT NULL,
+	[preferredTenantId] [int] NULL,
 	[CreateUserId] [int] NOT NULL,
 	[CreateDate] [datetimeoffset](7) NOT NULL,
 	[AmendUserId] [int] NOT NULL,
@@ -56,15 +51,6 @@ ALTER TABLE [hub].[User] ADD  CONSTRAINT [DF_userTBL_securityLifeCounter]  DEFAU
 GO
 
 ALTER TABLE [hub].[User] ADD  CONSTRAINT [DF_userTBL_RestrictToSSO]  DEFAULT ((0)) FOR [RestrictToSSO]
-GO
-
-ALTER TABLE [hub].[User] ADD  DEFAULT ((0)) FOR [loginWizardInProgress]
-GO
-
-ALTER TABLE [hub].[User] ADD  DEFAULT ((1)) FOR [preferredTenantId]
-GO
-
-ALTER TABLE [hub].[User] ADD  DEFAULT ((0)) FOR [adminRequestUserLogout]
 GO
 
 ALTER TABLE [hub].[User]  WITH CHECK ADD  CONSTRAINT [FK_userTBL_countryTBL] FOREIGN KEY([countryId])
