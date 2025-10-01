@@ -2,7 +2,6 @@
 {
     using elfhHub.Nhs.Models.Dto;
     using elfhHub.Nhs.Models.Entities;
-    using LearningHub.Nhs.Models.Dashboard;
     using Microsoft.EntityFrameworkCore;
 
     /// <summary>
@@ -181,6 +180,11 @@
         /// Gets or sets the user user group.
         /// </summary>
         public virtual DbSet<UserUserGroup> UserUserGroup { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user profile.
+        /// </summary>
+        public virtual DbSet<Nhs.Models.Entities.UserProfile> UserProfile { get; set; }
 
         /// <summary>
         /// Gets or sets the UserAuthentiate Dto.

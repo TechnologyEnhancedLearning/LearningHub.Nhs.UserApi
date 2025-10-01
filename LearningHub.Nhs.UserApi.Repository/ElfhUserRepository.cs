@@ -31,15 +31,27 @@
         /// <inheritdoc/>
         public async Task<User> GetByIdAsync(int id, UserIncludeCollectionsEnum[] includeCollections = null)
         {
-            return await this.DbContext.User.IncludeCollections(includeCollections).AsNoTracking()
-                            .FirstOrDefaultWithNoLockAsync(n => n.Id == id);
+            var result = await (
+                          from u in this.DbContext.User.IncludeCollections(includeCollections)
+                          join p in this.DbContext.UserProfile on u.Id equals p.Id
+                          where u.Id == id
+                          select new { u, p }).AsNoTracking().FirstOrDefaultWithNoLockAsync();
+
+            result?.u?.ApplyUserProfile(result?.p);
+            return result?.u;
         }
 
         /// <inheritdoc/>
         public async Task<User> GetByUsernameAsync(string username, UserIncludeCollectionsEnum[] includeCollections = null)
         {
-            return await this.DbContext.User.IncludeCollections(includeCollections).AsNoTracking()
-                            .FirstOrDefaultWithNoLockAsync(n => n.UserName == username);
+            var result = await (
+                          from u in this.DbContext.User.IncludeCollections(includeCollections)
+                          join p in this.DbContext.UserProfile on u.Id equals p.Id
+                          where u.UserName == username
+                          select new { u, p }).AsNoTracking().FirstOrDefaultWithNoLockAsync();
+
+            result?.u?.ApplyUserProfile(result?.p);
+            return result?.u;
         }
 
         /// <inheritdoc/>
@@ -51,26 +63,32 @@
         /// <inheritdoc/>
         public async Task<User> GetByOpenAthensIdAsync(string openAthensId)
         {
-            return await this.DbContext.User.AsNoTracking()
-                            .FirstOrDefaultWithNoLockAsync(f => f.UserAttributes.Any(a => a.TextValue == openAthensId));
+           var result = await (
+                         from u in this.DbContext.User
+                         join p in this.DbContext.UserProfile on u.Id equals p.Id
+                         where u.UserAttributes.Any(a => a.TextValue == openAthensId)
+                         select new { u, p }).AsNoTracking().FirstOrDefaultWithNoLockAsync();
+
+           result?.u?.ApplyUserProfile(result?.p);
+           return result?.u;
         }
 
         /// <inheritdoc/>
         public async Task<bool> DoesEmailExistAsync(string emailAddress)
         {
-            return await this.DbContext.User.AnyAsync(n => n.EmailAddress == emailAddress);
+            return await this.DbContext.UserProfile.AnyAsync(n => n.EmailAddress == emailAddress);
         }
 
         /// <inheritdoc/>
         public IQueryable<User> GetUsersForEmail(string emailAddress)
         {
-            return this.DbContext.User.AsNoTracking().Where(x => x.EmailAddress == emailAddress);
+            return this.DbContext.User.AsNoTracking().WithProfile(this.DbContext.UserProfile.AsNoTracking()).Where(u => u.EmailAddress == emailAddress);
         }
 
         /// <inheritdoc/>
         public async Task<int> NumberOfUsersForEmailAsync(string emailAddress)
         {
-            return await this.DbContext.User.CountWithNoLockAsync(x => x.EmailAddress == emailAddress);
+            return await this.DbContext.UserProfile.CountWithNoLockAsync(x => x.EmailAddress == emailAddress);
         }
 
         /// <inheritdoc/>
@@ -83,9 +101,10 @@
         public bool DoesUserExist(int medicalCouncilId, string medicalCouncilPrefix, string medicalCouncilNumber, string emailAddress)
         {
             var userExists = (from u in this.DbContext.User
+                              join up in this.DbContext.UserProfile on u.Id equals up.Id
                               join ue in this.DbContext.UserEmployment on u.Id equals ue.UserId into uej
                               from x in uej.DefaultIfEmpty()
-                              where u.EmailAddress == emailAddress
+                              where up.EmailAddress == emailAddress
                                   || (u.UserName == medicalCouncilPrefix + medicalCouncilNumber)
                                   || (x.MedicalCouncilNo == medicalCouncilNumber && x.MedicalCouncilId == medicalCouncilId)
                               select u).Any();
@@ -140,7 +159,7 @@
             {
                 var param0 = new SqlParameter("@p0", SqlDbType.Int) { Value = userId };
 
-                await this.DbContext.Database.ExecuteSqlRawAsync("proc_LinkEmploymentRecordToUser @p0", param0);
+                await this.DbContext.Database.ExecuteSqlRawAsync("elfh.proc_LinkEmploymentRecordToUser @p0", param0);
             }
             catch (Exception ex)
             {
@@ -161,7 +180,7 @@
         {
             var param0 = new SqlParameter("@userName", SqlDbType.VarChar) { Value = username };
 
-            var userAuthenticateDto = await this.DbContext.UserAuthenticateDto.FromSqlRaw("proc_UserDetailForAuthenticationByUserName @userName", param0).AsNoTracking().ToListAsync();
+            var userAuthenticateDto = await this.DbContext.UserAuthenticateDto.FromSqlRaw("elfh.proc_UserDetailForAuthenticationByUserName @userName", param0).AsNoTracking().ToListAsync();
 
             return userAuthenticateDto.FirstOrDefault();
         }

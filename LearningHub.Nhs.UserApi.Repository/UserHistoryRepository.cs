@@ -44,7 +44,7 @@
             var param3 = new SqlParameter("@p3", SqlDbType.Int) { Direction = ParameterDirection.Output };
 
             var result = await this.DbContext.Set<UserHistoryStoredProcResult>().FromSqlRaw(
-                             "dbo.proc_UserHistoryLoadForUser @p0, @p1, @p2, @p3 output", param0, param1, param2, param3).AsNoTracking().ToListWithNoLockAsync();
+                             "elfh.proc_UserHistoryLoadForUser @p0, @p1, @p2, @p3 output", param0, param1, param2, param3).AsNoTracking().ToListWithNoLockAsync();
 
             return result;
         }
@@ -70,7 +70,7 @@
                     new SqlParameter("@AmendDate", SqlDbType.DateTimeOffset) { Value = DateTimeOffset.Now },
                 };
 
-                string sql = "proc_UserHistoryInsert @UserId, @UserHistoryTypeId, @Detail, @UserAgent, @BrowserName, @BrowserVersion, @UrlReferer, @LoginIP, @LoginSuccessFul, @TenantId, @AmendUserId, @AmendDate";
+                string sql = "elfh.proc_UserHistoryInsert @UserId, @UserHistoryTypeId, @Detail, @UserAgent, @BrowserName, @BrowserVersion, @UrlReferer, @LoginIP, @LoginSuccessFul, @TenantId, @AmendUserId, @AmendDate";
 
                 await this.DbContext.Database.ExecuteSqlRawAsync(sql, sqlParams);
             }
@@ -91,7 +91,7 @@
             var param3 = new SqlParameter("@p3", SqlDbType.Int) { Direction = ParameterDirection.Output };
 
             var result = await this.DbContext.Set<UserHistoryStoredProcResult>().FromSqlRaw(
-                             "dbo.proc_UserHistoryLoadForLearningHubUser @p0, @p1, @p2, @p3 output", param0, param1, param2, param3).AsNoTracking().ToListWithNoLockAsync();
+                             "elfh.proc_UserHistoryLoadForLearningHubUser @p0, @p1, @p2, @p3 output", param0, param1, param2, param3).AsNoTracking().ToListWithNoLockAsync();
 
             retVal.Results = result;
             retVal.TotalResults = (int)param3.Value;

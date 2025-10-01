@@ -75,6 +75,17 @@
                 .IsRequired()
                 .HasColumnName("UserName")
                 .HasMaxLength(50);
+
+            modelBuilder.Ignore(e => e.Active);
+            modelBuilder.Ignore(e => e.ActiveComponentHierarchyDate);
+            modelBuilder.Ignore(e => e.ActiveComponentHierarchyId);
+            modelBuilder.Ignore(e => e.AdminRequestUserLogout);
+            modelBuilder.Ignore(e => e.AltEmailAddress);
+            modelBuilder.Ignore(e => e.CreatedDate);
+            modelBuilder.Ignore(e => e.EmailAddress);
+            modelBuilder.Ignore(e => e.FirstName);
+            modelBuilder.Ignore(e => e.LastName);
+            modelBuilder.Ignore(e => e.PreferredName);
         }
     }
 }

@@ -45,5 +45,69 @@
 
             return query;
         }
+
+        /// <summary>
+        /// The user update ions.
+        /// </summary>
+        /// <param name="user">The user.</param>
+        /// <param name="profile">The profile.</param>
+        public static void ApplyUserProfile(this User user, Models.Entities.UserProfile profile)
+        {
+            if (profile == null)
+            {
+                return;
+            }
+
+            user.EmailAddress = profile.EmailAddress;
+            user.AltEmailAddress = profile.AltEmailAddress;
+            user.FirstName = profile.FirstName;
+            user.LastName = profile.LastName;
+            user.PreferredName = profile.PreferredName;
+            user.Active = profile.Active;
+        }
+
+        /// <summary>
+        /// The user update query.
+        /// </summary>
+        /// <param name="users">The user.</param>
+        /// <param name="profiles">The profile.</param>
+        /// <returns>The <see cref="IQueryable"/>.</returns>
+        public static IQueryable<User> WithProfile(this IQueryable<User> users, IQueryable<Models.Entities.UserProfile> profiles)
+        {
+            return from u in users
+                   join p in profiles on u.Id equals p.Id
+                   select new User
+                   {
+                       Id = u.Id,
+                       UserName = u.UserName,
+                       EmailAddress = p.EmailAddress,
+                       FirstName = p.FirstName,
+                       LastName = p.LastName,
+                       Active = p.Active,
+                       AltEmailAddress = p.AltEmailAddress,
+                       PreferredName = p.PreferredName,
+                       CountryId = u.CountryId,
+                       RegistrationCode = u.RegistrationCode,
+                       ActiveFromDate = u.ActiveFromDate,
+                       ActiveToDate = u.ActiveToDate,
+                       PasswordHash = u.PasswordHash,
+                       MustChangeNextLogin = u.MustChangeNextLogin,
+                       PasswordLifeCounter = u.PasswordLifeCounter,
+                       SecurityLifeCounter = u.SecurityLifeCounter,
+                       RemoteLoginKey = u.RemoteLoginKey,
+                       RemoteLoginGuid = u.RemoteLoginGuid,
+                       RemoteLoginStart = u.RemoteLoginStart,
+                       RestrictToSso = u.RestrictToSso,
+                       ActiveComponentHierarchyId = u.ActiveComponentHierarchyId,
+                       ActiveComponentHierarchyDate = u.ActiveComponentHierarchyDate,
+                       CreatedDate = u.CreatedDate,
+                       LoginTimes = u.LoginTimes,
+                       LoginWizardInProgress = u.LoginWizardInProgress,
+                       LastLoginWizardCompleted = u.LastLoginWizardCompleted,
+                       PrimaryUserEmploymentId = u.PrimaryUserEmploymentId,
+                       RegionId = u.RegionId,
+                       PreferredTenantId = u.PreferredTenantId,
+                   };
+        }
     }
 }
