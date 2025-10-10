@@ -237,7 +237,7 @@
 
             await this.elfhUserRepository.UpdateAsync(id, user);
 
-            await this.InvalidateElfhUserCacheAsync(user.Id, user.UserName, token);
+           // await this.InvalidateElfhUserCacheAsync(user.Id, user.UserName, token);
         }
 
         /// <inheritdoc/>
@@ -250,7 +250,7 @@
 
             await this.elfhUserRepository.UpdateAsync(id, user);
 
-            await this.InvalidateElfhUserCacheAsync(user.Id, user.UserName, token);
+           // await this.InvalidateElfhUserCacheAsync(user.Id, user.UserName, token);
         }
 
         /// <inheritdoc/>
@@ -977,8 +977,6 @@
         public async Task UpdateMyAccountPersonalDetails(PersonalDetailsViewModel personalDetailsViewModel, int currentUserId)
         {
             User user = await this.elfhUserRepository.GetByIdAsync(personalDetailsViewModel.UserId);
-            user.FirstName = personalDetailsViewModel.FirstName;
-            user.LastName = personalDetailsViewModel.LastName;
             user.PreferredName = personalDetailsViewModel.PreferredName;
             user.AltEmailAddress = personalDetailsViewModel.SecondaryEmailAddress;
 
