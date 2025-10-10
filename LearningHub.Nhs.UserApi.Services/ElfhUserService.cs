@@ -237,7 +237,7 @@
 
             await this.elfhUserRepository.UpdateAsync(id, user);
 
-           // await this.InvalidateElfhUserCacheAsync(user.Id, user.UserName, token);
+            await this.InvalidateElfhUserCacheAsync(user.Id, user.UserName, token);
         }
 
         /// <inheritdoc/>
@@ -250,7 +250,7 @@
 
             await this.elfhUserRepository.UpdateAsync(id, user);
 
-           // await this.InvalidateElfhUserCacheAsync(user.Id, user.UserName, token);
+            await this.InvalidateElfhUserCacheAsync(user.Id, user.UserName, token);
         }
 
         /// <inheritdoc/>
