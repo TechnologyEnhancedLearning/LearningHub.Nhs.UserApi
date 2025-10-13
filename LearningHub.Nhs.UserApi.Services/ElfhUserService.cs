@@ -977,8 +977,6 @@
         public async Task UpdateMyAccountPersonalDetails(PersonalDetailsViewModel personalDetailsViewModel, int currentUserId)
         {
             User user = await this.elfhUserRepository.GetByIdAsync(personalDetailsViewModel.UserId);
-            user.FirstName = personalDetailsViewModel.FirstName;
-            user.LastName = personalDetailsViewModel.LastName;
             user.PreferredName = personalDetailsViewModel.PreferredName;
             user.AltEmailAddress = personalDetailsViewModel.SecondaryEmailAddress;
 
