@@ -79,5 +79,35 @@
 
             return countryList;
         }
+
+        /// <summary>
+        /// Get All UK Countries.
+        /// </summary>
+        /// <returns>List of countries.</returns>
+        public async Task<List<GenericListViewModel>> GetAllUKCountries()
+        {
+            var items = this.countryRepository.GetAll()
+                .Where(c => c.Deleted == false && c.Numeric == "826")
+                .OrderBy(r => r.DisplayOrder);
+
+            var countryList = await this.mapper.ProjectTo<GenericListViewModel>(items).ToListWithNoLockAsync();
+
+            return countryList;
+        }
+
+        /// <summary>
+        /// Get All Non UK Countries.
+        /// </summary>
+        /// <returns>List of countries.</returns>
+        public async Task<List<GenericListViewModel>> GetAllNonUKCountries()
+        {
+            var items = this.countryRepository.GetAll()
+                .Where(c => c.Deleted == false && c.Numeric != "826")
+                .OrderBy(r => r.DisplayOrder);
+
+            var countryList = await this.mapper.ProjectTo<GenericListViewModel>(items).ToListWithNoLockAsync();
+
+            return countryList;
+        }
     }
 }

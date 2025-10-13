@@ -923,5 +923,18 @@
             var result = await this.securityService.UpgradeAsFullAccessUser(userId, email);
             return this.Ok(result);
         }
+
+        /// <summary>
+        /// Update MyAccount Personal Details.
+        /// </summary>
+        /// <param name="personalDetailsViewModel">personalDetailsViewModel.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
+        [HttpPut]
+        [Route("UpdateMyAccountPersonalDetails")]
+        public async Task<IActionResult> UpdateMyAccountPersonalDetails([FromBody] PersonalDetailsViewModel personalDetailsViewModel)
+        {
+            await this.elfhUserService.UpdateMyAccountPersonalDetails(personalDetailsViewModel, this.CurrentUserId);
+            return this.Ok();
+        }
     }
 }
