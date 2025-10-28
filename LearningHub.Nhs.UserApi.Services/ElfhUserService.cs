@@ -968,6 +968,21 @@
           return false;
         }
 
+        /// <summary>
+        /// Update MyAccount PersonalDetails.
+        /// </summary>
+        /// <param name="personalDetailsViewModel">personalDetailsViewModel.</param>
+        /// <param name="currentUserId">currentUserId.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
+        public async Task UpdateMyAccountPersonalDetails(PersonalDetailsViewModel personalDetailsViewModel, int currentUserId)
+        {
+            User user = await this.elfhUserRepository.GetByIdAsync(personalDetailsViewModel.UserId);
+            user.PreferredName = personalDetailsViewModel.PreferredName;
+            user.AltEmailAddress = personalDetailsViewModel.SecondaryEmailAddress;
+
+            await this.elfhUserRepository.UpdateAsync(currentUserId, user);
+        }
+
         private async Task<LearningHubValidationResult> ValidateAsync(CreateOpenAthensLinkToLhUser newUserDetails)
         {
             var registrationValidator = new CreateLinkedOpenAthensUserValidator();
