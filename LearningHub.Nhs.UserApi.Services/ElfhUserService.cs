@@ -187,7 +187,7 @@
         /// <inheritdoc/>
         public async Task<UserAuthenticateDto> GetUserDetailForAuthenticateAsync(string userName)
         {
-            return await this.elfhUserRepository.GetUserDetailForAuthentication(userName);
+            return await this.lhUserRepository.GetUserDetailForAuthentication(userName);
         }
 
         /// <inheritdoc/>
@@ -229,13 +229,13 @@
         /// <inheritdoc/>
         public async Task RecordSuccessfulSigninAsync(int id, CancellationToken token = default)
         {
-            var user = await this.elfhUserRepository.GetByIdAsync(id);
+            var user = await this.lhUserRepository.GetByIdAsync(id);
 
             user.LoginTimes++;
             user.PasswordLifeCounter = 0;
             user.SecurityLifeCounter = 0;
 
-            await this.elfhUserRepository.UpdateAsync(id, user);
+            await this.lhUserRepository.UpdateAsync(id, user);
 
             await this.InvalidateElfhUserCacheAsync(user.Id, user.UserName, token);
         }
@@ -243,12 +243,12 @@
         /// <inheritdoc/>
         public async Task RecordUnsuccessfulSigninAsync(int id, CancellationToken token = default)
         {
-            var user = await this.elfhUserRepository.GetByIdAsync(id);
+            var user = await this.lhUserRepository.GetByIdAsync(id);
 
             user.LoginTimes++;
             user.PasswordLifeCounter++;
 
-            await this.elfhUserRepository.UpdateAsync(id, user);
+            await this.lhUserRepository.UpdateAsync(id, user);
 
             await this.InvalidateElfhUserCacheAsync(user.Id, user.UserName, token);
         }

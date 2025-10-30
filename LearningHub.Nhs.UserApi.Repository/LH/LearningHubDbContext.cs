@@ -1,5 +1,6 @@
 ﻿namespace LearningHub.Nhs.UserApi.Repository.LH
 {
+    using elfhHub.Nhs.Models.Dto;
     using LearningHub.Nhs.Models.Entities;
     using LearningHub.Nhs.Models.Entities.External;
     using LearningHub.Nhs.Models.Entities.Messaging;
@@ -49,6 +50,11 @@
         /// Gets or sets the email template.
         /// </summary>
         public virtual DbSet<EmailTemplate> EmailTemplate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the UserAuthentiate Dto.
+        /// </summary>
+        public virtual DbSet<UserAuthenticateDto> UserAuthenticateDto { get; set; }
 
         /// <summary>
         /// The on model creating.

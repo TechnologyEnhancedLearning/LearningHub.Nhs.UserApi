@@ -1,9 +1,13 @@
 ﻿namespace LearningHub.Nhs.UserApi.Repository.LH
 {
+    using System.Data;
+    using System.Linq;
     using System.Threading.Tasks;
+    using elfhHub.Nhs.Models.Dto;
     using LearningHub.Nhs.Models.Entities;
     using LearningHub.Nhs.UserApi.Repository;
     using LearningHub.Nhs.UserApi.Repository.Interface.LH;
+    using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
 
     /// <summary>
@@ -25,6 +29,24 @@
         public async Task<User> GetByIdAsync(int id)
         {
             return await this.DbContext.User.FirstOrDefaultWithNoLockAsync(n => n.Id == id);
+        }
+
+        /// <summary>
+        /// The get user detail for the authentication.
+        /// </summary>
+        /// <param name = "username">
+        /// username.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        public async Task<UserAuthenticateDto> GetUserDetailForAuthentication(string username)
+        {
+                var param0 = new SqlParameter("@userName", SqlDbType.VarChar) { Value = username };
+
+                var userAuthenticateDto = await this.DbContext.UserAuthenticateDto.FromSqlRaw("elfh.proc_UserDetailForAuthenticationByUserName @userName", param0).AsNoTracking().ToListAsync();
+
+                return userAuthenticateDto.FirstOrDefault();
         }
     }
 }
