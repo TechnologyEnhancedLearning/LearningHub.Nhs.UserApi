@@ -158,14 +158,13 @@
                 return null;
             }
 
-            var user = await this.elfhUserRepository.GetByOpenAthensIdAsync(openAthensId);
+            var user = await this.lhUserRepository.GetByOpenAthensIdAsync(openAthensId);
 
-            if (user != null)
-            {
-                await this.SyncLHUserAsync(user.Id, user.UserName);
-            }
-
-            return user?.ToBasicUser();
+            // if (user != null)
+            // {
+            //    await this.SyncLHUserAsync(user.Id, user.UserName);
+            // }
+            return user;
         }
 
         /// <inheritdoc/>
@@ -181,7 +180,7 @@
         /// <returns>The <see cref="Task"/>.</returns>
         public async Task<int> GetUserIdByUsernameAsync(string userName)
         {
-            return await this.elfhUserRepository.GetUserIdByUsernameAsync(userName);
+            return await this.lhUserRepository.GetUserIdByUsernameAsync(userName);
         }
 
         /// <inheritdoc/>

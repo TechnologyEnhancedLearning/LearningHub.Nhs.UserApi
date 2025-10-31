@@ -3,6 +3,7 @@
     using System.Data;
     using System.Linq;
     using System.Threading.Tasks;
+    using elfhHub.Nhs.Models.Common;
     using elfhHub.Nhs.Models.Dto;
     using LearningHub.Nhs.Models.Entities;
     using LearningHub.Nhs.UserApi.Repository;
@@ -29,6 +30,23 @@
         public async Task<User> GetByIdAsync(int id)
         {
             return await this.DbContext.User.FirstOrDefaultWithNoLockAsync(n => n.Id == id);
+        }
+
+        /// <inheritdoc/>
+        public async Task<int> GetUserIdByUsernameAsync(string username)
+        {
+            return await this.DbContext.User.AsNoTracking().Where(n => n.UserName == username).Select(n => n.Id).FirstOrDefaultWithNoLockAsync();
+        }
+
+        /// <inheritdoc/>
+        public async Task<UserBasic> GetByOpenAthensIdAsync(string openAthensId)
+        {
+            var param = new SqlParameter("@OpenAthensId", openAthensId);
+
+            return await this.DbContext.Set<UserBasic>()
+                .FromSqlRaw("EXEC elfh.proc_GetUserByOpenAthensId @OpenAthensId", param)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
         }
 
         /// <summary>
