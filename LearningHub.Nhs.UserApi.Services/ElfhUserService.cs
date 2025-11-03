@@ -158,14 +158,13 @@
                 return null;
             }
 
-            var user = await this.elfhUserRepository.GetByOpenAthensIdAsync(openAthensId);
+            var user = await this.lhUserRepository.GetByOpenAthensIdAsync(openAthensId);
 
-            if (user != null)
-            {
-                await this.SyncLHUserAsync(user.Id, user.UserName);
-            }
-
-            return user?.ToBasicUser();
+            // if (user != null)
+            // {
+            //    await this.SyncLHUserAsync(user.Id, user.UserName);
+            // }
+            return user;
         }
 
         /// <inheritdoc/>
@@ -181,13 +180,13 @@
         /// <returns>The <see cref="Task"/>.</returns>
         public async Task<int> GetUserIdByUsernameAsync(string userName)
         {
-            return await this.elfhUserRepository.GetUserIdByUsernameAsync(userName);
+            return await this.lhUserRepository.GetUserIdByUsernameAsync(userName);
         }
 
         /// <inheritdoc/>
         public async Task<UserAuthenticateDto> GetUserDetailForAuthenticateAsync(string userName)
         {
-            return await this.elfhUserRepository.GetUserDetailForAuthentication(userName);
+            return await this.lhUserRepository.GetUserDetailForAuthentication(userName);
         }
 
         /// <inheritdoc/>
@@ -229,14 +228,14 @@
         /// <inheritdoc/>
         public async Task RecordSuccessfulSigninAsync(int id, CancellationToken token = default)
         {
-            var user = await this.elfhUserRepository.GetByIdAsync(id);
+            var user = await this.lhUserRepository.GetByIdAsync(id);
 
             if (user.PasswordLifeCounter != 0 || user.SecurityLifeCounter != 0)
             {
                 user.PasswordLifeCounter = 0;
                 user.SecurityLifeCounter = 0;
 
-                await this.elfhUserRepository.UpdateAsync(id, user);
+                await this.lhUserRepository.UpdateAsync(id, user);
 
                 await this.InvalidateElfhUserCacheAsync(user.Id, user.UserName, token);
             }
@@ -245,11 +244,11 @@
         /// <inheritdoc/>
         public async Task RecordUnsuccessfulSigninAsync(int id, CancellationToken token = default)
         {
-            var user = await this.elfhUserRepository.GetByIdAsync(id);
+            var user = await this.lhUserRepository.GetByIdAsync(id);
 
             user.PasswordLifeCounter++;
 
-            await this.elfhUserRepository.UpdateAsync(id, user);
+            await this.lhUserRepository.UpdateAsync(id, user);
 
             await this.InvalidateElfhUserCacheAsync(user.Id, user.UserName, token);
         }
