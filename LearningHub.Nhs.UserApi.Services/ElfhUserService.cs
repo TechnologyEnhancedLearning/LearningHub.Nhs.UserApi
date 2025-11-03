@@ -231,13 +231,15 @@
         {
             var user = await this.elfhUserRepository.GetByIdAsync(id);
 
-            user.LoginTimes++;
-            user.PasswordLifeCounter = 0;
-            user.SecurityLifeCounter = 0;
+            if (user.PasswordLifeCounter != 0 || user.SecurityLifeCounter != 0)
+            {
+                user.PasswordLifeCounter = 0;
+                user.SecurityLifeCounter = 0;
 
-            await this.elfhUserRepository.UpdateAsync(id, user);
+                await this.elfhUserRepository.UpdateAsync(id, user);
 
-            await this.InvalidateElfhUserCacheAsync(user.Id, user.UserName, token);
+                await this.InvalidateElfhUserCacheAsync(user.Id, user.UserName, token);
+            }
         }
 
         /// <inheritdoc/>
@@ -245,7 +247,6 @@
         {
             var user = await this.elfhUserRepository.GetByIdAsync(id);
 
-            user.LoginTimes++;
             user.PasswordLifeCounter++;
 
             await this.elfhUserRepository.UpdateAsync(id, user);
