@@ -235,7 +235,7 @@
                 user.PasswordLifeCounter = 0;
                 user.SecurityLifeCounter = 0;
 
-            await this.lhUserRepository.UpdateAsync(id, user);
+                await this.lhUserRepository.UpdateAsync(id, user);
 
                 await this.InvalidateElfhUserCacheAsync(user.Id, user.UserName, token);
             }
