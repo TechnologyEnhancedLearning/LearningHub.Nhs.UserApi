@@ -53,10 +53,11 @@
         {
             var loginResult = await this.authenticationService.AuthenticateAsync(login);
 
-            // if (loginResult.IsAuthenticated && !string.IsNullOrWhiteSpace(loginResult.UserName))
-            // {
-            //    await this.elfhUserService.SyncLHUserAsync(loginResult.UserId, loginResult.UserName);
-            // }
+            if (loginResult.IsAuthenticated && !string.IsNullOrWhiteSpace(loginResult.UserName))
+            {
+                await this.elfhUserService.SyncLHUserAsync(loginResult.UserId, loginResult.UserName);
+            }
+
             return this.Ok(loginResult);
         }
 
@@ -80,10 +81,11 @@
 
             var loginResult = await this.authenticationService.CheckUserCredentialsSsoAsync(request.UserId);
 
-            // if (loginResult.IsAuthenticated && !string.IsNullOrWhiteSpace(loginResult.UserName))
-            // {
-            //    await this.elfhUserService.SyncLHUserAsync(loginResult.UserId, loginResult.UserName);
-            // }
+            if (loginResult.IsAuthenticated && !string.IsNullOrWhiteSpace(loginResult.UserName))
+            {
+                await this.elfhUserService.SyncLHUserAsync(loginResult.UserId, loginResult.UserName);
+            }
+
             return this.Ok(loginResult);
         }
 

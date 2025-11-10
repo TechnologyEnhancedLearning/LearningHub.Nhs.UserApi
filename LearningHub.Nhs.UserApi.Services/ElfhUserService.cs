@@ -158,13 +158,14 @@
                 return null;
             }
 
-            var user = await this.lhUserRepository.GetByOpenAthensIdAsync(openAthensId);
+            var user = await this.elfhUserRepository.GetByOpenAthensIdAsync(openAthensId);
 
-            // if (user != null)
-            // {
-            //    await this.SyncLHUserAsync(user.Id, user.UserName);
-            // }
-            return user;
+            if (user != null)
+            {
+                await this.SyncLHUserAsync(user.Id, user.UserName);
+            }
+
+            return user?.ToBasicUser();
         }
 
         /// <inheritdoc/>
@@ -180,13 +181,13 @@
         /// <returns>The <see cref="Task"/>.</returns>
         public async Task<int> GetUserIdByUsernameAsync(string userName)
         {
-            return await this.lhUserRepository.GetUserIdByUsernameAsync(userName);
+            return await this.elfhUserRepository.GetUserIdByUsernameAsync(userName);
         }
 
         /// <inheritdoc/>
         public async Task<UserAuthenticateDto> GetUserDetailForAuthenticateAsync(string userName)
         {
-            return await this.lhUserRepository.GetUserDetailForAuthentication(userName);
+            return await this.elfhUserRepository.GetUserDetailForAuthentication(userName);
         }
 
         /// <inheritdoc/>
@@ -228,27 +229,26 @@
         /// <inheritdoc/>
         public async Task RecordSuccessfulSigninAsync(int id, CancellationToken token = default)
         {
-            var user = await this.lhUserRepository.GetByIdAsync(id);
+            var user = await this.elfhUserRepository.GetByIdAsync(id);
 
-            if (user.PasswordLifeCounter != 0 || user.SecurityLifeCounter != 0)
-            {
-                user.PasswordLifeCounter = 0;
-                user.SecurityLifeCounter = 0;
+            user.LoginTimes++;
+            user.PasswordLifeCounter = 0;
+            user.SecurityLifeCounter = 0;
 
-                await this.lhUserRepository.UpdateAsync(id, user);
+            await this.elfhUserRepository.UpdateAsync(id, user);
 
-                await this.InvalidateElfhUserCacheAsync(user.Id, user.UserName, token);
-            }
+            await this.InvalidateElfhUserCacheAsync(user.Id, user.UserName, token);
         }
 
         /// <inheritdoc/>
         public async Task RecordUnsuccessfulSigninAsync(int id, CancellationToken token = default)
         {
-            var user = await this.lhUserRepository.GetByIdAsync(id);
+            var user = await this.elfhUserRepository.GetByIdAsync(id);
 
+            user.LoginTimes++;
             user.PasswordLifeCounter++;
 
-            await this.lhUserRepository.UpdateAsync(id, user);
+            await this.elfhUserRepository.UpdateAsync(id, user);
 
             await this.InvalidateElfhUserCacheAsync(user.Id, user.UserName, token);
         }
@@ -958,14 +958,14 @@
         /// <inheritdoc/>
         public async Task<bool> CheckSamePrimaryemailIsPendingToValidate(string secondaryEmail, int currentUserId)
         {
-          var userRoleUpgrades = this.userRoleUpgradeRepository.GetByEmailAddressAsync(secondaryEmail, currentUserId);
+            var userRoleUpgrades = this.userRoleUpgradeRepository.GetByEmailAddressAsync(secondaryEmail, currentUserId);
 
-          if (userRoleUpgrades.Count() > 0)
-          {
+            if (userRoleUpgrades.Count() > 0)
+            {
                 return true;
-          }
+            }
 
-          return false;
+            return false;
         }
 
         /// <summary>
@@ -977,6 +977,8 @@
         public async Task UpdateMyAccountPersonalDetails(PersonalDetailsViewModel personalDetailsViewModel, int currentUserId)
         {
             User user = await this.elfhUserRepository.GetByIdAsync(personalDetailsViewModel.UserId);
+            user.FirstName = personalDetailsViewModel.FirstName;
+            user.LastName = personalDetailsViewModel.LastName;
             user.PreferredName = personalDetailsViewModel.PreferredName;
             user.AltEmailAddress = personalDetailsViewModel.SecondaryEmailAddress;
 
