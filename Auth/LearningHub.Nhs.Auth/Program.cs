@@ -24,6 +24,7 @@ builder.Logging.AddConsole();
 builder.Host.UseNLog();
 
 string corsOriginUrl = builder.Configuration.GetValue<string>("LearningHubAuthConfig:AuthClients:learninghubopenapi:BaseUrl");
+
 string corsMoodleUrl = builder.Configuration.GetValue<string>("MoodleAPIConfig:BaseUrl");
 
 builder.Services.AddCors(options =>
