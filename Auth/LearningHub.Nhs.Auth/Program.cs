@@ -25,8 +25,6 @@ builder.Host.UseNLog();
 
 string corsOriginUrl = builder.Configuration.GetValue<string>("LearningHubAuthConfig:AuthClients:learninghubopenapi:BaseUrl");
 
-string corsMoodleUrl = builder.Configuration.GetValue<string>("MoodleAPIConfig:BaseUrl");
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(
@@ -34,17 +32,6 @@ builder.Services.AddCors(options =>
         builder => builder.AllowAnyOrigin()
         .WithOrigins(corsOriginUrl)
         .AllowAnyHeader());
-});
-
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("MoodleCORS", builder =>
-    {
-        builder.WithOrigins(corsMoodleUrl)
-               .AllowAnyHeader()
-               .AllowAnyMethod()
-               .AllowCredentials();
-    });
 });
 
 builder.Services.ConfigureServices(builder.Configuration, builder.Environment);
@@ -84,8 +71,6 @@ else
 LogManager.Configuration.Variables["connectionString"] = app.Configuration.GetConnectionString("NLogDb");
 
 app.UseCors("CorsPolicy");
-
-app.UseCors("MoodleCORS");
 
 app.UseCookiePolicy();
 
