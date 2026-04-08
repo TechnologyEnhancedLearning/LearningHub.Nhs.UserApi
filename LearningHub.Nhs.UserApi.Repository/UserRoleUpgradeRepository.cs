@@ -37,7 +37,7 @@
         public IQueryable<UserRoleUpgrade> GetByEmailAddressAsync(string emailAddress, int userId)
         {
             return this.DbContext.Set<UserRoleUpgrade>()
-                .Where(n => n.UserId == userId && n.EmailAddress == emailAddress && n.Deleted == false && n.UpgradeDate == null)
+                .Where(n => n.UserId == userId && n.EmailAddress.ToLower() == emailAddress.ToLower() && n.Deleted == false && n.UpgradeDate == null)
               .AsNoTracking();
         }
   }

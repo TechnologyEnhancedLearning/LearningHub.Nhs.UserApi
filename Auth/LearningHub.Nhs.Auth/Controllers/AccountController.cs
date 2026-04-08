@@ -277,7 +277,7 @@ showFormWithError:
                 {
                     UserId = userId,
                     UserHistoryTypeId = (int)UserHistoryType.Logout,
-                    Detail = @"User logged out",
+                    Detail = @"User logged out" + this.webSettings.IsPasswordUpdate + " " + vm.TriggerExternalSignout,
                 };
 
                 await this.UserService.StoreUserHistoryAsync(userHistory);
