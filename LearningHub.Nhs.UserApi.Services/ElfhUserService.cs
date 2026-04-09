@@ -237,13 +237,15 @@
         {
             var user = await this.elfhUserRepository.GetByIdAsync(id);
 
-            user.LoginTimes++;
-            user.PasswordLifeCounter = 0;
-            user.SecurityLifeCounter = 0;
+            if (user.PasswordLifeCounter != 0 || user.SecurityLifeCounter != 0)
+            {
+                user.PasswordLifeCounter = 0;
+                user.SecurityLifeCounter = 0;
 
-            await this.elfhUserRepository.UpdateAsync(id, user);
+                await this.elfhUserRepository.UpdateAsync(id, user);
 
-            await this.InvalidateElfhUserCacheAsync(user.Id, user.UserName, token);
+                await this.InvalidateElfhUserCacheAsync(user.Id, user.UserName, token);
+            }
         }
 
         /// <inheritdoc/>
@@ -251,7 +253,6 @@
         {
             var user = await this.elfhUserRepository.GetByIdAsync(id);
 
-            user.LoginTimes++;
             user.PasswordLifeCounter++;
 
             await this.elfhUserRepository.UpdateAsync(id, user);
@@ -1008,14 +1009,29 @@
         /// <inheritdoc/>
         public async Task<bool> CheckSamePrimaryemailIsPendingToValidate(string secondaryEmail, int currentUserId)
         {
-          var userRoleUpgrades = this.userRoleUpgradeRepository.GetByEmailAddressAsync(secondaryEmail, currentUserId);
+            var userRoleUpgrades = this.userRoleUpgradeRepository.GetByEmailAddressAsync(secondaryEmail, currentUserId);
 
-          if (userRoleUpgrades.Count() > 0)
-          {
+            if (userRoleUpgrades.Count() > 0)
+            {
                 return true;
-          }
+            }
 
-          return false;
+            return false;
+        }
+
+        /// <summary>
+        /// Update MyAccount PersonalDetails.
+        /// </summary>
+        /// <param name="personalDetailsViewModel">personalDetailsViewModel.</param>
+        /// <param name="currentUserId">currentUserId.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
+        public async Task UpdateMyAccountPersonalDetails(PersonalDetailsViewModel personalDetailsViewModel, int currentUserId)
+        {
+            User user = await this.elfhUserRepository.GetByIdAsync(personalDetailsViewModel.UserId);
+            user.PreferredName = personalDetailsViewModel.PreferredName;
+            user.AltEmailAddress = personalDetailsViewModel.SecondaryEmailAddress;
+
+            await this.elfhUserRepository.UpdateAsync(currentUserId, user);
         }
 
         private async Task<LearningHubValidationResult> ValidateAsync(CreateOpenAthensLinkToLhUser newUserDetails)

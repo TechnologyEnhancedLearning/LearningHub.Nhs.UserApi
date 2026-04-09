@@ -83,18 +83,18 @@
         /// <summary>
         /// IsPasswordUpdateMethod.
         /// </summary>
-        /// <param name="isLogout">The Logout.</param>
+        /// <param name="isPasswordUpdate">The PasswordUpdate.</param>
         /// <returns>The <see cref="ActionResult"/>.</returns>
         [HttpGet]
-        public IActionResult SetIsPasswordUpdate(bool isLogout)
+        public IActionResult SetIsPasswordUpdate(bool isPasswordUpdate)
         {
-            if (isLogout)
+            if (isPasswordUpdate)
             {
-                this.webSettings.IsPasswordUpdate = false;
+                this.webSettings.IsPasswordUpdate = true;
             }
             else
             {
-                this.webSettings.IsPasswordUpdate = true;
+                this.webSettings.IsPasswordUpdate = false;
             }
 
             var redirectUri = $"{this.webSettings.LearningHubWebClient}Home/UserLogout";

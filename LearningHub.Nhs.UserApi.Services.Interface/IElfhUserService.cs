@@ -520,5 +520,13 @@
         /// <param name="currentUserId">currentUserId.</param>
         /// <returns>The <see cref="Task"/>.</returns>
         Task<bool> CheckSamePrimaryemailIsPendingToValidate(string secondaryEmail, int currentUserId);
+
+        /// <summary>
+        /// Update MyAccount Personal Details.
+        /// </summary>
+        /// <param name="personalDetailsViewModel">personalDetailsViewModel.</param>
+        /// <param name="currentUserId">currentUserId.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
+        Task UpdateMyAccountPersonalDetails(PersonalDetailsViewModel personalDetailsViewModel, int currentUserId);
   }
 }
