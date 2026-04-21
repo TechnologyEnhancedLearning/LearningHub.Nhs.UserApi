@@ -10,11 +10,14 @@
     using IdentityServer4;
     using IdentityServer4.Events;
     using IdentityServer4.Services;
+    using LearningHub.Nhs.Auth.Configuration;
     using LearningHub.Nhs.Auth.Filters;
     using LearningHub.Nhs.Auth.Helpers;
     using LearningHub.Nhs.Auth.Interfaces;
     using LearningHub.Nhs.Auth.ViewModels.Sso;
+    using LearningHub.Nhs.Models.Databricks;
     using LearningHub.Nhs.Models.Entities.External;
+    using LearningHub.Nhs.Models.Report;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -35,6 +38,7 @@
         private readonly IUserService userService;
         private readonly IEventService eventService;
         private readonly ILogger<SsoController> logger;
+        private readonly WebSettings webSettings;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SsoController"/> class.
@@ -43,12 +47,14 @@
         /// <param name="registrationService">Registration info service.</param>
         /// <param name="userService">User service.</param>
         /// <param name="eventService">Event service.</param>
+        /// <param name="webSettings">webSettings.</param>
         /// <param name="logger">The logger.</param>
         public SsoController(
             IExternalSystemService externalSystemService,
             IRegistrationService registrationService,
             IUserService userService,
             IEventService eventService,
+            WebSettings webSettings,
             ILogger<SsoController> logger)
         {
             this.externalSystemService = externalSystemService;
@@ -56,6 +62,7 @@
             this.userService = userService;
             this.eventService = eventService;
             this.logger = logger;
+            this.webSettings = webSettings;
         }
 
         /// <summary>
@@ -249,6 +256,47 @@
             catch (Exception ex)
             {
                 this.logger.LogError(ex, "SSO link user error");
+                return this.View("Error");
+            }
+        }
+
+        /// <summary>
+        /// LinkToScript.
+        /// </summary>
+        /// <param name="userid">The user Id.</param>
+        /// <returns>Login view.</returns>
+        [HttpGet("sso/LinkToScript/{userId}")]
+        public async Task<IActionResult> LinkToScript(int userid)
+        {
+            try
+            {
+                var client = await this.externalSystemService.GetExternalSystem("SCRIPT");
+                var state = Guid.NewGuid().ToString();
+                return this.ClientCallback(userid, client, state);
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(ex, "An error occured while linking LH user to Script via SSO");
+                return this.View("Error");
+            }
+        }
+
+        /// <summary>
+        /// GrantCatalogueAccessAfterSignup.
+        /// </summary>
+        /// <param name="userid">The user Id.</param>
+        /// <returns>Login view.</returns>
+        [HttpGet("sso/GrantCatalogueAccessAfterSignup/{userId}")]
+        public async Task<IActionResult> GrantCatalogueAccessAfterSignup(int userid)
+        {
+            try
+            {
+                var redirectUri = $"{this.webSettings.LearningHubWebClient}catalogue/GrantCatalogueAccessAfterSignup?userid={userid}";
+                return this.Redirect(redirectUri);
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(ex, "SSO login error");
                 return this.View("Error");
             }
         }
