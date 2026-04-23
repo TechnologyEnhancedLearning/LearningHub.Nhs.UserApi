@@ -34,6 +34,21 @@ builder.Services.AddCors(options =>
         .AllowAnyHeader());
 });
 
+string moodleInstanceBridgeOrigin = builder.Configuration.GetValue<string>("LearningHubAuthConfig:AuthClients:moodleinstancebridge:BaseUrl");
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy", policy =>
+    {
+        policy.WithOrigins(
+                corsOriginUrl,
+                moodleInstanceBridgeOrigin)
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
+
 builder.Services.ConfigureServices(builder.Configuration, builder.Environment);
 
 GlobalDiagnosticsContext.Set("connectionString", builder.Configuration.GetSection("ASPNETCORE_ConnectionStrings")["NLogDb"]);
