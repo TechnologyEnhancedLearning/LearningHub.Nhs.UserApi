@@ -99,6 +99,20 @@
             return this.Ok(user);
         }
 
+        /////// <summary>
+        /////// Get e-LfH Hub user by emailAddress.
+        /////// </summary>
+        /////// <param name="emailAddress">The emailAddress.</param>
+        /////// <returns>The <see cref="Task"/>.</returns>
+        ////[HttpGet]
+        ////[Route("GetByUsername/{*emailAddress}")]
+        ////public async Task<IActionResult> GetByUserEmail(string emailAddress)
+        ////{
+        ////    var user = await this.elfhUserService.GetByUserEmailAsync(emailAddress);
+
+        ////    return this.Ok(user);
+        ////}
+
         /// <summary>
         /// Get e-LfH Hub user bu username.
         /// </summary>
@@ -156,7 +170,7 @@
         [Route("LinkUserToSso")]
         public async Task<IActionResult> LinkExistingUserToSso([FromBody] LinkUserToSsoRequestViewModel request)
         {
-            var authResult = await this.authenticationService.CheckUserCredentialsAsync(new Login { Username = request.Username, Password = request.Password });
+            var authResult = await this.authenticationService.ValidateUserCredentialsAsync(new LoginModel { EmailAddress = request.EmailAddress, Password = request.Password });
 
             if (!authResult.IsAuthenticated)
             {
@@ -312,7 +326,7 @@
         [Route("SyncSsoUsertoElfh")]
         public async Task<IActionResult> SyncSsoUsertoElfh([FromBody] LinkUserToSsoRequestViewModel request)
         {
-            var authResult = await this.authenticationService.CheckUserCredentialsAsync(new Login { Username = request.Username, Password = request.Password });
+            var authResult = await this.authenticationService.CheckUserCredentialsAsync(new Login { Username = request.EmailAddress, Password = request.Password });
             await this.registrationService.SyncSsoUsertoElfh(authResult.UserId, request.ExternalSystemCode);
 
             return this.Ok();

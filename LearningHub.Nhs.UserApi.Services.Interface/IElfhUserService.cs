@@ -62,6 +62,13 @@
         Task<UserAuthenticateDto> GetUserDetailForAuthenticateAsync(string userName);
 
         /// <summary>
+        /// The get user details for the authenticat by username.
+        /// </summary>
+        /// <param name="userName">The user name.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
+        Task<UserAuthenticateDto> GetUserDetailForAuthenticateByEmailAsync(string userName);
+
+        /// <summary>
         /// The get by open athens id.
         /// </summary>
         /// <param name="openAthensId">The open athens id.</param>
@@ -230,15 +237,15 @@
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         Task<PersonalDetailsViewModel> GetPersonalDetailsAsync(int currentUserId);
 
-            /// <summary>
-            /// The does email address exist async.
-            /// </summary>
-            /// <param name="emailAddress">
-            /// The email address.
-            /// </param>
-            /// <returns>
-            /// The <see cref="Task"/>.
-            /// </returns>
+        /// <summary>
+        /// The does email address exist async.
+        /// </summary>
+        /// <param name="emailAddress">
+        /// The email address.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
         Task<bool> DoesEmailAddressExistAsync(string emailAddress);
 
         /// <summary>
@@ -528,5 +535,5 @@
         /// <param name="currentUserId">currentUserId.</param>
         /// <returns>The <see cref="Task"/>.</returns>
         Task UpdateMyAccountPersonalDetails(PersonalDetailsViewModel personalDetailsViewModel, int currentUserId);
-  }
+    }
 }
