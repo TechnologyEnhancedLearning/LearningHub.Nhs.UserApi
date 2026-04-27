@@ -236,7 +236,7 @@
                     return this.View("Create", await this.BuildCreateUserViewModel(request, client, state));
                 }
 
-                var result = await this.registrationService.LinkUserToSso(request.Username, request.Password, client.Id, client.Code);
+                var result = await this.registrationService.LinkUserToSso(request.EmailAddress, request.Password, client.Id, client.Code);
                 if (!result.IsAuthenticated)
                 {
                     var model = await this.BuildCreateUserViewModel(request, client, state);

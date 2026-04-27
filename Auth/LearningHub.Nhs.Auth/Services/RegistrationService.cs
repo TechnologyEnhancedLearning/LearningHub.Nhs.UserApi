@@ -92,13 +92,13 @@
         }
 
         /// <inheritdoc/>
-        public async Task<LoginResultInternal> LinkUserToSso(string username, string password, int clientId, string clientCode)
+        public async Task<LoginResultInternal> LinkUserToSso(string emailAddress, string password, int clientId, string clientCode)
         {
             var client = this.UserApiHttpClient.GetClient();
 
             var vm = new LinkUserToSsoRequestViewModel
             {
-                Username = username,
+                EmailAddress = emailAddress,
                 Password = password,
                 ExternalSystemId = clientId,
                 ExternalSystemCode = clientCode,

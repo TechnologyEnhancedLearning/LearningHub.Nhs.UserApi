@@ -28,6 +28,20 @@
         Task<LoginResult> AuthenticateUserAsync(string username, string password);
 
         /// <summary>
+        /// The authenticate user async.
+        /// </summary>
+        /// <param name="emailAddress">
+        /// The username.
+        /// </param>
+        /// <param name="password">
+        /// The password.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        Task<LoginResultInternal> AuthenticateUserByEmailAsync(string emailAddress, string password);
+
+        /// <summary>
         /// The authenticate user sso async.
         /// </summary>
         /// <param name="userId">The user id.</param>

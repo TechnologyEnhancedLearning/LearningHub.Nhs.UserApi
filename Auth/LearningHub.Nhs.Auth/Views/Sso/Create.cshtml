@@ -13,7 +13,7 @@
 
         <p>The <strong>@Model.ClientName</strong> website has requested authorisation to access the Learning Hub.</p>
 
-        <p>If you already have an account on the Learning Hub, you can link your existing Learning Hub account with your @Model.ClientName account by entering your username and password below.</p>
+        <p>If you already have an account on the Learning Hub, you can link your existing Learning Hub account with your @Model.ClientName account by entering your email address and password below.</p>
 
         <p>When you select ‘Link my account’, the details you have entered will be sent to @Model.ClientName <strong>to link your accounts</strong>.</p>
 
@@ -26,12 +26,12 @@
             <p class="text-danger my-4">@Model.Error</p>
           }
 
-          <div class="form-group mb-5 @(((TagBuilder)Html.ValidationMessageFor(m => m.SsoLinkUserForm.Username)).HasInnerHtml ? "form-group--error" : "")">
-            <label asp-for="SsoLinkUserForm.Username"><strong>Username</strong></label>
+          <div class="form-group mb-5 @(((TagBuilder)Html.ValidationMessageFor(m => m.SsoLinkUserForm.EmailAddress)).HasInnerHtml ? "form-group--error" : "")">
+            <label asp-for="SsoLinkUserForm.EmailAddress"><strong>Email Address</strong></label>
             <div>
-              @Html.ValidationMessageFor(m => m.SsoLinkUserForm.Username)
-              <input type="text" class="form-control mt-2" asp-for="SsoLinkUserForm.Username" aria-describedby="username"
-                     placeholder="Enter username" required>
+              @Html.ValidationMessageFor(m => m.SsoLinkUserForm.EmailAddress)
+              <input type="text" class="form-control mt-2" asp-for="SsoLinkUserForm.EmailAddress" aria-describedby="emailaddress"
+                     placeholder="Enter email address" required>
             </div>
           </div>
 
