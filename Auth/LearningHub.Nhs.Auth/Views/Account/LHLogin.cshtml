@@ -94,7 +94,7 @@
 
                     <button class="nhsuk-button" type="submit">Continue</button>
                 </form>
-                @if (Model.ClientId == "learninghubwebclient")
+                @if (Model.ClientId == "learninghubwebclient" || Model.ClientId == "digitallearningsolutions")
                 {
                     <div class="nhsuk-grid-row">
                         <div class="nhsuk-grid-column-full">
@@ -115,35 +115,28 @@
                                             <a href="@($"https://{Model.LoginClientTemplate.ClientUrl}/{Model.LoginClientTemplate.RegisterAccountRelativeUrl}")">Create new account</a>
                                         </p>
                                     }
-                                    <p>
-                                        <a asp-controller="Account" asp-action="OpenAthens" asp-route-clientUrl=@($"https://{Model.LoginClientTemplate.ClientUrl}") asp-route-returnUrl=" @authRequiredReturnUrl" asp-route-invalidScope=false class="nhsuk-button nhsuk-button--secondary">Continue with OpenAthens</a>
-                                    </p>
+                                    @if (Model.ClientId == "digitallearningsolutions")
+                                    {
+                                        <p>
+                                            <a href="https://@Model.LoginClientTemplate.ClientUrl"
+                                               class="nhsuk-button nhsuk-button--secondary">
+                                                Login to your DLS account
+                                            </a>
+                                        </p>
+                                    }
+                                    else
+                                    {
+                                        <p>
+                                            <a asp-controller="Account" asp-action="OpenAthens" asp-route-clientUrl=@($"https://{Model.LoginClientTemplate.ClientUrl}") asp-route-returnUrl=" @authRequiredReturnUrl" asp-route-invalidScope=false class="nhsuk-button nhsuk-button--secondary">Continue with OpenAthens</a>
+                                        </p>
+                                    }
                                 </div>
                             </div>
                         </div>
                     </div>
                 }
             }
-            @if (Model.ClientId == "digitallearningsolutions")
-            {
-                <div class="nhsuk-grid-row">
-                    <div class="nhsuk-grid-column-full">
-                        <div class="nhsuk-u-reading-width">
-                            <div>
-                                <h3>
-                                    Problems signing in
-                                </h3>
-                                <p>
-                                    <a href="https://@Model.LoginClientTemplate.ClientUrl"
-                                       class="nhsuk-button nhsuk-button--secondary">
-                                        Login to your DLS account
-                                    </a>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            }
+
             @if (!Model.EnableLocalLogin && !Model.VisibleExternalProviders.Any())
             {
                 <div class="nhsuk-grid-row">
