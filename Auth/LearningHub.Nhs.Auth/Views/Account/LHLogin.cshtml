@@ -32,24 +32,41 @@
                 @if (Model.ClientId == "learninghubadmin")
                 {
                     <h1>Sign in to the Learning Hub as an Administrator</h1>
-                }
-                else
-                {
-                    <h1>Access your Learning Hub account</h1>
-                }
-                <h2>Login with your Learning Hub or elfh credentials</h2>
-                <div class="nhsuk-grid-row">
-                    <div class="nhsuk-grid-column-full">
-                        <div class="nhsuk-u-reading-width">
-                            <div>
-                                <p>
-                                    Please note that if you login to either the elfh Hub or Learning Hub from an external organisation using Single Sign On (SSO),
-                                    please navigate back to your organisation and re-attempt logging in from there.
-                                </p>
+                    <h2>Login with your Learning Hub or elfh credentials</h2>
+                    <div class="nhsuk-grid-row">
+                        <div class="nhsuk-grid-column-full">
+                            <div class="nhsuk-u-reading-width">
+                                <div>
+                                    <p>
+                                        Please note that if you login to either the elfh Hub or Learning Hub from an external organisation using Single Sign On (SSO),
+                                        please navigate back to your organisation and re-attempt logging in from there.
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                }
+                else if (Model.ClientId == "learninghubwebclient")
+                {
+                    <h1>Access your Learning Hub account</h1>
+                    <h2>Login with your Learning Hub or elfh credentials</h2>
+                    <div class="nhsuk-grid-row">
+                        <div class="nhsuk-grid-column-full">
+                            <div class="nhsuk-u-reading-width">
+                                <div>
+                                    <p>
+                                        Please note that if you login to either the elfh Hub or Learning Hub from an external organisation using Single Sign On (SSO),
+                                        please navigate back to your organisation and re-attempt logging in from there.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else if (Model.ClientId == "digitallearningsolutions")
+                {
+                    <h1>Login with your Learning Hub account</h1>
+                }
                 <form class="nhsuk-u-margin-bottom-2" asp-controller="Account" asp-action="Login" method="post">
                     <input type="hidden" asp-for="ReturnUrl" />
 
