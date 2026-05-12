@@ -18,6 +18,8 @@
     }
     var openAthensSignOnUrl = Url.Action("Login", "OpenAthens", new { returnUrl = authRequiredReturnUrl, invalidScope = false });
     var errorHasOccurred = !ViewData.ModelState.IsValid;
+    var separator = Model.LoginClientTemplate.ClientUrl.Contains("?") ? "&" : "?";
+    var loginUrl = $"https://{Model.LoginClientTemplate.ClientUrl}{separator}fallbackLogin=true";
 }
 
 <div class="nhsuk-width-container app-width-container">
@@ -118,7 +120,7 @@
                                     @if (Model.ClientId == "digitallearningsolutions")
                                     {
                                         <p>
-                                            <a href="https://@Model.LoginClientTemplate.ClientUrl"
+                                            <a href="@loginUrl"
                                                class="nhsuk-button nhsuk-button--secondary">
                                                 Login to your DLS account
                                             </a>
