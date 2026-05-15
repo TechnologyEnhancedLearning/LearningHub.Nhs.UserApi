@@ -6,6 +6,7 @@
     <Platforms>x64</Platforms>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="AutoMapper" />
     <PackageReference Include="elfhHub.Nhs.Models" />
     <PackageReference Include="LearningHub.Nhs.Models" />
     <PackageReference Include="StyleCop.Analyzers">
