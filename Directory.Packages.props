@@ -19,7 +19,7 @@
 		<PackageVersion Include="Azure.Identity" Version="1.21.0" />
 		<PackageVersion Include="coverlet.collector" Version="6.0.4" />		
 		<PackageVersion Include="EntityFrameworkCore.Testing.Moq" Version="9.0.2" />
-		<PackageVersion Include="FluentValidation" Version="12.0.0" />
+		<PackageVersion Include="FluentValidation" Version="12.1.1" />
 		<PackageVersion Include="IdentityServer4" Version="4.1.2" />
 		<PackageVersion Include="IdentityServer4.AccessTokenValidation" Version="3.0.1" />
 		<PackageVersion Include="IdentityServer4.Contrib.RedisStore" Version="4.0.0" />		
