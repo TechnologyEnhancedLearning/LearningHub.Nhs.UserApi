@@ -9,6 +9,7 @@
     using LearningHub.Nhs.UserApi.Services;
     using LearningHub.Nhs.UserApi.Services.Interface;
     using LearningHub.Nhs.UserApi.Shared.Configuration;
+    using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Options;
@@ -24,13 +25,14 @@
         /// </summary>
         /// <param name="services">IServiceCollection.</param>
         /// <param name="configuration">IConfiguration.</param>
-        public static void ConfigureServices(this IServiceCollection services, IConfiguration configuration)
+        /// <param name="env">IWebHostEnvironment.</param>
+        public static void ConfigureServices(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
         {
             services.AddOptions();
 
             services.AddApplicationInsightsTelemetry();
 
-            services.AddMappings(configuration);
+            services.AddMappings(configuration, env);
 
             services.Configure<Settings>(configuration.GetSection("Settings"));
 

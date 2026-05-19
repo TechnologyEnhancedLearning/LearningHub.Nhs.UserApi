@@ -51,7 +51,7 @@
 
             var optionsMock = new Mock<IOptions<Settings>>();
 
-            var registrationService = new RegistrationService(userRepositoryMock.Object, userGroupTypeInputValidationRepositoryMock.Object, null, null, null, null, null, null, null, null, null, null, null, null, optionsMock.Object, null, null, null, null, null, null, this.countryLookupRepoMock.Object);
+            var registrationService = new RegistrationService(userRepositoryMock.Object, userGroupTypeInputValidationRepositoryMock.Object, null, null, null, null, null, null, null, null, null, null, null, null, optionsMock.Object, null, null, null, null, null, null, this.countryLookupRepoMock.Object, null);
             var status = await registrationService.GetRegistrationStatus("test@here.com", this.ipAddress);
 
             Assert.IsType<EmailRegistrationStatus>(status);
@@ -79,7 +79,7 @@
 
             var optionsMock = new Mock<IOptions<Settings>>();
 
-            var registrationService = new RegistrationService(userRepositoryMock.Object, userGroupTypeInputValidationRepositoryMock.Object, null, null, null, null, null, null, null, null, null, null, null, null, optionsMock.Object, null, null, userGroupRepositoryMock.Object, null, null, null, this.countryLookupRepoMock.Object);
+            var registrationService = new RegistrationService(userRepositoryMock.Object, userGroupTypeInputValidationRepositoryMock.Object, null, null, null, null, null, null, null, null, null, null, null, null, optionsMock.Object, null, null, userGroupRepositoryMock.Object, null, null, null, this.countryLookupRepoMock.Object, null);
             var status = await registrationService.GetRegistrationStatus("test@here.com", this.ipAddress);
 
             Assert.IsType<EmailRegistrationStatus>(status);
@@ -103,7 +103,7 @@
 
             var optionsMock = new Mock<IOptions<Settings>>();
 
-            var registrationService = new RegistrationService(userRepositoryMock.Object, userGroupTypeInputValidationRepositoryMock.Object, null, null, null, null, null, null, null, null, null, null, null, null, optionsMock.Object, null, null, null, null, null, null, this.countryLookupRepoMock.Object);
+            var registrationService = new RegistrationService(userRepositoryMock.Object, userGroupTypeInputValidationRepositoryMock.Object, null, null, null, null, null, null, null, null, null, null, null, null, optionsMock.Object, null, null, null, null, null, null, this.countryLookupRepoMock.Object, null);
             var status = await registrationService.GetRegistrationStatus("test@here.com", this.ipAddress);
 
             Assert.IsType<EmailRegistrationStatus>(status);
@@ -127,7 +127,7 @@
 
             var optionsMock = new Mock<IOptions<Settings>>();
 
-            var registrationService = new RegistrationService(userRepositoryMock.Object, userGroupTypeInputValidationRepositoryMock.Object, null, null, null, null, null, null, null, null, null, null, null, null, optionsMock.Object, null, null, null, null, null, null, this.countryLookupRepoMock.Object);
+            var registrationService = new RegistrationService(userRepositoryMock.Object, userGroupTypeInputValidationRepositoryMock.Object, null, null, null, null, null, null, null, null, null, null, null, null, optionsMock.Object, null, null, null, null, null, null, this.countryLookupRepoMock.Object, null);
             var status = await registrationService.GetRegistrationStatus("test@here.com", this.ipAddress);
 
             Assert.IsType<EmailRegistrationStatus>(status);
@@ -145,7 +145,7 @@
         {
             var optionsMock = new Mock<IOptions<Settings>>();
 
-            var registrationService = new RegistrationService(null, null, null, null, null, null, null, null, null, null, null, null, null, null, optionsMock.Object, null, null, null, null, null, null, this.countryLookupRepoMock.Object);
+            var registrationService = new RegistrationService(null, null, null, null, null, null, null, null, null, null, null, null, null, null, optionsMock.Object, null, null, null, null, null, null, this.countryLookupRepoMock.Object, null);
             var validationResult = await registrationService.RegisterUser(
                 new RegistrationRequestViewModel()
                 {
@@ -177,7 +177,7 @@
         {
             var optionsMock = new Mock<IOptions<Settings>>();
 
-            var registrationService = new RegistrationService(null, null, null, null, null, null, null, null, null, null, null, null, null, null, optionsMock.Object, null, null, null, null, null, null, this.countryLookupRepoMock.Object);
+            var registrationService = new RegistrationService(null, null, null, null, null, null, null, null, null, null, null, null, null, null, optionsMock.Object, null, null, null, null, null, null, this.countryLookupRepoMock.Object, null);
             var validationResult = await registrationService.RegisterUser(
                 new RegistrationRequestViewModel()
                 {
@@ -207,7 +207,7 @@
         {
             var optionsMock = new Mock<IOptions<Settings>>();
 
-            var registrationService = new RegistrationService(null, null, null, null, null, null, null, null, null, null, null, null, null, null, optionsMock.Object, null, null, null, null, null, null, this.countryLookupRepoMock.Object);
+            var registrationService = new RegistrationService(null, null, null, null, null, null, null, null, null, null, null, null, null, null, optionsMock.Object, null, null, null, null, null, null, this.countryLookupRepoMock.Object, null);
             var validationResult = await registrationService.RegisterUser(
                 new RegistrationRequestViewModel()
                 {
@@ -252,7 +252,7 @@
 
             var optionsMock = new Mock<IOptions<Settings>>();
 
-            var registrationService = new RegistrationService(null, null, jobRoleRepositoryMock.Object, null, null, null, null, null, null, null, null, medicalcouncilServiceMock.Object, null, null, optionsMock.Object, null, null, null, null, null, null, this.countryLookupRepoMock.Object);
+            var registrationService = new RegistrationService(null, null, jobRoleRepositoryMock.Object, null, null, null, null, null, null, null, null, medicalcouncilServiceMock.Object, null, null, optionsMock.Object, null, null, null, null, null, null, this.countryLookupRepoMock.Object, null);
             var validationResult = await registrationService.RegisterUser(
                 new RegistrationRequestViewModel()
                 {
@@ -294,7 +294,7 @@
 
             var optionsMock = new Mock<IOptions<Settings>>();
 
-            var registrationService = new RegistrationService(null, null, jobRoleRepositoryMock.Object, null, null, null, null, null, null, null, null, medicalcouncilServiceMock.Object, null, null, optionsMock.Object, null, null, null, null, null, null, this.countryLookupRepoMock.Object);
+            var registrationService = new RegistrationService(null, null, jobRoleRepositoryMock.Object, null, null, null, null, null, null, null, null, medicalcouncilServiceMock.Object, null, null, optionsMock.Object, null, null, null, null, null, null, this.countryLookupRepoMock.Object, null);
             var validationResult = await registrationService.RegisterUser(
                 new RegistrationRequestViewModel()
                 {
@@ -336,7 +336,7 @@
 
             var optionsMock = new Mock<IOptions<Settings>>();
 
-            var registrationService = new RegistrationService(null, null, jobRoleRepositoryMock.Object, null, null, null, null, null, null, null, null, medicalcouncilServiceMock.Object, null, null, optionsMock.Object, null, null, null, null, null, null, this.countryLookupRepoMock.Object);
+            var registrationService = new RegistrationService(null, null, jobRoleRepositoryMock.Object, null, null, null, null, null, null, null, null, medicalcouncilServiceMock.Object, null, null, optionsMock.Object, null, null, null, null, null, null, this.countryLookupRepoMock.Object, null);
             var validationResult = await registrationService.RegisterUser(
                 new RegistrationRequestViewModel()
                 {
@@ -381,7 +381,7 @@
 
             var optionsMock = new Mock<IOptions<Settings>>();
 
-            var registrationService = new RegistrationService(null, null, jobRoleRepositoryMock.Object, null, null, null, null, null, null, null, null, null, userServiceMock.Object, null, optionsMock.Object, null, medicalCouncilRepositoryMock.Object, null, null, null, null, this.countryLookupRepoMock.Object);
+            var registrationService = new RegistrationService(null, null, jobRoleRepositoryMock.Object, null, null, null, null, null, null, null, null, null, userServiceMock.Object, null, optionsMock.Object, null, medicalCouncilRepositoryMock.Object, null, null, null, null, this.countryLookupRepoMock.Object, null);
             var validationResult = await registrationService.RegisterUser(
                 new RegistrationRequestViewModel()
                 {
@@ -456,7 +456,7 @@
             var emailLogRepositoryMock = new Mock<IEmailLogRepository>();
             emailLogRepositoryMock.Setup(r => r.CreateAsync(It.IsAny<int>(), It.IsAny<EmailLog>()));
 
-            var registrationService = new RegistrationService(userRepositoryMock.Object, userGroupTypeInputValidationRepositoryMock.Object, jobRoleRepositoryMock.Object, userUserGroupRepositoryMock.Object, userEmploymentRepositoryMock.Object, emailTemplateRepositoryMock.Object, emailLogRepositoryMock.Object, systemSettingsRepositoryMock.Object, userPasswordValidationTokenRepositoryMock.Object, tenantRepositoryMock.Object, tenantSmtpRepositoryMock.Object, null, userServiceMock.Object, userHistoryServiceMock.Object, this.GetSettings(), loginWizardServiceMock.Object, null, null, null, null, null, this.countryLookupRepoMock.Object);
+            var registrationService = new RegistrationService(userRepositoryMock.Object, userGroupTypeInputValidationRepositoryMock.Object, jobRoleRepositoryMock.Object, userUserGroupRepositoryMock.Object, userEmploymentRepositoryMock.Object, emailTemplateRepositoryMock.Object, emailLogRepositoryMock.Object, systemSettingsRepositoryMock.Object, userPasswordValidationTokenRepositoryMock.Object, tenantRepositoryMock.Object, tenantSmtpRepositoryMock.Object, null, userServiceMock.Object, userHistoryServiceMock.Object, this.GetSettings(), loginWizardServiceMock.Object, null, null, null, null, null, this.countryLookupRepoMock.Object, null);
             var validationResult = await registrationService.RegisterUser(
                 new RegistrationRequestViewModel()
                 {
