@@ -356,7 +356,7 @@
                     var personalisation = new Dictionary<string, dynamic>();
                     personalisation["name"] = newUser.FirstName;
                     personalisation["username"] = newUser.UserName;
-                    personalisation["password"] = userPasswordValidationToken.ValidateUrl;
+                    personalisation["password url"] = userPasswordValidationToken.ValidateUrl;
 
                     var emailRequest = new EmailRequest
                     {
