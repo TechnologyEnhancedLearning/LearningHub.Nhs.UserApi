@@ -749,15 +749,16 @@
         /// <param name="model">
         /// The model.
         /// </param>
+        /// <param name="timeoffset">The timeOffset.</param>
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
         [HttpPost]
         [AllowAnonymous]
         [Route("ForgotPassword")]
-        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model, [FromQuery] int? timeoffset)
         {
-            await this.ElfhUserService.SendForgotPasswordEmail(model.EmailAddress);
+            await this.ElfhUserService.SendForgotPasswordEmail(model.EmailAddress, timeoffset);
             return this.Ok(new ApiResponse(true));
         }
 
