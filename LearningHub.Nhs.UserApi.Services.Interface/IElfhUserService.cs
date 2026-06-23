@@ -335,13 +335,10 @@
         /// <param name="emailAddress">
         /// The email address.
         /// </param>
-        /// <param name="tzOffset">
-        /// The timeOffset.
-        /// </param>
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        Task SendForgotPasswordEmail(string emailAddress, int? tzOffset);
+        Task SendForgotPasswordEmail(string emailAddress);
 
         /// <summary>
         /// Sends email to user.

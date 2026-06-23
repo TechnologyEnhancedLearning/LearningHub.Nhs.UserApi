@@ -732,7 +732,7 @@
         }
 
         /// <inheritdoc/>
-        public async Task SendForgotPasswordEmail(string emailAddress, int? tzOffset)
+        public async Task SendForgotPasswordEmail(string emailAddress)
         {
             var user = this.elfhUserRepository.GetAll().SingleOrDefault(x => x.EmailAddress == emailAddress);
             if (user == null)
@@ -754,7 +754,6 @@
                 Recipient = user.EmailAddress,
                 TemplateId = this.settings.Value.GovNotifyTemplates.ForgottenUsernameOrPassword,
                 Personalisation = personalisation,
-                TimezoneOffset = tzOffset,
             };
 
             var client = this.openApiHttpClient.GetClient();
