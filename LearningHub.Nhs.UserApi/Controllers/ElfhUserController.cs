@@ -936,5 +936,17 @@
             await this.elfhUserService.UpdateMyAccountPersonalDetails(personalDetailsViewModel, this.CurrentUserId);
             return this.Ok();
         }
+
+        /// <summary>
+        /// Register a new user.
+        /// </summary>
+        /// <param name="registrationRequest">The registration request.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
+        [HttpPost]
+        [Route("SimplifiedRegisterUser")]
+        public async Task<IActionResult> SimplifiedRegisterUser([FromBody] SimplifiedRegistrationRequestViewModel registrationRequest)
+        {
+            return this.Ok(await this.registrationService.SimplifiedRegisterUser(registrationRequest));
+        }
     }
 }
