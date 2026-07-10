@@ -230,15 +230,15 @@
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         Task<PersonalDetailsViewModel> GetPersonalDetailsAsync(int currentUserId);
 
-            /// <summary>
-            /// The does email address exist async.
-            /// </summary>
-            /// <param name="emailAddress">
-            /// The email address.
-            /// </param>
-            /// <returns>
-            /// The <see cref="Task"/>.
-            /// </returns>
+        /// <summary>
+        /// The does email address exist async.
+        /// </summary>
+        /// <param name="emailAddress">
+        /// The email address.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
         Task<bool> DoesEmailAddressExistAsync(string emailAddress);
 
         /// <summary>
@@ -335,10 +335,13 @@
         /// <param name="emailAddress">
         /// The email address.
         /// </param>
+        /// <param name="tzOffset">
+        /// The timeOffset.
+        /// </param>
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        Task SendForgotPasswordEmail(string emailAddress);
+        Task SendForgotPasswordEmail(string emailAddress, int? tzOffset);
 
         /// <summary>
         /// Sends email to user.
@@ -528,5 +531,5 @@
         /// <param name="currentUserId">currentUserId.</param>
         /// <returns>The <see cref="Task"/>.</returns>
         Task UpdateMyAccountPersonalDetails(PersonalDetailsViewModel personalDetailsViewModel, int currentUserId);
-  }
+    }
 }

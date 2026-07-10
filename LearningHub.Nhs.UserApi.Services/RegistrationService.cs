@@ -363,6 +363,7 @@
                         Recipient = registrationRequest.EmailAddress,
                         TemplateId = this.settings.GovNotifyTemplates.NHSLearningHubRegistration,
                         Personalisation = personalisation,
+                        TimezoneOffset = registrationRequest.TimezoneOffset,
                     };
 
                     var client = this.openApiHttpClient.GetClient();
