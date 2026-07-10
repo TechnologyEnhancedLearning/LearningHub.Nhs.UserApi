@@ -51,5 +51,12 @@
         /// </param>
         /// <returns>The <see cref="Task"/>.</returns>
         Task<bool> GetEmailStatus(string emailAddress);
+
+        /// <summary>
+        /// The register user.
+        /// </summary>
+        /// <param name="registrationRequest">The registration request.</param>
+        /// <returns>The <see cref="LearningHubValidationResult"/>.</returns>
+        Task<LearningHubValidationResult> SimplifiedRegisterUser(SimplifiedRegistrationRequestViewModel registrationRequest);
     }
 }

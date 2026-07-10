@@ -14,5 +14,10 @@
         /// Gets or sets the NHSLearningHubRegistration ID.
         /// </summary>
         public string NHSLearningHubRegistration { get; set; }
+
+        /// <summary>
+        /// Gets or sets the NHSLearningHubRegistration ID.
+        /// </summary>
+        public string RegistrationEmailVerification { get; set; }
     }
 }

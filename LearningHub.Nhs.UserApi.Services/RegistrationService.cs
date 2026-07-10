@@ -461,6 +461,99 @@
             }
         }
 
+        /// <summary>
+        /// Simplified register user.
+        /// </summary>
+        /// <param name="registrationRequest">registrationRequest.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
+        public async Task<LearningHubValidationResult> SimplifiedRegisterUser(SimplifiedRegistrationRequestViewModel registrationRequest)
+        {
+            var retVal = await this.RegistrationValidateAsync(registrationRequest);
+            if (retVal.IsValid)
+            {
+                // Create new user
+                User newUser = new User()
+                {
+                    UserName = await this.userService.CreateUserNameAsync(0, null, registrationRequest.LastName),
+                    EmailAddress = registrationRequest.EmailAddress,
+                    FirstName = registrationRequest.FirstName,
+                    LastName = registrationRequest.LastName,
+                    AltEmailAddress = null,
+                    PreferredName = null,
+                    CountryId = null,
+                    RegionId = null,
+                    Active = true,
+                    PreferredTenantId = this.settings.LearningHubTenantId,
+                    LastLoginWizardCompleted = DateTimeOffset.Now,
+                    CreatedDate = DateTimeOffset.Now,
+                    RestrictToSso = registrationRequest.IsExternalUser,
+                };
+                int userId = await this.userRepository.CreateAsync(0, newUser);
+                retVal.CreatedId = userId;
+
+                // Add UserHistory entry
+                UserHistoryViewModel userHistory = new UserHistoryViewModel()
+                {
+                    UserId = userId,
+                    Detail = "User created by self-registration",
+                    UserHistoryTypeId = (int)UserHistoryType.SystemEvent,
+                };
+                var uhCreateResult = await this.userHistoryService.CreateAsync(userHistory, userId);
+
+                if (!uhCreateResult.IsValid)
+                {
+                    return uhCreateResult;
+                }
+
+                bool isBlueUserFromEmail = this.userGroupTypeInputValidationRepository.IsEmailValidForUserGroup(newUser.EmailAddress, 1070); // 1070 = e-LfH Standard User Type - Blue
+
+                // Add user to UserGroup
+                UserUserGroup userUserGroup = new UserUserGroup()
+                {
+                    UserId = userId,
+                    UserGroupId = isBlueUserFromEmail ? 1070 : 1170, // "1070 e-LfH Standard User Type - Blue" "1170 Public User Type"
+                };
+                await this.userUserGroupRepository.CreateAsync(userId, userUserGroup);
+
+                if (registrationRequest.IsExternalUser)
+                {
+                    var userExternalSystem = new ExternalSystemUser
+                    {
+                        UserId = userId,
+                        ExternalSystemId = registrationRequest.ExternalSystemId.Value,
+                    };
+
+                    await this.externalSystemUserRepository.CreateExternalSystemUserAsync(userExternalSystem);
+                }
+
+                if (registrationRequest.IsExternalUser == false)
+                {
+                    var expiryMinutes = (int)(await this.systemSettingRepository.GetByIdAsync((int)SystemSettingEnum.PasswordValidationExpiryUserDefault)).IntValue;
+                    UserPasswordValidationTokenExtended userPasswordValidationToken = this.GenerateUserPasswordValidationToken(expiryMinutes, userId);
+                    await this.userPasswordValidationTokenRepository.CreateAsync(userId, userPasswordValidationToken);
+
+                    var personalisation = new Dictionary<string, dynamic>();
+                    personalisation["name"] = newUser.FirstName;
+                    personalisation["verification_link"] = userPasswordValidationToken.ValidateUrl;
+
+                    var emailRequest = new EmailRequest
+                    {
+                        Recipient = registrationRequest.EmailAddress,
+                        TemplateId = this.settings.GovNotifyTemplates.RegistrationEmailVerification,
+                        Personalisation = personalisation,
+                    };
+
+                    var client = this.openApiHttpClient.GetClient();
+
+                    using var reqContent = new StringContent(JsonConvert.SerializeObject(emailRequest), Encoding.UTF8, "application/json");
+
+                    await client.PostAsync("GovNotifyMessage/SendEmail", reqContent).ConfigureAwait(false);
+                }
+            }
+
+            return retVal;
+        }
+
         private long ConvertFromIpAddressToInteger(string ipAddress)
         {
             byte[] bytes = IPAddress.Parse(ipAddress).GetAddressBytes();
@@ -477,6 +570,16 @@
         private async Task<LearningHubValidationResult> ValidateAsync(RegistrationRequestViewModel registrationRequest)
         {
             var registrationValidator = new RegistrationValidator();
+            var validationResult = await registrationValidator.ValidateAsync(registrationRequest);
+
+            var retVal = new LearningHubValidationResult(validationResult);
+
+            return retVal;
+        }
+
+        private async Task<LearningHubValidationResult> RegistrationValidateAsync(SimplifiedRegistrationRequestViewModel registrationRequest)
+        {
+            var registrationValidator = new SimplifiedRegistrationValidator();
             var validationResult = await registrationValidator.ValidateAsync(registrationRequest);
 
             var retVal = new LearningHubValidationResult(validationResult);
@@ -501,7 +604,7 @@
             };
             passwordValidationExpiryToken.ValidateUrl = this.settings.LearningHubUrl +
                                                             string.Format(
-                                                                "validate-password?token={0}&loctoken={1}",
+                                                                "validate-email?token={0}&loctoken={1}",
                                                                 HttpUtility.UrlEncode(userToken),
                                                                 HttpUtility.UrlEncode(passwordValidationExpiryToken.Lookup));
             passwordValidationExpiryToken.LogOnUrl = this.settings.LearningHubUrl + "account/logon";
