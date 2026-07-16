@@ -1,5 +1,6 @@
 namespace LearningHub.Nhs.UserApi
 {
+    using System.Net.Http;
     using AutoMapper;
     using elfhHub.Nhs.Models.Automapper;
     using IdentityServer4.AccessTokenValidation;
@@ -11,9 +12,11 @@ namespace LearningHub.Nhs.UserApi
     using LearningHub.Nhs.UserApi.Services.Interface;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Options;
     using ElfhMap = LearningHub.Nhs.UserApi.Repository.ElfhMap;
     using LHMap = LearningHub.Nhs.UserApi.Repository.LHMap;
@@ -28,13 +31,14 @@ namespace LearningHub.Nhs.UserApi
         /// </summary>
         /// <param name="services">The services.</param>
         /// <param name="configuration">The configuration.</param>
-        public static void AddMappings(this IServiceCollection services, IConfiguration configuration)
+        /// <param name="env">The IWebHostEnvironment.</param>
+        public static void AddMappings(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
         {
             services.AddLearningHubDBMappings(configuration);
 
             services.AddElfhDBMappings(configuration);
 
-            services.AddServices();
+            services.AddServices(configuration, env);
 
             services.AddAuthentication(configuration);
 
@@ -169,7 +173,7 @@ namespace LearningHub.Nhs.UserApi
             services.AddScoped<Repository.Interface.LH.IUserRepository, Repository.LH.UserRepository>();
         }
 
-        private static void AddServices(this IServiceCollection services)
+        private static void AddServices(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
         {
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<ICountryService, CountryService>();
@@ -195,6 +199,22 @@ namespace LearningHub.Nhs.UserApi
             services.AddScoped<IExternalSystemDeepLinkService, ExternalSystemDeepLinkService>();
             services.AddScoped<IExternalSystemService, ExternalSystemService>();
             services.AddScoped<IExternalSystemUserService, ExternalSystemUserService>();
+
+            services.Configure<OpenApiConfig>(configuration.GetSection("OpenApiConfig"));
+            if (env.IsDevelopment())
+            {
+                services.AddHttpClient<IOpenApiHttpClient, OpenApiHttpClient>()
+                    .ConfigurePrimaryHttpMessageHandler(
+                        () => new HttpClientHandler
+                        {
+                            ServerCertificateCustomValidationCallback =
+                                          HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
+                        });
+            }
+            else
+            {
+                services.AddHttpClient<IOpenApiHttpClient, OpenApiHttpClient>();
+            }
         }
 
         private static void AddAuthentication(this IServiceCollection services, IConfiguration configuration)
