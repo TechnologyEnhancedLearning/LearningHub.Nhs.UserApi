@@ -136,7 +136,8 @@
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        [HttpPut("{passwordCreateModel}")]
+        [HttpPut]
+        [Route("SetInitialUserPassword")]
         public async Task<IActionResult> SetInitialUserPassword([FromBody] PasswordCreateModel passwordCreateModel)
         {
             var result = await this.securityService.SetInitialPasswordAsync(passwordCreateModel);
