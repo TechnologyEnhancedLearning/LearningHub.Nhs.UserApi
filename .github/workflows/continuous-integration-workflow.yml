@@ -25,10 +25,10 @@ jobs:
       - name: Use NuGet 5.8
         uses: nuget/setup-nuget@v1  
         
-      - name: Use Node 12.19
+      - name: Use Node 16
         uses: actions/setup-node@v4
         with:
-           node-version: '20.19.0'
+           node-version: '16'
            
       - name: Install dependencies
         run: |
