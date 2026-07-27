@@ -28,6 +28,7 @@
   "devDependencies": {
     "@babel/core": "^7.27.3",
     "@babel/preset-env": "^7.27.2",
+    "@types/node": "^16.18.126",
     "babel-core": "^4.7.16",
     "babel-loader": "^8.2.2",
     "babel-preset-env": "^1.6.0",
@@ -39,7 +40,6 @@
     "sass-loader": "^11.0.1",
     "style-loader": "^2.0.0",
     "ts-loader": "^9.5.2,
-    "@types/node": "^16.18.126",
     "ts-node": "^10.2.0",
     "typescript": "^4.2.4",
     "webpack": "^5.99.9",
