@@ -18,8 +18,8 @@
     }
     var openAthensSignOnUrl = Url.Action("Login", "OpenAthens", new { returnUrl = authRequiredReturnUrl, invalidScope = false });
     var errorHasOccurred = !ViewData.ModelState.IsValid;
-    var separator = Model.LoginClientTemplate.ClientUrl.Contains("?") ? "&" : "?";
-    var loginUrl = $"https://{Model.LoginClientTemplate.ClientUrl}{separator}fallbackLogin=true";
+   var separator = Model.LoginClientTemplate.ClientUrl.Contains("?") ? "&" : "?";
+   var loginUrl = $"{ "https"}://{Model.LoginClientTemplate.ClientUrl}/Login";
 }
 
 <div class="nhsuk-width-container app-width-container">
