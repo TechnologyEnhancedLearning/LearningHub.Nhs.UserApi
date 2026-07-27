@@ -39,8 +39,8 @@
     "sass-loader": "^11.0.1",
     "style-loader": "^2.0.0",
     "ts-loader": "^9.5.2",
-    "ts-node": "^20.17.0",
-    "typescript": "^5.4.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
     "webpack": "^5.99.9",
     "webpack-cli": "^4.10.0",
     "webpack-dev-server": "^4.15.1"
