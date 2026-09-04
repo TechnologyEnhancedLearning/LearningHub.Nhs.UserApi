@@ -149,21 +149,21 @@
 
             if (this.ModelState.IsValid)
             {
-                // validate username/password
-                var loginResult = await this.UserService.AuthenticateUserAsync(model.Username.Trim(), model.Password.Trim());
-                int userId;
-                try
-                {
-                    userId = await this.UserService.GetUserIdByUserNameAsync(model.Username.Trim());
-                }
-                catch (Exception)
-                {
-                    userId = 0;
-                }
+                // validate email/password
+                var loginResult = await this.UserService.AuthenticateUserByEmailAsync(model.EmailAddress.Trim(), model.Password.Trim());
+                int userId = loginResult.UserId;
+                ////try
+                ////{
+                ////    userId = await this.UserService.GetUserIdByUserNameAsync(model.EmailAddress.Trim());
+                ////}
+                ////catch (Exception)
+                ////{
+                   /// userId = 0;
+                ////}
 
                 if (loginResult.IsAuthenticated)
                 {
-                    await this.SignInUser(userId, model.Username.Trim(), model.RememberLogin, context.Parameters["ext_referer"]);
+                    await this.SignInUser(userId, model.EmailAddress.Trim(), model.RememberLogin, context.Parameters["ext_referer"]);
 
                     if (context != null)
                     {
@@ -196,7 +196,7 @@
                 else if (userId > 0)
                 {
                     await this.UserService.AddLogonToUserHistory(
-                        $"Login failed for user {model.Username.Trim()}",
+                        $"Login failed for user {model.EmailAddress.Trim()}",
                         userId,
                         UserHistoryType.Logon,
                         false,
@@ -204,8 +204,8 @@
                         context.Parameters["ext_referer"]);
                 }
 
-                await this.Events.RaiseAsync(new UserLoginFailureEvent(model.Username.Trim(), loginResult.ErrorMessage));
-                this.ModelState.AddModelError(nameof(model.Username), "Enter your username again");
+                await this.Events.RaiseAsync(new UserLoginFailureEvent(model.EmailAddress.Trim(), loginResult.ErrorMessage));
+                this.ModelState.AddModelError(nameof(model.EmailAddress), "Enter your email again");
                 this.ModelState.AddModelError(nameof(model.Password), "Enter your password again");
                 this.ModelState.AddModelError(string.Empty, loginResult.ErrorMessage);
             }
@@ -364,7 +364,7 @@ showFormWithError:
                     {
                         EnableLocalLogin = local,
                         ReturnUrl = returnUrl,
-                        Username = context.LoginHint,
+                        EmailAddress = context.LoginHint,
                         LoginClientTemplate = loginClientTemplate,
                     };
 
@@ -414,7 +414,7 @@ showFormWithError:
                 AllowRememberLogin = loginClientTemplate?.AllowRememberLogin ?? AccountOptions.AllowRememberLogin,
                 EnableLocalLogin = allowLocal && AccountOptions.AllowLocalLogin,
                 ReturnUrl = returnUrl,
-                Username = context?.LoginHint,
+                EmailAddress = context?.LoginHint,
                 ExternalProviders = providers.ToArray(),
                 LoginClientTemplate = loginClientTemplate ?? new LoginClientTemplate(),
                 ClientId = context?.Client?.ClientId,
@@ -433,7 +433,7 @@ showFormWithError:
         private async Task<LoginViewModel> BuildLoginViewModelAsync(LoginInputModel model)
         {
             var vm = await this.BuildLoginViewModelAsync(model.ReturnUrl);
-            vm.Username = model.Username;
+            vm.EmailAddress = model.EmailAddress;
             vm.Password = model.Password;
             vm.RememberLogin = model.RememberLogin;
             return vm;

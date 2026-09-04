@@ -180,6 +180,11 @@
             return await this.elfhUserRepository.GetByUsernameAsync(userName, includeCollections);
         }
 
+        ////public async Task<User> GetByUserEmailAsync(string userName, UserIncludeCollectionsEnum[] includeCollections = null)
+        ////{
+        ////    return await this.elfhUserRepository.GetByUsernameAsync(userName, includeCollections);
+        ////}
+
         /// <summary>
         /// The get user id by username async.
         /// </summary>
@@ -194,6 +199,12 @@
         public async Task<UserAuthenticateDto> GetUserDetailForAuthenticateAsync(string userName)
         {
             return await this.elfhUserRepository.GetUserDetailForAuthentication(userName);
+        }
+
+        /// <inheritdoc/>
+        public async Task<UserAuthenticateDto> GetUserDetailForAuthenticateByEmailAsync(string emailAddress)
+        {
+            return await this.elfhUserRepository.GetUserDetailForAuthenticationByEmail(emailAddress);
         }
 
         /// <inheritdoc/>
@@ -744,10 +755,21 @@
             UserPasswordValidationTokenExtended userPasswordValidationToken = this.GenerateUserPasswordValidationToken(expiryMinutes, user.Id);
             await this.userPasswordValidationTokenRepository.CreateAsync(user.Id, userPasswordValidationToken);
 
-            var personalisation = new Dictionary<string, dynamic>();
-            personalisation["name"] = user.FirstName;
-            personalisation["username"] = user.UserName;
-            personalisation["new password"] = userPasswordValidationToken.ValidateUrl;
+            string websiteEmailsFrom = (await this.tenantSmtpRepository.GetByIdAsync(this.settings.Value.LearningHubTenantId)).From;
+            EmailTemplate emailTemplate = await this.emailTemplateRepository.GetByTypeAndTenantAsync((int)EmailTemplateTypeEnum.AdminPasswordValidateEmail, this.settings.Value.LearningHubTenantId);
+            string bodyText = emailTemplate.Body;
+            bodyText = bodyText.Replace("[FullName]", (user.FirstName + " " + user.LastName).ToTitleCase());
+            bodyText = bodyText.Replace("[FirstName]", user.FirstName.ToTitleCase());
+            bodyText = bodyText.Replace("[EmailAddress]", user.EmailAddress);
+            bodyText = bodyText.Replace("[PasswordValidateUrl]", userPasswordValidationToken.ValidateUrl);
+            bodyText = bodyText.Replace("[TimeLimit]", (expiryMinutes / 60).ToString() + " hours");
+            bodyText = bodyText.Replace("[TenantUrl]", this.settings.Value.LearningHubUrl);
+
+            Tenant tenant = await this.tenantRepository.GetByIdAsync(this.settings.Value.LearningHubTenantId);
+            if (!string.IsNullOrEmpty(tenant.SupportFormUrl))
+            {
+                bodyText = bodyText.Replace("[SupportFormUrl]", tenant.SupportFormUrl);
+            }
 
             var emailRequest = new EmailRequest
             {

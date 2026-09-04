@@ -23,65 +23,48 @@
 }
 
 <div class="nhsuk-width-container app-width-container">
-    <div class="nhsuk-grid-row">
-        <div class="nhsuk-grid-column-full nhsuk-u-padding-top-7 nhsuk-u-padding-bottom-5">
-            @if (Model.EnableLocalLogin)
-            {
-                @if (errorHasOccurred)
-                {
-                    <vc:error-summary order-of-property-names="@(new[] { nameof(Model.Password),nameof(Model.Username) })" />
-                }
-                @if (Model.ClientId == "learninghubadmin")
-                {
-                    <h1>Sign in to the Learning Hub as an Administrator</h1>
-                    <h2>Login with your Learning Hub or elfh credentials</h2>
-                    <div class="nhsuk-grid-row">
-                        <div class="nhsuk-grid-column-full">
-                            <div class="nhsuk-u-reading-width">
-                                <div>
-                                    <p>
-                                        Please note that if you login to either the elfh Hub or Learning Hub from an external organisation using Single Sign On (SSO),
-                                        please navigate back to your organisation and re-attempt logging in from there.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                }
-                else if (Model.ClientId == "learninghubwebclient")
-                {
-                    <h1>Access your Learning Hub account</h1>
-                    <h2>Login with your Learning Hub or elfh credentials</h2>
-                    <div class="nhsuk-grid-row">
-                        <div class="nhsuk-grid-column-full">
-                            <div class="nhsuk-u-reading-width">
-                                <div>
-                                    <p>
-                                        Please note that if you login to either the elfh Hub or Learning Hub from an external organisation using Single Sign On (SSO),
-                                        please navigate back to your organisation and re-attempt logging in from there.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                }
-                else if (Model.ClientId == "digitallearningsolutions")
-                {
-                    <h1>Login with your Learning Hub account</h1>
-                }
-                <form class="nhsuk-u-margin-bottom-2" asp-controller="Account" asp-action="Login" method="post">
-                    <input type="hidden" asp-for="ReturnUrl" />
+  <div class="nhsuk-grid-row">
+    <div class="nhsuk-grid-column-full nhsuk-u-padding-top-7 nhsuk-u-padding-bottom-5">
+      @if (Model.EnableLocalLogin)
+      {
+        @if (errorHasOccurred)
+        {
+          <vc:error-summary order-of-property-names="@(new[] { nameof(Model.Password),nameof(Model.EmailAddress) })" />
+        }
+        @if (Model.ClientId == "learninghubadmin")
+        {
+          <h1>Sign in to the Learning Hub as an Administrator</h1>
+        }
+        else
+        {
+          <h1>Access your Learning Hub account</h1>
+        }
+        <h2>Login with your Learning Hub or elfh credentials</h2>
+        <div class="nhsuk-grid-row">
+          <div class="nhsuk-grid-column-full">
+            <div class="nhsuk-u-reading-width">
+              <div>
+                <p>
+                  Please note that if you login to either the elfh Hub or Learning Hub from an external organisation using Single Sign On (SSO),
+                  please navigate back to your organisation and re-attempt logging in from there.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <form class="nhsuk-u-margin-bottom-2" asp-controller="Account" asp-action="Login" method="post">
+          <input type="hidden" asp-for="ReturnUrl" />
 
-                    <vc:text-input asp-for="Username"
-                                   label="Enter your username"
-                                   populate-with-current-value="true"
-                                   type="text"
-                                   spell-check="false"
-                                   hint-text="A username is different to an email address"
-                                   autocomplete="Username"
-                                   css-class="nhsuk-u-width-one-half"
-                                   required="true"
-                                   required-client-side-error-message="You need to enter your username" />
+                    <vc:text-input asp-for="EmailAddress"
+                       label="Enter your email"
+                       populate-with-current-value="true"
+                       type="text"
+                       spell-check="false"
+                       hint-text=""
+                       autocomplete="EmailAddress"
+                       css-class="nhsuk-u-width-one-half"
+                       required="true"
+                       required-client-side-error-message="You need to enter your email" />
 
                     <vc:text-input asp-for="Password"
                                    label="Enter your password"
@@ -94,60 +77,47 @@
                                    required="true"
                                    required-client-side-error-message="You need to enter your password" />
 
-                    <button class="nhsuk-button" type="submit">Continue</button>
-                </form>
-                @if (Model.ClientId == "learninghubwebclient" || Model.ClientId == "digitallearningsolutions")
-                {
-                    <div class="nhsuk-grid-row">
-                        <div class="nhsuk-grid-column-full">
-                            <div class="nhsuk-u-reading-width">
-                                <div>
-                                    <h3>
-                                        Problems signing in
-                                    </h3>
-                                    @if (Model.LoginClientTemplate.UseForgottenPassword)
-                                    {
-                                        <p class="nhsuk-u-margin-bottom-2">
-                                            <a href="@($"https://{Model.LoginClientTemplate.ClientUrl}/{Model.LoginClientTemplate.ForgottenPasswordRelativeUrl}")">Forgotten username or password</a>
-                                        </p>
-                                    }
-                                    @if (Model.LoginClientTemplate.UseRegister)
-                                    {
-                                        <p>
-                                            <a href="@($"https://{Model.LoginClientTemplate.ClientUrl}/{Model.LoginClientTemplate.RegisterAccountRelativeUrl}")">Create new account</a>
-                                        </p>
-                                    }
-                                    @if (Model.ClientId == "digitallearningsolutions")
-                                    {
-                                        <p>
-                                            <a href="@loginUrl"
-                                               class="nhsuk-button nhsuk-button--secondary">
-                                                Login to your DLS account
-                                            </a>
-                                        </p>
-                                    }
-                                    else
-                                    {
-                                        <p>
-                                            <a asp-controller="Account" asp-action="OpenAthens" asp-route-clientUrl=@($"https://{Model.LoginClientTemplate.ClientUrl}") asp-route-returnUrl=" @authRequiredReturnUrl" asp-route-invalidScope=false class="nhsuk-button nhsuk-button--secondary">Continue with OpenAthens</a>
-                                        </p>
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                }
-            }
-
-            @if (!Model.EnableLocalLogin && !Model.VisibleExternalProviders.Any())
-            {
-                <div class="nhsuk-grid-row">
-                    <div class="nhsuk-grid-column-full">
-                        <div>
-                            <h1>
-                                You cannot reach the Learning Hub this way
-                            </h1>
-                            <p>You can visit our <a href="@($"https://{Model.LoginClientTemplate.ClientUrl}")">home page</a> to login or <a href="@($"https://{Model.LoginClientTemplate.ClientUrl}/{Model.LoginClientTemplate.RegisterAccountRelativeUrl}")">create an account.</a></p>
+          <button class="nhsuk-button" type="submit">Continue</button>
+        </form>
+        @if (Model.ClientId == "learninghubwebclient")
+        {
+          <div class="nhsuk-grid-row">
+            <div class="nhsuk-grid-column-full">
+              <div class="nhsuk-u-reading-width">
+                <div>
+                  <h3>
+                    Problems signing in
+                  </h3>
+                  @if (Model.LoginClientTemplate.UseForgottenPassword)
+                  {
+                    <p class="nhsuk-u-margin-bottom-2">
+                      <a href="@($"https://{Model.LoginClientTemplate.ClientUrl}/{Model.LoginClientTemplate.ForgottenPasswordRelativeUrl}")">Forgotten password</a>
+                    </p>
+                  }
+                  @if (Model.LoginClientTemplate.UseRegister)
+                  {
+                    <p>
+                      <a href="@($"https://{Model.LoginClientTemplate.ClientUrl}/{Model.LoginClientTemplate.RegisterAccountRelativeUrl}")">Create new account</a>
+                    </p>
+                  }
+                  <p>
+                    <a asp-controller="Account" asp-action="OpenAthens" asp-route-clientUrl=@($"https://{Model.LoginClientTemplate.ClientUrl}") asp-route-returnUrl=" @authRequiredReturnUrl" asp-route-invalidScope=false class="nhsuk-button nhsuk-button--secondary">Continue with OpenAthens</a>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      }
+      @if (!Model.EnableLocalLogin && !Model.VisibleExternalProviders.Any())
+      {
+        <div class="nhsuk-grid-row">
+          <div class="nhsuk-grid-column-full">
+              <div>
+                <h1>
+                  You cannot reach the Learning Hub this way
+                </h1>
+                <p>You can visit our <a href="@($"https://{Model.LoginClientTemplate.ClientUrl}")">home page</a> to login or <a href="@($"https://{Model.LoginClientTemplate.ClientUrl}/{Model.LoginClientTemplate.RegisterAccountRelativeUrl}")">create an account.</a></p>
 
                             <p>If you need assistance registering for an account please <a href="@ViewBag.SupportFormUrl" target="_blank">contact support.</a> </p>
                         </div>

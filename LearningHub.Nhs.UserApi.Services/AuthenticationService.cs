@@ -3,6 +3,7 @@
     using System;
     using System.Linq;
     using System.Threading.Tasks;
+    using elfhHub.Nhs.Models.Common;
     using LearningHub.Nhs.Models.Common;
     using LearningHub.Nhs.UserApi.Services.Interface;
     using LearningHub.Nhs.UserApi.Shared;
@@ -44,6 +45,25 @@
         public async Task<LoginResultInternal> AuthenticateAsync(Login login)
         {
             var loginResult = await this.CheckUserCredentialsAsync(login);
+
+            if (loginResult.IsAuthenticated)
+            {
+                await this.elfhUserService.RecordSuccessfulSigninAsync(loginResult.UserId);
+                this.logger.LogInformation("User {lhuserid} has successfully authenticated.", loginResult.UserId);
+            }
+            else if (loginResult.UserId > 0)
+            {
+                await this.elfhUserService.RecordUnsuccessfulSigninAsync(loginResult.UserId);
+                this.logger.LogWarning("User {lhuserid} has unsuccessfully authenticated. {errMsg}", loginResult.UserId, loginResult.ErrorMessage);
+            }
+
+            return loginResult;
+        }
+
+        /// <inheritdoc/>
+        public async Task<LoginResultInternal> AuthenticateByEmailAsync(LoginModel login)
+        {
+            var loginResult = await this.ValidateUserCredentialsAsync(login);
 
             if (loginResult.IsAuthenticated)
             {
@@ -120,6 +140,95 @@
             var errMsgs = new
             {
                 userPassIncorrect = "The username or password is incorrect",
+                accountNotActive = "This account is not active. Please contact the support team if you need help.",
+                openAthensSignIn =
+                    "If yours is an OpenAthens Account, you must login via the \"Sign on with OpenAthens\" option and not directly here.",
+                restrictedLogin =
+                    "This account has a restricted login. Please log in via your organisations website instead.",
+                oneMoreChance = "You have one more chance to enter correct answers before your account becomes locked!",
+                accountLocked = "This account is locked. Please contact the support team if you need help.",
+            };
+
+            if (user == null)
+            {
+                loginResult.ErrorMessage = errMsgs.userPassIncorrect;
+                loginResult.IsAuthenticated = false;
+            }
+            else if (!user.Active || user.ActiveFromDate > DateTimeOffset.Now || user.ActiveToDate < DateTimeOffset.Now)
+            {
+                loginResult.ErrorMessage = errMsgs.accountNotActive;
+                loginResult.IsAuthenticated = false;
+            }
+            else if (user.RestrictToSso)
+            {
+                if (user.OpenAthensUserAttributeId.HasValue && user.OpenAthensUserAttributeId.Value > 0)
+                {
+                    loginResult.ErrorMessage = errMsgs.openAthensSignIn;
+                }
+                else
+                {
+                    loginResult.ErrorMessage = errMsgs.restrictedLogin;
+                }
+
+                loginResult.IsAuthenticated = false;
+            }
+            else if (user.PasswordLifeCounter >= this.settings.MaxLogonAttempts)
+            {
+                loginResult.ErrorMessage = errMsgs.accountLocked;
+                loginResult.IsAuthenticated = false;
+            }
+            else
+            {
+                if (this.passwordManagerService.Base64MD5HashDigest(login.Password) == user.PasswordHash)
+                {
+                    loginResult.ErrorMessage = string.Empty;
+                    loginResult.IsAuthenticated = true;
+                    loginResult.UserName = user.UserName;
+                }
+                else
+                {
+                    // Temporarily increment password counter as password check failed.
+                    // This will be committed in a later operation to the DB.
+                    user.PasswordLifeCounter++;
+                    if (user.PasswordLifeCounter >= this.settings.MaxLogonAttempts)
+                    {
+                        loginResult.ErrorMessage = errMsgs.accountLocked;
+                    }
+                    else if (user.PasswordLifeCounter == this.settings.MaxLogonAttempts - 1)
+                    {
+                        loginResult.ErrorMessage = errMsgs.oneMoreChance;
+                    }
+                    else
+                    {
+                        loginResult.ErrorMessage = errMsgs.userPassIncorrect;
+                    }
+
+                    loginResult.IsAuthenticated = false;
+                }
+            }
+
+            loginResult.UserId = user?.Id ?? 0;
+
+            return loginResult;
+        }
+
+        /// <summary>
+        /// The validate user credentials.
+        /// </summary>
+        /// <param name="login">
+        /// The login.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        public async Task<LoginResultInternal> ValidateUserCredentialsAsync(LoginModel login)
+        {
+            var user = await this.elfhUserService.GetUserDetailForAuthenticateByEmailAsync(login.EmailAddress);
+
+            LoginResultInternal loginResult = new LoginResultInternal();
+            var errMsgs = new
+            {
+                userPassIncorrect = "The Email or password is incorrect",
                 accountNotActive = "This account is not active. Please contact the support team if you need help.",
                 openAthensSignIn =
                     "If yours is an OpenAthens Account, you must login via the \"Sign on with OpenAthens\" option and not directly here.",

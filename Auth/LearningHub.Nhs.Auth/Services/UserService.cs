@@ -109,6 +109,28 @@
         }
 
         /// <inheritdoc/>
+        public async Task<int> GetUserIdByUserEmailAsync(string emailAddress)
+        {
+            var client = this.UserApiHttpClient.GetClient();
+
+            // In asp.net " " (space) in the url PATH segment is considered invalid url,
+            // it has to be encoded properly, "HttpUtility.UrlEncode" does not encode space character correctly
+            // in the url PATH, below added fix for that
+            var request = $"ElfhUser/GetUserIdByUsername/{HttpUtility.UrlEncode(emailAddress)}";
+            var response = await client.GetAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var userId = int.Parse(await response.Content.ReadAsStringAsync());
+                return userId;
+            }
+            else
+            {
+                throw new Exception("Invalid username!");
+            }
+        }
+
+        /// <inheritdoc/>
         public async Task<UserBasic> GetUserByOAUserIdAsync(string oaUserId)
         {
             UserBasic viewmodel = null;
@@ -152,6 +174,32 @@
                 {
                     var result = await response.Content.ReadAsStringAsync();
                     viewmodel = JsonConvert.DeserializeObject<LoginResult>(result);
+                }
+            }
+
+            return viewmodel;
+        }
+
+        /// <inheritdoc/>
+        public async Task<LoginResultInternal> AuthenticateUserByEmailAsync(string emailAddress, string password)
+        {
+            LoginResultInternal viewmodel = null;
+
+            var client = this.UserApiHttpClient.GetClient();
+
+            var request = "Authentication/AuthenticateByEmail";
+
+            var login = new { EmailAddress = emailAddress, Password = password };
+            using (HttpContent httpContent = new StringContent(JsonConvert.SerializeObject(login), Encoding.UTF8))
+            {
+                httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                var response = await client.PostAsync(request, httpContent);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await response.Content.ReadAsStringAsync();
+                    viewmodel = JsonConvert.DeserializeObject<LoginResultInternal>(result);
                 }
             }
 

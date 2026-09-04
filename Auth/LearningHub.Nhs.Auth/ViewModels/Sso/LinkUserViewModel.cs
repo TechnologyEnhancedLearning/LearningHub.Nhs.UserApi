@@ -10,8 +10,10 @@
         /// <summary>
         /// Gets or sets the user name.
         /// </summary>
-        [Required(ErrorMessage = "Enter your username")]
-        public string Username { get; set; }
+        [DataType(DataType.EmailAddress)]
+        [Required(ErrorMessage = "Enter your email address")]
+        [EmailAddress(ErrorMessage = "Enter an email in the correct format, like name@example.com")]
+        public string EmailAddress { get; set; }
 
         /// <summary>
         /// Gets or sets the password.
@@ -34,7 +36,7 @@
             vm.ShowLinkUserForm = true;
             vm.SsoLinkUserForm = new LinkUserViewModel
             {
-                Username = this.Username,
+                EmailAddress = this.EmailAddress,
                 Password = this.Password,
             };
         }
