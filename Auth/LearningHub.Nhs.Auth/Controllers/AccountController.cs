@@ -88,7 +88,7 @@
                 return this.RedirectToAction("Challenge", "External", new { provider = vm.ExternalLoginScheme, returnUrl });
             }
 
-            if ((vm.ClientId == "learninghubwebclient") || (vm.ClientId == "learninghubadmin"))
+            if ((vm.ClientId == "learninghubwebclient") || (vm.ClientId == "learninghubadmin") || (vm.ClientId == "digitallearningsolutions"))
             {
                 this.ViewData["Layout"] = vm.LoginClientTemplate.LayoutPath;
                 this.ViewBag.SupportFormUrl = this.webSettings.SupportForm;
@@ -214,7 +214,7 @@ showFormWithError:
 
 // something went wrong, show form with error
             var vm = await this.BuildLoginViewModelAsync(model);
-            if ((vm.ClientId == "learninghubwebclient") || (vm.ClientId == "learninghubadmin"))
+            if ((vm.ClientId == "learninghubwebclient") || (vm.ClientId == "learninghubadmin") || (vm.ClientId == "digitallearningsolutions"))
             {
                 this.ViewData["Layout"] = vm.LoginClientTemplate.LayoutPath;
                 this.ViewBag.SupportFormUrl = this.webSettings.SupportForm;

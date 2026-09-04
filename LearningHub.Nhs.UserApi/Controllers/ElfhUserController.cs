@@ -763,15 +763,16 @@
         /// <param name="model">
         /// The model.
         /// </param>
+        /// <param name="timeoffset">The timeOffset.</param>
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
         [HttpPost]
         [AllowAnonymous]
         [Route("ForgotPassword")]
-        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model, [FromQuery] int? timeoffset)
         {
-            await this.ElfhUserService.SendForgotPasswordEmail(model.EmailAddress);
+            await this.ElfhUserService.SendForgotPasswordEmail(model.EmailAddress, timeoffset);
             return this.Ok(new ApiResponse(true));
         }
 
@@ -949,6 +950,18 @@
         {
             await this.elfhUserService.UpdateMyAccountPersonalDetails(personalDetailsViewModel, this.CurrentUserId);
             return this.Ok();
+        }
+
+        /// <summary>
+        /// Register a new user.
+        /// </summary>
+        /// <param name="registrationRequest">The registration request.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
+        [HttpPost]
+        [Route("SimplifiedRegisterUser")]
+        public async Task<IActionResult> SimplifiedRegisterUser([FromBody] SimplifiedRegistrationRequestViewModel registrationRequest)
+        {
+            return this.Ok(await this.registrationService.SimplifiedRegisterUser(registrationRequest));
         }
     }
 }
