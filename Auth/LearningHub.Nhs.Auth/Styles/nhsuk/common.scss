@@ -68,3 +68,56 @@
 .field-validation-valid {
     display: none !important;
 }
+/*Notification Banner*/
+.nhsuk-warning-banner {
+    border: 4px solid $nhsuk-blue;
+    background-color: $nhsuk-white;
+    margin-bottom: 32px;
+}
+
+.nhsuk-warning-banner__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: $nhsuk-blue;
+    padding: 12px 16px;
+}
+
+.nhsuk-warning-banner__title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: $nhsuk-white;
+}
+
+.nhsuk-warning-banner__content {
+    padding: 16px;
+}
+
+.nhsuk-warning-banner__heading {
+    margin: 0;
+    font-size: 19px;
+    line-height: 1.5;
+    color: #212b32;
+}
+
+.nhsuk-warning-banner__close {
+    text-decoration: none;
+    background: transparent;
+    border: none;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #212b32;
+    line-height: 1;
+}
+
+.nhsuk-warning-banner__close:hover {
+    opacity: 0.7;
+}
+
+.nhsuk-warning-banner__close:focus {
+    outline: 4px solid #ffb81c;
+    outline-offset: 2px;
+}
+/*Notification Banner*/

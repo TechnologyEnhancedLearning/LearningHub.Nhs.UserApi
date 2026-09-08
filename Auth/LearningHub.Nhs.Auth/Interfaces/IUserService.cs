@@ -93,6 +93,13 @@
         Task<UserBasic> GetUserByOAUserIdAsync(string oaUserId);
 
         /// <summary>
+        /// The HasMultipleUsersForEmailAsync.
+        /// </summary>
+        /// <param name="emailAddress">Email Address.</param>
+        /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
+        Task<bool> HasMultipleUsersForEmailAsync(string emailAddress);
+
+        /// <summary>
         /// The get user role async.
         /// </summary>
         /// <param name="id">

@@ -74,7 +74,7 @@
             UserBasicViewModel viewmodel = null;
 
             var client = this.UserApiHttpClient.GetClient();
-            var request = $"ElfhUser/GetByUsername/{username}";
+            var request = $"ElfhUser/GetByUsername/{HttpUtility.UrlEncode(username).Replace("+", "%20")}";
             var response = await client.GetAsync(request);
 
             if (response.IsSuccessStatusCode)
@@ -130,6 +130,32 @@
             }
 
             return viewmodel;
+        }
+
+        /// <inheritdoc/>
+        public async Task<bool> HasMultipleUsersForEmailAsync(string emailAddress)
+        {
+            var request = $"ElfhUser/HasMultipleUsersForEmail/{emailAddress}";
+            if (string.IsNullOrWhiteSpace(emailAddress))
+            {
+                throw new Exception("No Email given to check.");
+            }
+
+            var client = this.UserApiHttpClient.GetClient();
+            var response = await client.GetAsync(request).ConfigureAwait(false);
+            var hasMultipleUsers = false;
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                hasMultipleUsers = bool.Parse(result);
+            }
+            else if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+            {
+                throw new Exception("AccessDenied");
+            }
+
+            return hasMultipleUsers;
         }
 
         /// <inheritdoc/>
