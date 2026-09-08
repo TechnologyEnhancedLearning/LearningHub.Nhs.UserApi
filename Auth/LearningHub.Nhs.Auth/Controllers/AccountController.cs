@@ -17,12 +17,14 @@
     using LearningHub.Nhs.Auth.Extensions;
     using LearningHub.Nhs.Auth.Filters;
     using LearningHub.Nhs.Auth.Interfaces;
+    using LearningHub.Nhs.Auth.Models;
     using LearningHub.Nhs.Auth.Models.Account;
     using LearningHub.Nhs.Caching;
     using LearningHub.Nhs.Models.Common;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
 
@@ -38,6 +40,7 @@
         private readonly LearningHubAuthConfig authConfig;
         private readonly WebSettings webSettings;
         private readonly ILogger logger;
+        private string emailBasedAuthenticationPhase1;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountController"/> class.
@@ -50,7 +53,8 @@
         /// <param name="webSettings">webSettings parameter.</param>
         /// <param name="logger">ILogger instance.</param>
         /// <param name="authConfig">Auth service config.</param>
-        /// <param name="cacheService">Cacje service config.</param>
+        /// <param name="cacheService">Cache service config.</param>
+        /// <param name="config">Config service config.</param>
         public AccountController(
             IIdentityServerInteractionService interaction,
             IClientStore clientStore,
@@ -60,7 +64,8 @@
             WebSettings webSettings,
             ILogger<AccountController> logger,
             IOptions<LearningHubAuthConfig> authConfig,
-            ICacheService cacheService)
+            ICacheService cacheService,
+            IConfiguration config)
             : base(userService, events, clientStore, webSettings, cacheService)
         {
             this.interaction = interaction;
@@ -68,6 +73,7 @@
             this.authConfig = authConfig?.Value;
             this.webSettings = webSettings;
             this.logger = logger;
+            this.emailBasedAuthenticationPhase1 = config["FeatureManagement:EmailBasedAuthenticationPhase1"];
         }
 
         /// <summary>
@@ -152,9 +158,11 @@
                 // validate username/password
                 var loginResult = await this.UserService.AuthenticateUserAsync(model.Username.Trim(), model.Password.Trim());
                 int userId;
+                UserBasicViewModel userBasicViewModel = null;
                 try
                 {
-                    userId = await this.UserService.GetUserIdByUserNameAsync(model.Username.Trim());
+                    userBasicViewModel = await this.UserService.GetUserByUserNameAsync(model.Username.Trim());
+                    userId = userBasicViewModel.Id;
                 }
                 catch (Exception)
                 {
@@ -174,8 +182,16 @@
                             return this.View("Redirect", new RedirectViewModel { RedirectUrl = model.ReturnUrl });
                         }
 
-                        // we can trust model.ReturnUrl since GetAuthorizationContextAsync returned non-null
-                        return this.Redirect(model.ReturnUrl);
+                        if (Convert.ToBoolean(this.emailBasedAuthenticationPhase1))
+                        {
+                            var hasMultipleUsers = await this.UserService.HasMultipleUsersForEmailAsync(userBasicViewModel.EmailAddress);
+                            return this.View("LoginChangeAwareness", new UserEmailViewModel { Email = userBasicViewModel.EmailAddress, HasMultipleUsers = hasMultipleUsers, RedirectUrl = model.ReturnUrl, MyAccountUrl = this.WebSettings.LearningHubWebClient + "MyAccount/ChangePersonalDetails" });
+                        }
+                        else
+                        {
+                            // we can trust model.ReturnUrl since GetAuthorizationContextAsync returned non-null
+                            return this.Redirect(model.ReturnUrl);
+                        }
                     }
 
                     // request for a local page
