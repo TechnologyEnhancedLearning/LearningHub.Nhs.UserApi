@@ -37,6 +37,27 @@
         Task<LoginResultInternal> AuthenticateSsoUserAsync(int userId, int externalSystemId, string clientCode);
 
         /// <summary>
+        /// The authenticate user async.
+        /// </summary>
+        /// <param name="emailAddress">
+        /// The username.
+        /// </param>
+        /// <param name="password">
+        /// The password.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        Task<LoginResultInternal> AuthenticateUserByEmailAsync(string emailAddress, string password);
+
+        /// <summary>
+        /// GetUserIdByUserEmailAsync.
+        /// </summary>
+        /// <param name="emailAddress">the emailAddress.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
+        Task<int> GetUserIdByUserEmailAsync(string emailAddress);
+
+        /// <summary>
         /// The get user by user name async.
         /// </summary>
         /// <param name="username">

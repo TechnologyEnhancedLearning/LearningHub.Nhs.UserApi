@@ -68,11 +68,11 @@
                 {
                     <h1>Login with your Learning Hub account</h1>
                 }
-                <form class="nhsuk-u-margin-bottom-2" asp-controller="Account" asp-action="Login" method="post">
+                <form class="nhsuk-u-margin-bottom-2" asp-controller="Account" asp-action="Login" method="post" id="login-form">
                     <input type="hidden" asp-for="ReturnUrl" />
 
-                    <vc:text-input asp-for="Username"
-                                   label="Enter your username"
+                    <vc:text-input asp-for="Username"                
+                                   label="@(Model.EmailBasedAuthenticationPhase2 ? "Enter your email address" : "Enter your username")"
                                    populate-with-current-value="true"
                                    type="text"
                                    spell-check="false"

@@ -1,6 +1,7 @@
 ﻿namespace LearningHub.Nhs.UserApi.Services.Interface
 {
     using System.Threading.Tasks;
+    using elfhHub.Nhs.Models.Common;
     using LearningHub.Nhs.Models.Common;
     using Login = elfhHub.Nhs.Models.Common.Login;
 
@@ -24,6 +25,13 @@
         Task<LoginResultInternal> CheckUserCredentialsSsoAsync(int userId);
 
         /// <summary>
+        /// The authenticate async.
+        /// </summary>
+        /// <param name="login">The login.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
+        Task<LoginResultInternal> AuthenticateByEmailAsync(LoginModel login);
+
+        /// <summary>
         /// The check user credentials.
         /// </summary>
         /// <param name="login">
@@ -33,5 +41,16 @@
         /// The <see cref="Task"/>.
         /// </returns>
         Task<LoginResultInternal> CheckUserCredentialsAsync(Login login);
+
+        /// <summary>
+        /// The check user credentials.
+        /// </summary>
+        /// <param name="login">
+        /// The login.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        Task<LoginResultInternal> ValidateUserCredentialsAsync(LoginModel login);
     }
 }

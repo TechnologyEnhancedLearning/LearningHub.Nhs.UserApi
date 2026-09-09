@@ -24,5 +24,10 @@
         /// Gets or sets the My account url.
         /// </summary>
         public string MyAccountUrl { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Username.
+        /// </summary>
+        public string UserName { get; set; }
     }
 }
