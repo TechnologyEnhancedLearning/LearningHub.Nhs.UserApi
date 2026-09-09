@@ -42,6 +42,7 @@
         private readonly ILogger logger;
         private string emailBasedAuthenticationPhase1;
         private bool emailBasedAuthenticationPhase2;
+        private bool emailBasedAuthenticationPhase3;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountController"/> class.
@@ -76,6 +77,7 @@
             this.logger = logger;
             this.emailBasedAuthenticationPhase1 = config["FeatureManagement:EmailBasedAuthenticationPhase1"];
             this.emailBasedAuthenticationPhase2 = Convert.ToBoolean(config["FeatureManagement:EmailBasedAuthenticationPhase2"]);
+            this.emailBasedAuthenticationPhase3 = Convert.ToBoolean(config["FeatureManagement:EmailBasedAuthenticationPhase3"]);
         }
 
         /// <summary>
@@ -164,25 +166,42 @@
                 bool isUserNameLogin = false;
                 try
                 {
-                    if (this.emailBasedAuthenticationPhase2)
+                    var username = model.Username?.Trim();
+                    var password = model.Password?.Trim();
+
+                    if (Convert.ToBoolean(this.emailBasedAuthenticationPhase1))
                     {
-                        if (model.Username.Contains('@'))
+                        // Phase 1: Username/password authentication
+                        loginResult = await this.UserService.AuthenticateUserAsync(username, password);
+
+                        userBasicViewModel = await this.UserService.GetUserByUserNameAsync(username);
+                        userId = userBasicViewModel.Id;
+                        isUserNameLogin = true;
+                    }
+                    else if (this.emailBasedAuthenticationPhase2 || this.emailBasedAuthenticationPhase3)
+                    {
+                        // Phase 2/3: Support both username/password and email/password
+                        if (username.Contains('@'))
                         {
-                            // validate email/password
-                            var loginResultInternal = await this.UserService.AuthenticateUserByEmailAsync(model.Username.Trim(), model.Password.Trim());
+                            var loginResultInternal = await this.UserService.AuthenticateUserByEmailAsync(username, password);
                             userId = loginResultInternal.UserId;
                             loginResult = loginResultInternal;
                         }
                         else
                         {
-                            // validate username/password
-                            loginResult = await this.UserService.AuthenticateUserAsync(model.Username.Trim(), model.Password.Trim());
+                            loginResult = await this.UserService.AuthenticateUserAsync(username, password);
 
-                            userBasicViewModel = await this.UserService.GetUserByUserNameAsync(model.Username.Trim());
+                            userBasicViewModel = await this.UserService.GetUserByUserNameAsync(username);
                             userId = userBasicViewModel.Id;
                             isUserNameLogin = true;
                         }
                     }
+                    ////else if (this.emailBasedAuthenticationPhase4)
+                    ////{
+                    ////    // Phase 4: Email/password authentication only
+                    ////    loginResult = await this.UserService.AuthenticateUserByEmailAsync(username, password);
+                    ////    userId = loginResult.UserId;
+                    ////}
                 }
                 catch (Exception)
                 {
@@ -210,6 +229,10 @@
                         else if (Convert.ToBoolean(this.emailBasedAuthenticationPhase2 && isUserNameLogin))
                         {
                             return this.View("UserNameLoginTransition", new UserEmailViewModel { Email = userBasicViewModel.EmailAddress, HasMultipleUsers = false, RedirectUrl = model.ReturnUrl, MyAccountUrl = $"{this.webSettings.LearningHubWebClient}Home/UserLogout", UserName = userBasicViewModel.UserName });
+                        }
+                        else if (Convert.ToBoolean(this.emailBasedAuthenticationPhase3 && isUserNameLogin))
+                        {
+                            return this.View("UserNameLoginNotAllowed", new UserEmailViewModel { Email = userBasicViewModel.EmailAddress, HasMultipleUsers = false, RedirectUrl = model.ReturnUrl, MyAccountUrl = $"{this.webSettings.LearningHubWebClient}Home/UserLogout", UserName = userBasicViewModel.UserName });
                         }
                         else
                         {
