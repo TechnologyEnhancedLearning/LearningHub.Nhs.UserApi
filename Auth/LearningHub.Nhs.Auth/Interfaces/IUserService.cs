@@ -37,6 +37,27 @@
         Task<LoginResultInternal> AuthenticateSsoUserAsync(int userId, int externalSystemId, string clientCode);
 
         /// <summary>
+        /// The authenticate user async.
+        /// </summary>
+        /// <param name="emailAddress">
+        /// The username.
+        /// </param>
+        /// <param name="password">
+        /// The password.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        Task<LoginResultInternal> AuthenticateUserByEmailAsync(string emailAddress, string password);
+
+        /// <summary>
+        /// GetUserIdByUserEmailAsync.
+        /// </summary>
+        /// <param name="emailAddress">the emailAddress.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
+        Task<int> GetUserIdByUserEmailAsync(string emailAddress);
+
+        /// <summary>
         /// The get user by user name async.
         /// </summary>
         /// <param name="username">
@@ -91,6 +112,13 @@
         /// </returns>
         [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1305:FieldNamesMustNotUseHungarianNotation", Justification = "Reviewed. Suppression is OK here.")]
         Task<UserBasic> GetUserByOAUserIdAsync(string oaUserId);
+
+        /// <summary>
+        /// The HasMultipleUsersForEmailAsync.
+        /// </summary>
+        /// <param name="emailAddress">Email Address.</param>
+        /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
+        Task<bool> HasMultipleUsersForEmailAsync(string emailAddress);
 
         /// <summary>
         /// The get user role async.

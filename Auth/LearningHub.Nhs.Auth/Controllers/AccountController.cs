@@ -17,12 +17,14 @@
     using LearningHub.Nhs.Auth.Extensions;
     using LearningHub.Nhs.Auth.Filters;
     using LearningHub.Nhs.Auth.Interfaces;
+    using LearningHub.Nhs.Auth.Models;
     using LearningHub.Nhs.Auth.Models.Account;
     using LearningHub.Nhs.Caching;
     using LearningHub.Nhs.Models.Common;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
 
@@ -38,6 +40,9 @@
         private readonly LearningHubAuthConfig authConfig;
         private readonly WebSettings webSettings;
         private readonly ILogger logger;
+        private string emailBasedAuthenticationPhase1;
+        private bool emailBasedAuthenticationPhase2;
+        private bool emailBasedAuthenticationPhase3;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountController"/> class.
@@ -50,7 +55,8 @@
         /// <param name="webSettings">webSettings parameter.</param>
         /// <param name="logger">ILogger instance.</param>
         /// <param name="authConfig">Auth service config.</param>
-        /// <param name="cacheService">Cacje service config.</param>
+        /// <param name="cacheService">Cache service config.</param>
+        /// <param name="config">Config service config.</param>
         public AccountController(
             IIdentityServerInteractionService interaction,
             IClientStore clientStore,
@@ -60,7 +66,8 @@
             WebSettings webSettings,
             ILogger<AccountController> logger,
             IOptions<LearningHubAuthConfig> authConfig,
-            ICacheService cacheService)
+            ICacheService cacheService,
+            IConfiguration config)
             : base(userService, events, clientStore, webSettings, cacheService)
         {
             this.interaction = interaction;
@@ -68,6 +75,9 @@
             this.authConfig = authConfig?.Value;
             this.webSettings = webSettings;
             this.logger = logger;
+            this.emailBasedAuthenticationPhase1 = config["FeatureManagement:EmailBasedAuthenticationPhase1"];
+            this.emailBasedAuthenticationPhase2 = Convert.ToBoolean(config["FeatureManagement:EmailBasedAuthenticationPhase2"]);
+            this.emailBasedAuthenticationPhase3 = Convert.ToBoolean(config["FeatureManagement:EmailBasedAuthenticationPhase3"]);
         }
 
         /// <summary>
@@ -81,6 +91,7 @@
             // Use internal login page
             // build a model so we know what to show on the login page
             var vm = await this.BuildLoginViewModelAsync(returnUrl);
+            vm.EmailBasedAuthenticationPhase2 = this.emailBasedAuthenticationPhase2;
 
             if (vm.IsExternalLoginOnly)
             {
@@ -149,12 +160,48 @@
 
             if (this.ModelState.IsValid)
             {
-                // validate username/password
-                var loginResult = await this.UserService.AuthenticateUserAsync(model.Username.Trim(), model.Password.Trim());
-                int userId;
+                int userId = 0;
+                LoginResult loginResult = null;
+                UserBasicViewModel userBasicViewModel = null;
+                bool isUserNameLogin = false;
                 try
                 {
-                    userId = await this.UserService.GetUserIdByUserNameAsync(model.Username.Trim());
+                    var username = model.Username?.Trim();
+                    var password = model.Password?.Trim();
+
+                    if (Convert.ToBoolean(this.emailBasedAuthenticationPhase1))
+                    {
+                        // Phase 1: Username/password authentication
+                        loginResult = await this.UserService.AuthenticateUserAsync(username, password);
+
+                        userBasicViewModel = await this.UserService.GetUserByUserNameAsync(username);
+                        userId = userBasicViewModel.Id;
+                        isUserNameLogin = true;
+                    }
+                    else if (this.emailBasedAuthenticationPhase2 || this.emailBasedAuthenticationPhase3)
+                    {
+                        // Phase 2/3: Support both username/password and email/password
+                        if (username.Contains('@'))
+                        {
+                            var loginResultInternal = await this.UserService.AuthenticateUserByEmailAsync(username, password);
+                            userId = loginResultInternal.UserId;
+                            loginResult = loginResultInternal;
+                        }
+                        else
+                        {
+                            loginResult = await this.UserService.AuthenticateUserAsync(username, password);
+
+                            userBasicViewModel = await this.UserService.GetUserByUserNameAsync(username);
+                            userId = userBasicViewModel.Id;
+                            isUserNameLogin = true;
+                        }
+                    }
+                    ////else if (this.emailBasedAuthenticationPhase4)
+                    ////{
+                    ////    // Phase 4: Email/password authentication only
+                    ////    loginResult = await this.UserService.AuthenticateUserByEmailAsync(username, password);
+                    ////    userId = loginResult.UserId;
+                    ////}
                 }
                 catch (Exception)
                 {
@@ -164,7 +211,7 @@
                 if (loginResult.IsAuthenticated)
                 {
                     await this.SignInUser(userId, model.Username.Trim(), model.RememberLogin, context.Parameters["ext_referer"]);
-
+                    var islogin = this.User?.Identity.IsAuthenticated;
                     if (context != null)
                     {
                         if (await this.ClientStore.IsPkceClientAsync(context.Client.ClientId))
@@ -174,8 +221,24 @@
                             return this.View("Redirect", new RedirectViewModel { RedirectUrl = model.ReturnUrl });
                         }
 
-                        // we can trust model.ReturnUrl since GetAuthorizationContextAsync returned non-null
-                        return this.Redirect(model.ReturnUrl);
+                        if (Convert.ToBoolean(this.emailBasedAuthenticationPhase1))
+                        {
+                            var hasMultipleUsers = await this.UserService.HasMultipleUsersForEmailAsync(userBasicViewModel.EmailAddress);
+                            return this.View("LoginChangeAwareness", new UserEmailViewModel { Email = userBasicViewModel.EmailAddress, HasMultipleUsers = hasMultipleUsers, RedirectUrl = model.ReturnUrl, MyAccountUrl = this.WebSettings.LearningHubWebClient + "MyAccount/ChangePersonalDetails", UserName = userBasicViewModel.UserName });
+                        }
+                        else if (Convert.ToBoolean(this.emailBasedAuthenticationPhase2 && isUserNameLogin))
+                        {
+                            return this.View("UserNameLoginTransition", new UserEmailViewModel { Email = userBasicViewModel.EmailAddress, HasMultipleUsers = false, RedirectUrl = model.ReturnUrl, MyAccountUrl = $"{this.webSettings.LearningHubWebClient}Home/UserLogout", UserName = userBasicViewModel.UserName });
+                        }
+                        else if (Convert.ToBoolean(this.emailBasedAuthenticationPhase3 && isUserNameLogin))
+                        {
+                            return this.View("UserNameLoginNotAllowed", new UserEmailViewModel { Email = userBasicViewModel.EmailAddress, HasMultipleUsers = false, RedirectUrl = model.ReturnUrl, MyAccountUrl = $"{this.webSettings.LearningHubWebClient}Home/UserLogout", UserName = userBasicViewModel.UserName });
+                        }
+                        else
+                        {
+                            // we can trust model.ReturnUrl since GetAuthorizationContextAsync returned non-null
+                            return this.Redirect(model.ReturnUrl);
+                        }
                     }
 
                     // request for a local page

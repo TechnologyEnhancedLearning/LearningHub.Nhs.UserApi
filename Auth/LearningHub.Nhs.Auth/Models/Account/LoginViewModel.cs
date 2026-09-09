@@ -48,5 +48,10 @@
         /// Gets or sets the ClientId.
         /// </summary>
         public string ClientId { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether EmailBasedAuthenticationPhase2.
+        /// </summary>
+        public bool EmailBasedAuthenticationPhase2 { get; set; }
     }
 }

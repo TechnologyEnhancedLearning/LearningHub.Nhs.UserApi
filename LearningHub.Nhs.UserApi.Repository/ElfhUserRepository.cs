@@ -165,5 +165,23 @@
 
             return userAuthenticateDto.FirstOrDefault();
         }
+
+        /// <summary>
+        /// The get user detail for the authentication using email address.
+        /// </summary>
+        /// <param name = "emailaddress">
+        /// username.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        public async Task<UserAuthenticateDto> GetUserDetailForAuthenticationByEmail(string emailaddress)
+        {
+            var param0 = new SqlParameter("@emailaddress", SqlDbType.VarChar) { Value = emailaddress };
+
+            var userAuthenticateDto = await this.DbContext.UserAuthenticateDto.FromSqlRaw("proc_UserDetailForAuthenticationByEmail @emailaddress", param0).AsNoTracking().ToListAsync();
+
+            return userAuthenticateDto.FirstOrDefault();
+        }
     }
 }
