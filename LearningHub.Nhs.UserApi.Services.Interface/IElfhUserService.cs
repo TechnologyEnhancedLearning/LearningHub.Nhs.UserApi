@@ -62,6 +62,13 @@
         Task<UserAuthenticateDto> GetUserDetailForAuthenticateAsync(string userName);
 
         /// <summary>
+        /// The get user details for the authenticat by username.
+        /// </summary>
+        /// <param name="userName">The user name.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
+        Task<UserAuthenticateDto> GetUserDetailForAuthenticateByEmailAsync(string userName);
+
+        /// <summary>
         /// The get by open athens id.
         /// </summary>
         /// <param name="openAthensId">The open athens id.</param>

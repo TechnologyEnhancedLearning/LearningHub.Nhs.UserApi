@@ -90,6 +90,24 @@
         }
 
         /// <summary>
+        /// Authenticate user by email.
+        /// </summary>
+        /// <param name="login">The login.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
+        [HttpPost("AuthenticateByEmail")]
+        public async Task<IActionResult> AuthenticateElfhHubByEmailAsync([FromBody] LoginModel login)
+        {
+            var loginResult = await this.authenticationService.AuthenticateByEmailAsync(login);
+
+            if (loginResult.IsAuthenticated && !string.IsNullOrWhiteSpace(loginResult.UserName))
+            {
+                await this.elfhUserService.SyncLHUserAsync(loginResult.UserId, loginResult.UserName);
+            }
+
+            return this.Ok(loginResult);
+        }
+
+        /// <summary>
         /// Check credentials without user authentication.
         /// </summary>
         /// <param name="login">

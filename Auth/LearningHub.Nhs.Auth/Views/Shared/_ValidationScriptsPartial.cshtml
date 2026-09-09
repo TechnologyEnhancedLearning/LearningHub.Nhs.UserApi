@@ -24,7 +24,14 @@
 
     let errorElements = [];
     let submitAttempted = false;
-    document.querySelector('form').onsubmit = () => { submitAttempted = true; errorElements = []; }
+    const form = document.querySelector('form');
+        if (form) {
+        form.onsubmit = () => {
+            submitAttempted = true;
+            errorElements = [];
+        };
+    }
+    //document.querySelector('form').onsubmit = () => { submitAttempted = true; errorElements = []; }
  
     $(function () {
         $('form').each(function () {

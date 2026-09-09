@@ -197,6 +197,12 @@
         }
 
         /// <inheritdoc/>
+        public async Task<UserAuthenticateDto> GetUserDetailForAuthenticateByEmailAsync(string emailAddress)
+        {
+            return await this.elfhUserRepository.GetUserDetailForAuthenticationByEmail(emailAddress);
+        }
+
+        /// <inheritdoc/>
         public async Task<string> GetUserRoleAsync(int id)
         {
             var usergroups = await this.userGroupRepository.GetByUserAsync(id);
