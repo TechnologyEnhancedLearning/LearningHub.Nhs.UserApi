@@ -272,8 +272,7 @@
             {
                 var client = await this.externalSystemService.GetExternalSystem("SCRIPT");
                 var state = Guid.NewGuid().ToString();
-                var hash = SecurityHelper.GenerateHash($"{userid}", client.SecretKey);
-                return this.Redirect($"{this.webSettings.ScriptResourceCallbackUrl}?userid={userid}&hash={HttpUtility.UrlEncode(hash)}&state={state}");
+                return this.ClientCallback(userid, client, state);
             }
             catch (Exception ex)
             {
