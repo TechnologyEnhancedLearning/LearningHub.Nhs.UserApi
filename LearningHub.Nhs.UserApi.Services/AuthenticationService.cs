@@ -228,7 +228,7 @@
             LoginResultInternal loginResult = new LoginResultInternal();
             var errMsgs = new
             {
-                userPassIncorrect = "The Email or password is incorrect",
+                userPassIncorrect = "The Email address or password is incorrect",
                 accountNotActive = "This account is not active. Please contact the support team if you need help.",
                 openAthensSignIn =
                     "If yours is an OpenAthens Account, you must login via the \"Sign on with OpenAthens\" option and not directly here.",

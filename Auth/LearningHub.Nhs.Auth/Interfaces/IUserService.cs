@@ -3,6 +3,7 @@
     using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
     using elfhHub.Nhs.Models.Common;
+    using elfhHub.Nhs.Models.Entities;
     using elfhHub.Nhs.Models.Enums;
     using LearningHub.Nhs.Auth.Models;
     using LearningHub.Nhs.Models.Common;
@@ -155,5 +156,12 @@
         /// The <see cref="Task"/>.
         /// </returns>
         Task AddLogonToUserHistory(string detail, int userId, UserHistoryType userHistoryType, bool loginSuccessFull, HttpRequest request, string externalReferer);
+
+        /// <summary>
+        /// AddLoginToLoginType.
+        /// </summary>
+        /// <param name="userLoginType">The userLoginType.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
+        Task AddLoginToLoginType(UserLoginType userLoginType);
     }
 }

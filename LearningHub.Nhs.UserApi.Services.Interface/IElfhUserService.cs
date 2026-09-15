@@ -147,6 +147,13 @@
         Task UpdateCurrentUserPassword(string newPassword, int currentUserId);
 
         /// <summary>
+        /// AddLoginToLoginType.
+        /// </summary>
+        /// <param name="userLoginType">The userLoginType.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
+        Task AddLoginToLoginType(UserLoginType userLoginType);
+
+        /// <summary>
         /// The update login wizard flag.
         /// </summary>
         /// <param name="updateLoginWizardInProgress">

@@ -136,6 +136,11 @@
 		<Folder Include="wwwroot\images\client-logos\" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\..\LearningHub.Nhs.UserApi.Repository.Interface\LearningHub.Nhs.UserApi.Repository.Interface.csproj" />
+	  <ProjectReference Include="..\..\LearningHub.Nhs.UserApi.Services.Interface\LearningHub.Nhs.UserApi.Services.Interface.csproj" />
+	</ItemGroup>
+
 	<ProjectExtensions>
 		<VisualStudio>
 			<UserProperties appsettings_1json__JsonSchema="" />

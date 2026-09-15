@@ -2,10 +2,12 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
     using System.Linq;
     using System.Net;
     using System.Threading.Tasks;
     using elfhHub.Nhs.Models.Common;
+    using elfhHub.Nhs.Models.Entities;
     using elfhHub.Nhs.Models.Enums;
     using IdentityModel;
     using IdentityServer4.Events;
@@ -21,9 +23,11 @@
     using LearningHub.Nhs.Auth.Models.Account;
     using LearningHub.Nhs.Caching;
     using LearningHub.Nhs.Models.Common;
+    using LearningHub.Nhs.UserApi.Services.Interface;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Razor.TagHelpers;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
@@ -40,9 +44,10 @@
         private readonly LearningHubAuthConfig authConfig;
         private readonly WebSettings webSettings;
         private readonly ILogger logger;
-        private string emailBasedAuthenticationPhase1;
+        private bool emailBasedAuthenticationPhase1;
         private bool emailBasedAuthenticationPhase2;
         private bool emailBasedAuthenticationPhase3;
+        private bool emailBasedAuthenticationPhase4;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountController"/> class.
@@ -75,9 +80,10 @@
             this.authConfig = authConfig?.Value;
             this.webSettings = webSettings;
             this.logger = logger;
-            this.emailBasedAuthenticationPhase1 = config["FeatureManagement:EmailBasedAuthenticationPhase1"];
+            this.emailBasedAuthenticationPhase1 = Convert.ToBoolean(config["FeatureManagement:EmailBasedAuthenticationPhase1"]);
             this.emailBasedAuthenticationPhase2 = Convert.ToBoolean(config["FeatureManagement:EmailBasedAuthenticationPhase2"]);
             this.emailBasedAuthenticationPhase3 = Convert.ToBoolean(config["FeatureManagement:EmailBasedAuthenticationPhase3"]);
+            this.emailBasedAuthenticationPhase4 = Convert.ToBoolean(config["FeatureManagement:EmailBasedAuthenticationPhase4"]);
         }
 
         /// <summary>
@@ -91,7 +97,10 @@
             // Use internal login page
             // build a model so we know what to show on the login page
             var vm = await this.BuildLoginViewModelAsync(returnUrl);
+            vm.EmailBasedAuthenticationPhase1 = this.emailBasedAuthenticationPhase1;
             vm.EmailBasedAuthenticationPhase2 = this.emailBasedAuthenticationPhase2;
+            vm.EmailBasedAuthenticationPhase3 = this.emailBasedAuthenticationPhase3;
+            vm.EmailBasedAuthenticationPhase4 = this.emailBasedAuthenticationPhase4;
 
             if (vm.IsExternalLoginOnly)
             {
@@ -169,7 +178,7 @@
                     var username = model.Username?.Trim();
                     var password = model.Password?.Trim();
 
-                    if (Convert.ToBoolean(this.emailBasedAuthenticationPhase1))
+                    if (this.emailBasedAuthenticationPhase1)
                     {
                         // Phase 1: Username/password authentication
                         loginResult = await this.UserService.AuthenticateUserAsync(username, password);
@@ -186,6 +195,7 @@
                             var loginResultInternal = await this.UserService.AuthenticateUserByEmailAsync(username, password);
                             userId = loginResultInternal.UserId;
                             loginResult = loginResultInternal;
+                            isUserNameLogin = false;
                         }
                         else
                         {
@@ -196,12 +206,14 @@
                             isUserNameLogin = true;
                         }
                     }
-                    ////else if (this.emailBasedAuthenticationPhase4)
-                    ////{
-                    ////    // Phase 4: Email/password authentication only
-                    ////    loginResult = await this.UserService.AuthenticateUserByEmailAsync(username, password);
-                    ////    userId = loginResult.UserId;
-                    ////}
+                    else if (this.emailBasedAuthenticationPhase4)
+                    {
+                        // Phase 4: Email/password authentication only
+                        var loginResultInternal = await this.UserService.AuthenticateUserByEmailAsync(username, password);
+                        userId = loginResultInternal.UserId;
+                        loginResult = loginResultInternal;
+                        isUserNameLogin = false;
+                    }
                 }
                 catch (Exception)
                 {
@@ -211,6 +223,17 @@
                 if (loginResult.IsAuthenticated)
                 {
                     await this.SignInUser(userId, model.Username.Trim(), model.RememberLogin, context.Parameters["ext_referer"]);
+                    var userLoginType = new UserLoginType
+                    {
+                        UserId = userId,
+                        LoginInfo = model.Username.Trim(),
+                        CreateUserId = userId,
+                        CreateDate = DateTime.UtcNow,
+                        UserHistoryTypeId = isUserNameLogin ? Convert.ToInt32(UserHistoryType.LoginUsingUserName) : Convert.ToInt32(UserHistoryType.LoginUsingEmailAddress),
+                    };
+
+                    // Add successful sign-in type to Login type table
+                    await this.UserService.AddLoginToLoginType(userLoginType);
                     var islogin = this.User?.Identity.IsAuthenticated;
                     if (context != null)
                     {
@@ -221,14 +244,19 @@
                             return this.View("Redirect", new RedirectViewModel { RedirectUrl = model.ReturnUrl });
                         }
 
-                        if (Convert.ToBoolean(this.emailBasedAuthenticationPhase1))
+                        if (userBasicViewModel != null)
+                        {
+                            this.TempData["EmailAddress"] = userBasicViewModel.EmailAddress;
+                        }
+
+                        if (this.emailBasedAuthenticationPhase1)
                         {
                             var hasMultipleUsers = await this.UserService.HasMultipleUsersForEmailAsync(userBasicViewModel.EmailAddress);
                             return this.View("LoginChangeAwareness", new UserEmailViewModel { Email = userBasicViewModel.EmailAddress, HasMultipleUsers = hasMultipleUsers, RedirectUrl = model.ReturnUrl, MyAccountUrl = this.WebSettings.LearningHubWebClient + "MyAccount/ChangePersonalDetails", UserName = userBasicViewModel.UserName });
                         }
                         else if (Convert.ToBoolean(this.emailBasedAuthenticationPhase2 && isUserNameLogin))
                         {
-                            return this.View("UserNameLoginTransition", new UserEmailViewModel { Email = userBasicViewModel.EmailAddress, HasMultipleUsers = false, RedirectUrl = model.ReturnUrl, MyAccountUrl = $"{this.webSettings.LearningHubWebClient}Home/UserLogout", UserName = userBasicViewModel.UserName });
+                            return this.View("UserNameLoginTransition", new UserEmailViewModel { Email = userBasicViewModel.EmailAddress, HasMultipleUsers = false, RedirectUrl = model.ReturnUrl, MyAccountUrl = $"Logout", UserName = userBasicViewModel.UserName });
                         }
                         else if (Convert.ToBoolean(this.emailBasedAuthenticationPhase3 && isUserNameLogin))
                         {
@@ -268,7 +296,30 @@
                 }
 
                 await this.Events.RaiseAsync(new UserLoginFailureEvent(model.Username.Trim(), loginResult.ErrorMessage));
-                this.ModelState.AddModelError(nameof(model.Username), "Enter your username again");
+                if (this.emailBasedAuthenticationPhase4)
+                {
+                    if (!new EmailAddressAttribute().IsValid(model.Username))
+                    {
+                        this.ModelState.AddModelError(
+                            nameof(model.Username),
+                            "Enter a valid email address");
+                    }
+                    else
+                    {
+                        this.ModelState.AddModelError(
+                            nameof(model.Username),
+                            "Please enter your email address again.");
+                    }
+                }
+                else
+                {
+                    this.ModelState.AddModelError(
+                        nameof(model.Username),
+                        "Please enter your username again.");
+                }
+
+               //// var message = this.emailBasedAuthenticationPhase4 ? "Please enter your email address again." : "Please enter your username again.";
+               //// this.ModelState.AddModelError(nameof(model.Username), message);
                 this.ModelState.AddModelError(nameof(model.Password), "Enter your password again");
                 this.ModelState.AddModelError(string.Empty, loginResult.ErrorMessage);
             }
@@ -366,6 +417,30 @@ showFormWithError:
             else
             {
                 return this.View("LoggedOut", vm);
+            }
+        }
+
+        /// <summary>
+        /// BackToSignIn.
+        /// </summary>
+        /// <param name="redirectUrl">The returnUrl.</param>
+        /// <returns>The login page.</returns>
+        [HttpGet]
+        public async Task<IActionResult> BackToSignIn(string redirectUrl)
+        {
+            await this.HttpContext.SignOutAsync();
+
+            var vm = await this.BuildLoginViewModelAsync(redirectUrl);
+            vm.Username = this.TempData.Peek("EmailAddress")?.ToString();
+            if ((vm.ClientId == "learninghubwebclient") || (vm.ClientId == "learninghubadmin") || (vm.ClientId == "digitallearningsolutions"))
+            {
+                this.ViewData["Layout"] = vm.LoginClientTemplate.LayoutPath;
+                this.ViewBag.SupportFormUrl = this.webSettings.SupportForm;
+                return this.View("LHLogin", vm);
+            }
+            else
+            {
+                return this.View(vm);
             }
         }
 

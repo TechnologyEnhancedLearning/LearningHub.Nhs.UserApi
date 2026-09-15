@@ -14,17 +14,25 @@
     using LearningHub.Nhs.Auth.Filters;
     using LearningHub.Nhs.Auth.Helpers;
     using LearningHub.Nhs.Auth.Interfaces;
+    using LearningHub.Nhs.Auth.Models;
+    using LearningHub.Nhs.Auth.Models.Account;
     using LearningHub.Nhs.Auth.ViewModels.Sso;
+    using LearningHub.Nhs.Models.Common;
     using LearningHub.Nhs.Models.Databricks;
     using LearningHub.Nhs.Models.Entities.External;
     using LearningHub.Nhs.Models.Report;
+    using LearningHub.Nhs.Models.User;
+    using LearningHub.Nhs.UserApi.Services.Interface;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.WebUtilities;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
     using UAParser;
+    using IExternalSystemService = LearningHub.Nhs.Auth.Interfaces.IExternalSystemService;
+    using IRegistrationService = LearningHub.Nhs.Auth.Interfaces.IRegistrationService;
 
     /// <summary>
     /// SSO Controller operations.
@@ -39,6 +47,10 @@
         private readonly IEventService eventService;
         private readonly ILogger<SsoController> logger;
         private readonly WebSettings webSettings;
+        private bool emailBasedAuthenticationPhase1;
+        private bool emailBasedAuthenticationPhase2;
+        private bool emailBasedAuthenticationPhase3;
+        private bool emailBasedAuthenticationPhase4;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SsoController"/> class.
@@ -49,13 +61,15 @@
         /// <param name="eventService">Event service.</param>
         /// <param name="webSettings">webSettings.</param>
         /// <param name="logger">The logger.</param>
+        /// <param name="config">Config service config.</param>
         public SsoController(
             IExternalSystemService externalSystemService,
             IRegistrationService registrationService,
             IUserService userService,
             IEventService eventService,
             WebSettings webSettings,
-            ILogger<SsoController> logger)
+            ILogger<SsoController> logger,
+            IConfiguration config)
         {
             this.externalSystemService = externalSystemService;
             this.registrationService = registrationService;
@@ -63,6 +77,10 @@
             this.eventService = eventService;
             this.logger = logger;
             this.webSettings = webSettings;
+            this.emailBasedAuthenticationPhase1 = Convert.ToBoolean(config["FeatureManagement:EmailBasedAuthenticationPhase1"]);
+            this.emailBasedAuthenticationPhase2 = Convert.ToBoolean(config["FeatureManagement:EmailBasedAuthenticationPhase2"]);
+            this.emailBasedAuthenticationPhase3 = Convert.ToBoolean(config["FeatureManagement:EmailBasedAuthenticationPhase3"]);
+            this.emailBasedAuthenticationPhase4 = Convert.ToBoolean(config["FeatureManagement:EmailBasedAuthenticationPhase4"]);
         }
 
         /// <summary>
@@ -114,6 +132,17 @@
 
                 if (loginResult?.IsAuthenticated == true)
                 {
+                    var userLoginType = new elfhHub.Nhs.Models.Entities.UserLoginType
+                    {
+                        UserId = request.UserId,
+                        LoginInfo = loginResult.UserName,
+                        CreateUserId = request.UserId,
+                        CreateDate = DateTime.UtcNow,
+                        UserHistoryTypeId = Convert.ToInt32(UserHistoryType.LoginSSO),
+                    };
+
+                    // Add successful sign-in type to Login type table
+                    await this.userService.AddLoginToLoginType(userLoginType);
                     var userHistory = this.GetUserHistoryViewModel(request.UserId, client.Name);
 
                     await Task.WhenAll(
@@ -168,7 +197,6 @@
 
                 var vm = new CreateUserViewModel().SetClientInfo(client, state);
                 await this.PopulateDropdowns(vm);
-
                 return this.View("Create", vm);
             }
             catch (Exception ex)
@@ -250,8 +278,31 @@
                     model.Error = result.ErrorMessage;
                     return this.View("Create", model);
                 }
+                else
+                {
+                    var username = request.Username?.Trim();
+                    var password = request.Password?.Trim();
+                    string redirectUrl = this.CreateRedirecturl(result.UserId, client, state);
 
-                return this.ClientCallback(result.UserId, client, state);
+                    if (this.emailBasedAuthenticationPhase1)
+                    {
+                        ////var hasMultipleUsers = await this.userService.HasMultipleUsersForEmailAsync(userBasicViewModel.EmailAddress);
+                        return this.View("LoginChangeAwareness", new UserEmailViewModel { Email = username, HasMultipleUsers = false, RedirectUrl = redirectUrl, MyAccountUrl = this.webSettings.LearningHubWebClient + "MyAccount/ChangePersonalDetails", UserName = username });
+                    }
+                    else if (Convert.ToBoolean(this.emailBasedAuthenticationPhase2 && !username.Contains('@')))
+                    {
+                        return this.View("UserNameLoginTransition", new UserEmailViewModel { Email = username, HasMultipleUsers = false, RedirectUrl = redirectUrl, MyAccountUrl = $"{this.webSettings.LearningHubWebClient}Home/UserLogout", UserName = username });
+                    }
+                    else if (Convert.ToBoolean(this.emailBasedAuthenticationPhase3 && !username.Contains('@')))
+                    {
+                        return this.View("UserNameLoginNotAllowed", new UserEmailViewModel { Email = username, HasMultipleUsers = false, RedirectUrl = redirectUrl, MyAccountUrl = $"{this.webSettings.LearningHubWebClient}Home/UserLogout", UserName = username });
+                    }
+                    else
+                    {
+                        // we can trust model.ReturnUrl since GetAuthorizationContextAsync returned non-null
+                        return this.ClientCallback(result.UserId, client, state);
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -306,6 +357,13 @@
             var hash = SecurityHelper.GenerateHash($"{userId}", client.SecretKey);
 
             return this.Redirect($"{client.CallbackUrl}?userid={userId}&hash={HttpUtility.UrlEncode(hash)}&state={state}");
+        }
+
+        private string CreateRedirecturl(int userId, ExternalSystem client, string state)
+        {
+            var hash = SecurityHelper.GenerateHash($"{userId}", client.SecretKey);
+
+            return $"{client.CallbackUrl}?userid={userId}&hash={HttpUtility.UrlEncode(hash)}&state={state}";
         }
 
         private async Task<CreateUserViewModel> BuildCreateUserViewModel(RegisterUserViewModel request, ExternalSystem client, string state)

@@ -13,9 +13,7 @@
                  class="nhsuk-warning-banner"
                  role="region"
                  aria-labelledby="maintenance-warning-title">
-
                 <div class="nhsuk-warning-banner__header">
-
                     <h2 class="nhsuk-warning-banner__title"
                         id="maintenance-warning-title">
                         Use your email address to sign in
@@ -25,76 +23,34 @@
                        aria-label="Dismiss warning">
                         ×
                     </a>
-
                 </div>
-
                 <div class="nhsuk-warning-banner__content nhsuk-u-padding-top-5">
                     <p class="nhsuk-u-padding-left-2">
                         You signed in using your username: <b>@Model.UserName</b>
                     </p>
-                    @* <p class="nhsuk-u-padding-left-2">
-                        Next time, sign in with your email address:
-                        <span id="email-address">@Model.Email</span>
-
-                        <button type="button"
-                                class="nhsuk-button nhsuk-button--secondary nhsuk-u-margin-bottom-0"
-                                id="copy-email">
-                            Copy email address
-                        </button>
-
-                        <span id="copy-status"
-                              class="nhsuk-u-visually-hidden"
-                              role="status"
-                              aria-live="polite">
-                        </span>
-                    </p> *@
-
                     <p class="nhsuk-u-padding-left-2">
                         Next time, sign in with your email address:
                         <span id="email-address">@Model.Email</span>
                         <a href="#" id="copy-email">[Copy email address]</a>
-
                         <span id="copy-status"
                               class="nhsuk-u-visually-hidden"
                               role="status"
                               aria-live="polite"></span>
                     </p>
-
                     <p class="nhsuk-u-padding-left-2">Your password has not changed.</p>
                     <p class="nhsuk-u-padding-left-2">If you use a password manager, update it to use your email address instead of your username.</p>
                     <p class="nhsuk-u-padding-left-2">
-                        <a href="@Model.MyAccountUrl">Try email sign-in now</a>
+                        <a asp-action="BackToSignIn" asp-controller="Account" asp-route-redirectUrl="@Model.RedirectUrl">Try email sign-in now</a>
                     </p>
-
                     <p class="nhsuk-u-padding-left-2">
                         <a href="@Model.RedirectUrl">Continue to Learning Hub</a>
                     </p>
                 </div>
-
             </div>
         </div>
     </div>
 </div>
 <script>
-    // document.getElementById('copy-email').addEventListener('click', async function () {
-    //     const email = document.getElementById('email-address').textContent.trim();
-    //     const status = document.getElementById('copy-status');
-
-    //     try {
-    //         await navigator.clipboard.writeText(email);
-
-    //         status.textContent = 'Email address copied';
-    //         this.textContent = 'Email address copied';
-
-    //         setTimeout(() => {
-    //             this.textContent = 'Copy email address';
-    //             status.textContent = '';
-    //         }, 2000);
-    //     } catch (error) {
-    //         status.textContent = 'Unable to copy email address';
-    //         console.error('Copy failed:', error);
-    //     }
-    // });
         document.addEventListener('DOMContentLoaded', function () {
         const copyLink = document.getElementById('copy-email');
         const emailAddress = document.getElementById('email-address');

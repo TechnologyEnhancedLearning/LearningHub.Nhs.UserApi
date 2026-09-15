@@ -58,7 +58,7 @@
         /// <inheritdoc/>
         public async Task<bool> DoesEmailExistAsync(string emailAddress)
         {
-            return await this.DbContext.User.AnyAsync(n => n.EmailAddress == emailAddress);
+            return await this.DbContext.User.AnyAsync(n => n.EmailAddress == emailAddress && n.Active && !n.Deleted);
         }
 
         /// <inheritdoc/>
@@ -85,7 +85,7 @@
             var userExists = (from u in this.DbContext.User
                               join ue in this.DbContext.UserEmployment on u.Id equals ue.UserId into uej
                               from x in uej.DefaultIfEmpty()
-                              where u.EmailAddress == emailAddress
+                              where (u.EmailAddress == emailAddress && u.Active && !u.Deleted)
                                   || (u.UserName == medicalCouncilPrefix + medicalCouncilNumber)
                                   || (x.MedicalCouncilNo == medicalCouncilNumber && x.MedicalCouncilId == medicalCouncilId)
                               select u).Any();
@@ -177,11 +177,11 @@
         /// </returns>
         public async Task<UserAuthenticateDto> GetUserDetailForAuthenticationByEmail(string emailaddress)
         {
-            var param0 = new SqlParameter("@emailaddress", SqlDbType.VarChar) { Value = emailaddress };
+                var param0 = new SqlParameter("@emailaddress", SqlDbType.VarChar) { Value = emailaddress };
 
-            var userAuthenticateDto = await this.DbContext.UserAuthenticateDto.FromSqlRaw("proc_UserDetailForAuthenticationByEmail @emailaddress", param0).AsNoTracking().ToListAsync();
+                var userAuthenticateDto = await this.DbContext.UserAuthenticateDto.FromSqlRaw("proc_UserDetailForAuthenticationByEmail @emailaddress", param0).AsNoTracking().ToListAsync();
 
-            return userAuthenticateDto.FirstOrDefault();
+                return userAuthenticateDto.FirstOrDefault();
         }
     }
 }
