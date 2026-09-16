@@ -9,6 +9,7 @@
     using elfhHub.Nhs.Models.Enums;
     using IdentityServer4;
     using IdentityServer4.Events;
+    using IdentityServer4.Models;
     using IdentityServer4.Services;
     using LearningHub.Nhs.Auth.Configuration;
     using LearningHub.Nhs.Auth.Filters;
@@ -271,7 +272,22 @@
                     return this.View("Create", await this.BuildCreateUserViewModel(request, client, state));
                 }
 
-                var result = await this.registrationService.LinkUserToSso(request.Username, request.Password, client.Id, client.Code);
+                var username = request.Username?.Trim();
+                var password = request.Password?.Trim();
+                LoginResultInternal result = null;
+                if (this.emailBasedAuthenticationPhase4 && !request.Username.Contains("@"))
+                {
+                    result = new LoginResultInternal
+                    {
+                        IsAuthenticated = false,
+                        ErrorMessage = "Please sign in using your email address.",
+                    };
+                }
+                else
+                {
+                    result = await this.registrationService.LinkUserToSso(request.Username, request.Password, client.Id, client.Code);
+                }
+
                 if (!result.IsAuthenticated)
                 {
                     var model = await this.BuildCreateUserViewModel(request, client, state);
@@ -280,22 +296,24 @@
                 }
                 else
                 {
-                    var username = request.Username?.Trim();
-                    var password = request.Password?.Trim();
                     string redirectUrl = this.CreateRedirecturl(result.UserId, client, state);
+                    UserBasicViewModel userBasicViewModel = null;
 
                     if (this.emailBasedAuthenticationPhase1)
                     {
-                        ////var hasMultipleUsers = await this.userService.HasMultipleUsersForEmailAsync(userBasicViewModel.EmailAddress);
-                        return this.View("LoginChangeAwareness", new UserEmailViewModel { Email = username, HasMultipleUsers = false, RedirectUrl = redirectUrl, MyAccountUrl = this.webSettings.LearningHubWebClient + "MyAccount/ChangePersonalDetails", UserName = username });
+                        userBasicViewModel = await this.userService.GetUserByUserNameAsync(username);
+                        var hasMultipleUsers = await this.userService.HasMultipleUsersForEmailAsync(userBasicViewModel.EmailAddress);
+                        return this.View("LoginChangeAwareness", new UserEmailViewModel { Email = userBasicViewModel.EmailAddress, HasMultipleUsers = false, RedirectUrl = redirectUrl, MyAccountUrl = this.webSettings.LearningHubWebClient + "MyAccount/ChangePersonalDetails", UserName = username });
                     }
                     else if (Convert.ToBoolean(this.emailBasedAuthenticationPhase2 && !username.Contains('@')))
                     {
-                        return this.View("UserNameLoginTransition", new UserEmailViewModel { Email = username, HasMultipleUsers = false, RedirectUrl = redirectUrl, MyAccountUrl = $"{this.webSettings.LearningHubWebClient}Home/UserLogout", UserName = username });
+                        userBasicViewModel = await this.userService.GetUserByUserNameAsync(username);
+                        return this.View("UserNameLoginTransition", new UserEmailViewModel { Email = userBasicViewModel.EmailAddress, HasMultipleUsers = false, RedirectUrl = redirectUrl, MyAccountUrl = $"{this.webSettings.LearningHubWebClient}Home/UserLogout", UserName = username });
                     }
                     else if (Convert.ToBoolean(this.emailBasedAuthenticationPhase3 && !username.Contains('@')))
                     {
-                        return this.View("UserNameLoginNotAllowed", new UserEmailViewModel { Email = username, HasMultipleUsers = false, RedirectUrl = redirectUrl, MyAccountUrl = $"{this.webSettings.LearningHubWebClient}Home/UserLogout", UserName = username });
+                        userBasicViewModel = await this.userService.GetUserByUserNameAsync(username);
+                        return this.View("UserNameLoginNotAllowed", new UserEmailViewModel { Email = userBasicViewModel.EmailAddress, HasMultipleUsers = false, RedirectUrl = redirectUrl, MyAccountUrl = $"{this.webSettings.LearningHubWebClient}Home/UserLogout", UserName = username });
                     }
                     else
                     {
