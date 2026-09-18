@@ -11,6 +11,7 @@
     using LearningHub.Nhs.UserApi.Repository.Interface;
     using LearningHub.Nhs.UserApi.Services.Interface;
     using LearningHub.Nhs.UserApi.Shared.Configuration;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Options;
     using Moq;
     using Xunit;
@@ -545,6 +546,7 @@
                 null,
                 null,
                 null,
+                null,
                 null);
 
             var role = await userService.GetUserRoleAsync(1);
@@ -573,6 +575,7 @@
             var userService = new ElfhUserService(
                 null,
                 userGroupRepositoryMock.Object,
+                null,
                 null,
                 null,
                 null,
@@ -842,6 +845,7 @@
                 null,
                 null,
                 null,
+                null,
                 null);
 
             var role = await userService.GetUserRoleAsync(1);
@@ -869,6 +873,7 @@
             userSecurityQuestionRepositoryyMock.Setup(r => r.CreateAsync(It.IsAny<int>(), It.IsAny<UserSecurityQuestion>()));
 
             var userService = new ElfhUserService(
+                null,
                 null,
                 null,
                 null,
@@ -921,7 +926,10 @@
             userSecurityQuestionRepositoryyMock.Setup(r =>
                 r.CreateAsync(It.IsAny<int>(), It.IsAny<UserSecurityQuestion>()));
 
+            var configurationMock = new Mock<IConfiguration>();
+
             var userService = new ElfhUserService(
+                null,
                 null,
                 null,
                 null,
@@ -965,6 +973,7 @@
             elfhCacheMock.Setup(s => s.RemoveAsync(It.IsAny<string>(), CancellationToken.None));
 
             var userService = new ElfhUserService(
+                null,
                 null,
                 null,
                 null,
