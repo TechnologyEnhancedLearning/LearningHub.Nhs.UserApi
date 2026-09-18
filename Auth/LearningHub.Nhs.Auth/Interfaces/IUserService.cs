@@ -3,6 +3,7 @@
     using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
     using elfhHub.Nhs.Models.Common;
+    using elfhHub.Nhs.Models.Entities;
     using elfhHub.Nhs.Models.Enums;
     using LearningHub.Nhs.Auth.Models;
     using LearningHub.Nhs.Models.Common;
@@ -35,6 +36,27 @@
         /// <param name="clientCode">The client Code.</param>
         /// <returns>The <see cref="LoginResultInternal"/>.</returns>
         Task<LoginResultInternal> AuthenticateSsoUserAsync(int userId, int externalSystemId, string clientCode);
+
+        /// <summary>
+        /// The authenticate user async.
+        /// </summary>
+        /// <param name="emailAddress">
+        /// The username.
+        /// </param>
+        /// <param name="password">
+        /// The password.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        Task<LoginResultInternal> AuthenticateUserByEmailAsync(string emailAddress, string password);
+
+        /// <summary>
+        /// GetUserIdByUserEmailAsync.
+        /// </summary>
+        /// <param name="emailAddress">the emailAddress.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
+        Task<int> GetUserIdByUserEmailAsync(string emailAddress);
 
         /// <summary>
         /// The get user by user name async.
@@ -93,6 +115,13 @@
         Task<UserBasic> GetUserByOAUserIdAsync(string oaUserId);
 
         /// <summary>
+        /// The HasMultipleUsersForEmailAsync.
+        /// </summary>
+        /// <param name="emailAddress">Email Address.</param>
+        /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
+        Task<bool> HasMultipleUsersForEmailAsync(string emailAddress);
+
+        /// <summary>
         /// The get user role async.
         /// </summary>
         /// <param name="id">
@@ -127,5 +156,12 @@
         /// The <see cref="Task"/>.
         /// </returns>
         Task AddLogonToUserHistory(string detail, int userId, UserHistoryType userHistoryType, bool loginSuccessFull, HttpRequest request, string externalReferer);
+
+        /// <summary>
+        /// AddLoginToLoginType.
+        /// </summary>
+        /// <param name="userLoginType">The userLoginType.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
+        Task AddLoginToLoginType(UserLoginType userLoginType);
     }
 }

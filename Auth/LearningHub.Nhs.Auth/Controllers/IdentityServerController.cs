@@ -4,7 +4,9 @@
     using System.Globalization;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using Azure.Core;
     using elfhHub.Nhs.Models.Common;
+    using elfhHub.Nhs.Models.Entities;
     using elfhHub.Nhs.Models.Enums;
     using IdentityServer4;
     using IdentityServer4.Events;
@@ -14,6 +16,7 @@
     using LearningHub.Nhs.Auth.Interfaces;
     using LearningHub.Nhs.Auth.Models.Account;
     using LearningHub.Nhs.Caching;
+    using LearningHub.Nhs.UserApi.Services.Interface;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -165,8 +168,18 @@
                 true,
                 this.Request,
                 externalReferer);
+            var userLoginType = new UserLoginType
+            {
+                UserId = userId,
+                LoginInfo = username,
+                CreateUserId = userId,
+                CreateDate = DateTime.UtcNow,
+                UserHistoryTypeId = Convert.ToInt32(UserHistoryType.OpenAthens),
+            };
 
-            await this.SignInUser(userId, username, rememberLogin, externalReferer, new[] { new Claim("openAthensUser", "true"), });
+            // Add successful sign-in type to Login type table
+            await this.UserService.AddLoginToLoginType(userLoginType);
+            await this.SignInUser(userId, username, rememberLogin, externalReferer, new[] { new Claim("openAthensUser", "true") });
         }
     }
 }
