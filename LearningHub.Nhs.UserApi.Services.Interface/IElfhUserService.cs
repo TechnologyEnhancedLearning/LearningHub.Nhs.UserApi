@@ -62,6 +62,13 @@
         Task<UserAuthenticateDto> GetUserDetailForAuthenticateAsync(string userName);
 
         /// <summary>
+        /// The get user details for the authenticat by username.
+        /// </summary>
+        /// <param name="userName">The user name.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
+        Task<UserAuthenticateDto> GetUserDetailForAuthenticateByEmailAsync(string userName);
+
+        /// <summary>
         /// The get by open athens id.
         /// </summary>
         /// <param name="openAthensId">The open athens id.</param>
@@ -138,6 +145,13 @@
         /// The <see cref="Task"/>.
         /// </returns>
         Task UpdateCurrentUserPassword(string newPassword, int currentUserId);
+
+        /// <summary>
+        /// AddLoginToLoginType.
+        /// </summary>
+        /// <param name="userLoginType">The userLoginType.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
+        Task AddLoginToLoginType(UserLoginType userLoginType);
 
         /// <summary>
         /// The update login wizard flag.

@@ -8,10 +8,12 @@
     using System.Threading.Tasks;
     using System.Web;
     using elfhHub.Nhs.Models.Common;
+    using elfhHub.Nhs.Models.Entities;
     using elfhHub.Nhs.Models.Enums;
     using LearningHub.Nhs.Auth.Interfaces;
     using LearningHub.Nhs.Auth.Models;
     using LearningHub.Nhs.Models.Common;
+    using LearningHub.Nhs.UserApi.Repository.Interface;
     using Microsoft.AspNetCore.Http;
     using Newtonsoft.Json;
     using UAParser;
@@ -74,7 +76,7 @@
             UserBasicViewModel viewmodel = null;
 
             var client = this.UserApiHttpClient.GetClient();
-            var request = $"ElfhUser/GetByUsername/{username}";
+            var request = $"ElfhUser/GetByUsername/{HttpUtility.UrlEncode(username).Replace("+", "%20")}";
             var response = await client.GetAsync(request);
 
             if (response.IsSuccessStatusCode)
@@ -133,6 +135,32 @@
         }
 
         /// <inheritdoc/>
+        public async Task<bool> HasMultipleUsersForEmailAsync(string emailAddress)
+        {
+            var request = $"ElfhUser/HasMultipleUsersForEmail/{emailAddress}";
+            if (string.IsNullOrWhiteSpace(emailAddress))
+            {
+                throw new Exception("No Email given to check.");
+            }
+
+            var client = this.UserApiHttpClient.GetClient();
+            var response = await client.GetAsync(request).ConfigureAwait(false);
+            var hasMultipleUsers = false;
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                hasMultipleUsers = bool.Parse(result);
+            }
+            else if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+            {
+                throw new Exception("AccessDenied");
+            }
+
+            return hasMultipleUsers;
+        }
+
+        /// <inheritdoc/>
         public async Task<LoginResult> AuthenticateUserAsync(string username, string password)
         {
             LoginResult viewmodel = null;
@@ -179,6 +207,54 @@
             }
 
             return vm;
+        }
+
+        /// <inheritdoc/>
+        public async Task<LoginResultInternal> AuthenticateUserByEmailAsync(string emailAddress, string password)
+        {
+            LoginResultInternal viewmodel = null;
+
+            var client = this.UserApiHttpClient.GetClient();
+
+            var request = "Authentication/AuthenticateByEmail";
+
+            var login = new { EmailAddress = emailAddress, Password = password };
+            using (HttpContent httpContent = new StringContent(JsonConvert.SerializeObject(login), Encoding.UTF8))
+            {
+                httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                var response = await client.PostAsync(request, httpContent);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await response.Content.ReadAsStringAsync();
+                    viewmodel = JsonConvert.DeserializeObject<LoginResultInternal>(result);
+                }
+            }
+
+            return viewmodel;
+        }
+
+        /// <inheritdoc/>
+        public async Task<int> GetUserIdByUserEmailAsync(string emailAddress)
+        {
+            var client = this.UserApiHttpClient.GetClient();
+
+            // In asp.net " " (space) in the url PATH segment is considered invalid url,
+            // it has to be encoded properly, "HttpUtility.UrlEncode" does not encode space character correctly
+            // in the url PATH, below added fix for that
+            var request = $"ElfhUser/GetUserIdByUsername/{HttpUtility.UrlEncode(emailAddress)}";
+            var response = await client.GetAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var userId = int.Parse(await response.Content.ReadAsStringAsync());
+                return userId;
+            }
+            else
+            {
+                throw new Exception("Invalid username!");
+            }
         }
 
         /// <inheritdoc/>
@@ -240,6 +316,28 @@
                 if (!apiResponse.Success)
                 {
                     throw new Exception("Failed to store UserHistory: " + JsonConvert.SerializeObject(userHistory));
+                }
+            }
+        }
+
+        /// <inheritdoc/>
+        public async Task AddLoginToLoginType(UserLoginType userLoginType)
+        {
+            var client = this.UserApiHttpClient.GetClient();
+            var request = "ElfhUser/AddLoginToLoginType";
+            using HttpContent httpContent = new StringContent(JsonConvert.SerializeObject(userLoginType), Encoding.UTF8);
+            httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+            var response = await client.PostAsync(request, httpContent);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                var apiResponse = JsonConvert.DeserializeObject<ApiResponse>(result);
+
+                if (!apiResponse.Success)
+                {
+                    throw new Exception("Failed to store UserLoginType: " + JsonConvert.SerializeObject(userLoginType));
                 }
             }
         }

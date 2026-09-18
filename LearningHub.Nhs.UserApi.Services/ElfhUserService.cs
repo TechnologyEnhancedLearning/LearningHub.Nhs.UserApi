@@ -26,6 +26,8 @@
     using LearningHub.Nhs.UserApi.Services.Models;
     using LearningHub.Nhs.UserApi.Shared;
     using LearningHub.Nhs.UserApi.Shared.Configuration;
+    using Microsoft.AspNetCore.Http.HttpResults;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
@@ -41,6 +43,7 @@
         private readonly IElfhUserRepository elfhUserRepository;
         private readonly IUserGroupRepository userGroupRepository;
         private readonly IUserRoleUpgradeRepository userRoleUpgradeRepository;
+        private readonly IUserLoginTypeRepository userLoginTypeRepository;
         private readonly IUserUserGroupRepository userUserGroupRepository;
         private readonly IMedicalCouncilRepository medicalCouncilRepository;
         private readonly IUserSecurityQuestionRepository userSecurityQuestionRepository;
@@ -62,6 +65,8 @@
         private readonly IMapper mapper;
         private readonly ILogger<ElfhUserService> logger;
         private readonly IOpenApiHttpClient openApiHttpClient;
+        private bool emailBasedAuthenticationPhase3;
+        private bool emailBasedAuthenticationPhase4;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ElfhUserService"/> class.
@@ -70,6 +75,7 @@
         /// <param name="userGroupRepository">The user group repository.</param>
         /// <param name="userUserGroupRepository">The user usergroup repository.</param>
         /// <param name="userRoleUpgradeRepository">The user role upgarde repository.</param>
+        /// <param name="userLoginTypeRepository">The user login type repository.</param>
         /// <param name="lhUserRepository">The LH user repository.</param>
         /// <param name="userAttributeRepository">The user atribute repository.</param>
         /// <param name="userEmploymentRepository">The user employment repository.</param>
@@ -90,11 +96,13 @@
         /// <param name="mapper">The mapper.</param>
         /// <param name="logger">The logger.</param>
         /// <param name="openApiHttpClient">The openApiHttpClient.</param>
+        /// <param name="config">Config service config.</param>
         public ElfhUserService(
             IElfhUserRepository elfhUserRepository,
             IUserGroupRepository userGroupRepository,
             IUserUserGroupRepository userUserGroupRepository,
             IUserRoleUpgradeRepository userRoleUpgradeRepository,
+            IUserLoginTypeRepository userLoginTypeRepository,
             IUserRepository lhUserRepository,
             IUserAttributeRepository userAttributeRepository,
             IUserEmploymentRepository userEmploymentRepository,
@@ -114,12 +122,14 @@
             IElfhRedisCache elfhCache,
             IMapper mapper,
             ILogger<ElfhUserService> logger,
-            IOpenApiHttpClient openApiHttpClient)
+            IOpenApiHttpClient openApiHttpClient,
+            IConfiguration config)
         {
             this.elfhUserRepository = elfhUserRepository;
             this.userGroupRepository = userGroupRepository;
             this.userUserGroupRepository = userUserGroupRepository;
             this.userRoleUpgradeRepository = userRoleUpgradeRepository;
+            this.userLoginTypeRepository = userLoginTypeRepository;
             this.lhUserRepository = lhUserRepository;
             this.userAttributeRepository = userAttributeRepository;
             this.userEmploymentRepository = userEmploymentRepository;
@@ -140,6 +150,8 @@
             this.mapper = mapper;
             this.logger = logger;
             this.openApiHttpClient = openApiHttpClient;
+            this.emailBasedAuthenticationPhase3 = Convert.ToBoolean(config["FeatureManagement:EmailBasedAuthenticationPhase3"]);
+            this.emailBasedAuthenticationPhase4 = Convert.ToBoolean(config["FeatureManagement:EmailBasedAuthenticationPhase4"]);
         }
 
         /// <inheritdoc/>
@@ -194,6 +206,12 @@
         public async Task<UserAuthenticateDto> GetUserDetailForAuthenticateAsync(string userName)
         {
             return await this.elfhUserRepository.GetUserDetailForAuthentication(userName);
+        }
+
+        /// <inheritdoc/>
+        public async Task<UserAuthenticateDto> GetUserDetailForAuthenticateByEmailAsync(string emailAddress)
+        {
+            return await this.elfhUserRepository.GetUserDetailForAuthenticationByEmail(emailAddress);
         }
 
         /// <inheritdoc/>
@@ -356,6 +374,20 @@
             {
                 var medicalCouncil = await this.medicalCouncilRepository.GetByIdAsync(medicalCouncilId);
                 return (medicalCouncil.UploadPrefix.Trim() + medicalCouncilNumber.StripUnicodeCharactersFromString()).ToUpper();
+            }
+        }
+
+        /// <inheritdoc/>
+        public async Task AddLoginToLoginType(UserLoginType userLoginType)
+        {
+            try
+            {
+                await this.userLoginTypeRepository.CreateAsync(userLoginType.UserId, userLoginType);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                throw;
             }
         }
 
@@ -681,7 +713,7 @@
             var emailRequest = new EmailRequest
             {
                 Recipient = user.EmailAddress,
-                TemplateId = this.settings.Value.GovNotifyTemplates.ForgottenUsernameOrPassword,
+                TemplateId = (this.emailBasedAuthenticationPhase3 || this.emailBasedAuthenticationPhase4) ? this.settings.Value.GovNotifyTemplates.PasswordResetRequest : this.settings.Value.GovNotifyTemplates.ForgottenUsernameOrPassword,
                 Personalisation = personalisation,
             };
 
