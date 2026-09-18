@@ -1,7 +1,10 @@
 ﻿@model LearningHub.Nhs.Auth.ViewModels.Sso.CreateUserViewModel
+@using Microsoft.Extensions.Configuration;
+@inject IConfiguration Configuration
 @{
-  ViewBag.Title = "Registration";
-  Layout = "~/Views/Shared/_SsoLayout.cshtml";
+    ViewBag.Title = "Registration";
+    Layout = "~/Views/Shared/_SsoLayout.cshtml";
+    var EmailBasedAuthenticationPhase1 = Configuration.GetValue<bool>("FeatureManagement:EmailBasedAuthenticationPhase1");
 }
 
 <div class="nhsuk-width-container app-width-container">
@@ -13,7 +16,7 @@
 
         <p>The <strong>@Model.ClientName</strong> website has requested authorisation to access the Learning Hub.</p>
 
-        <p>If you already have an account on the Learning Hub, you can link your existing Learning Hub account with your @Model.ClientName account by entering your username and password below.</p>
+        <p> If you already have an account on the Learning Hub, you can link your existing Learning Hub account with your @Model.ClientName account by entering your @(EmailBasedAuthenticationPhase1 ? "username" : "email address") and password below. </p>
 
         <p>When you select ‘Link my account’, the details you have entered will be sent to @Model.ClientName <strong>to link your accounts</strong>.</p>
 
@@ -27,11 +30,11 @@
           }
 
           <div class="form-group mb-5 @(((TagBuilder)Html.ValidationMessageFor(m => m.SsoLinkUserForm.Username)).HasInnerHtml ? "form-group--error" : "")">
-            <label asp-for="SsoLinkUserForm.Username"><strong>Username</strong></label>
-            <div>
+          <label asp-for="SsoLinkUserForm.Username"><strong>@(EmailBasedAuthenticationPhase1 ? "username" : "email address")</strong></label>
+           <div>
               @Html.ValidationMessageFor(m => m.SsoLinkUserForm.Username)
-              <input type="text" class="form-control mt-2" asp-for="SsoLinkUserForm.Username" aria-describedby="username"
-                     placeholder="Enter username" required>
+                            <input type="text" class="form-control mt-2" asp-for="SsoLinkUserForm.Username" aria-describedby="@(EmailBasedAuthenticationPhase1 ? "username" : "email address")"
+                                   placeholder="Enter @(EmailBasedAuthenticationPhase1 ? "username" : "email address")" required>
             </div>
           </div>
 

@@ -23,6 +23,7 @@
     using LearningHub.Nhs.UserApi.Services.Interface;
     using LearningHub.Nhs.UserApi.Services.Models;
     using LearningHub.Nhs.UserApi.Shared.Configuration;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
 
@@ -55,6 +56,8 @@
         private readonly IUserGroupTypeInputValidationRepository userGroupTypeInputValidationRepository;
         private readonly Settings settings;
         private readonly IOpenApiHttpClient openApiHttpClient;
+        private bool emailBasedAuthenticationPhase1;
+        private bool emailBasedAuthenticationPhase2;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RegistrationService"/> class.
@@ -82,6 +85,7 @@
         /// <param name="userGroupTypeInputValidationRepository">The userGroupType Input Validation repository.</param>
         /// <param name="settings">The settings.</param>
         /// <param name="openApiHttpClient">The openApiHttpClient.</param>
+        /// <param name="config">Config service config.</param>
         public RegistrationService(
              IElfhUserRepository elfhUserRepository,
              IUserGroupTypeInputValidationRepository userGroupTypeInputValidationRepository,
@@ -105,7 +109,8 @@
              IUserExternalSystemRepository userExternalSystemRepository,
              Repository.Interface.LH.IExternalSystemUserRepository externalSystemUserRepository,
              IIpCountryLookupRepository ipCountryLookupRepository,
-             IOpenApiHttpClient openApiHttpClient)
+             IOpenApiHttpClient openApiHttpClient,
+             IConfiguration config)
         {
             this.userService = userService;
             this.medicalCouncilService = medicalCouncilService;
@@ -130,6 +135,8 @@
             this.ipCountryLookupRepository = ipCountryLookupRepository;
             this.settings = settings.Value;
             this.openApiHttpClient = openApiHttpClient;
+            this.emailBasedAuthenticationPhase1 = Convert.ToBoolean(config["FeatureManagement:EmailBasedAuthenticationPhase1"]);
+            this.emailBasedAuthenticationPhase2 = Convert.ToBoolean(config["FeatureManagement:EmailBasedAuthenticationPhase2"]);
         }
 
         /// <inheritdoc/>
@@ -355,7 +362,11 @@
 
                     var personalisation = new Dictionary<string, dynamic>();
                     personalisation["name"] = newUser.FirstName;
-                    personalisation["username"] = newUser.UserName;
+                    if (this.emailBasedAuthenticationPhase1 && this.emailBasedAuthenticationPhase2)
+                    {
+                        personalisation["username"] = newUser.UserName;
+                    }
+
                     personalisation["password url"] = userPasswordValidationToken.ValidateUrl;
 
                     var emailRequest = new EmailRequest

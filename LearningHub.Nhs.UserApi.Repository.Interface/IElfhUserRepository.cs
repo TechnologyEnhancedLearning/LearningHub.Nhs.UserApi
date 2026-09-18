@@ -62,6 +62,17 @@
         Task<UserAuthenticateDto> GetUserDetailForAuthentication(string username);
 
         /// <summary>
+        /// The get user detail for the authentication using email address.
+        /// </summary>
+        /// <param name = "emailaddress">
+        /// username.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        Task<UserAuthenticateDto> GetUserDetailForAuthenticationByEmail(string emailaddress);
+
+        /// <summary>
         /// The get by open athens id.
         /// </summary>
         /// <param name="openAthensId">

@@ -68,19 +68,19 @@
                 {
                     <h1>Login with your Learning Hub account</h1>
                 }
-                <form class="nhsuk-u-margin-bottom-2" asp-controller="Account" asp-action="Login" method="post">
+                <form class="nhsuk-u-margin-bottom-2" asp-controller="Account" asp-action="Login" method="post" id="login-form">
                     <input type="hidden" asp-for="ReturnUrl" />
 
                     <vc:text-input asp-for="Username"
-                                   label="Enter your username"
+                                   label="@(Model.EmailBasedAuthenticationPhase1 ? "Enter your username" : "Enter your email address")"
                                    populate-with-current-value="true"
                                    type="text"
                                    spell-check="false"
                                    hint-text="A username is different to an email address"
-                                   autocomplete="Username"
+                                   autocomplete="@(Model.EmailBasedAuthenticationPhase1 ? "Username" : "EmailAddress")"
                                    css-class="nhsuk-u-width-one-half"
                                    required="true"
-                                   required-client-side-error-message="You need to enter your username" />
+                                   required-client-side-error-message="@(Model.EmailBasedAuthenticationPhase1 ? "You need to enter your username" : "You need to enter your email")" />
 
                     <vc:text-input asp-for="Password"
                                    label="Enter your password"
@@ -107,7 +107,9 @@
                                     @if (Model.LoginClientTemplate.UseForgottenPassword)
                                     {
                                         <p class="nhsuk-u-margin-bottom-2">
-                                            <a href="@($"https://{Model.LoginClientTemplate.ClientUrl}/{Model.LoginClientTemplate.ForgottenPasswordRelativeUrl}")">Forgotten username or password</a>
+                                            <a href="@($"https://{Model.LoginClientTemplate.ClientUrl}/{Model.LoginClientTemplate.ForgottenPasswordRelativeUrl}")"> @(Model.EmailBasedAuthenticationPhase3 || Model.EmailBasedAuthenticationPhase4 ? "Forgotten password": "Forgotten username or password")
+                                            </a>
+
                                         </p>
                                     }
                                     @if (Model.LoginClientTemplate.UseRegister)
