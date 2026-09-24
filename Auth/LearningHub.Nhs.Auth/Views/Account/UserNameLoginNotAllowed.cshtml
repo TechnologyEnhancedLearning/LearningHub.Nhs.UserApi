@@ -1,6 +1,6 @@
 ﻿@model LearningHub.Nhs.Auth.Models.Account.UserEmailViewModel
 @{
-    ViewData["Title"] = "Login";
+    ViewData["Title"] = "You can no longer sign in with your username";
     Layout = "~/Views/Shared/LearningHub/_Layout.cshtml";
     ViewData["DisableValidation"] = true;
 }
@@ -8,8 +8,31 @@
 <div class="nhsuk-width-container app-width-container">
     <div class="nhsuk-grid-row">
         <div class="nhsuk-grid-column-full nhsuk-u-padding-top-7 nhsuk-u-padding-bottom-5">
+            <div class="nhsuk-grid-column-full">
+                <h1 class="nhsuk-heading-xl">@ViewData["Title"]</h1>
+                <div>
+                    <p>
+                        You entered your username: <b>@Model.UserName</b>
+                    </p>
+                    <p>
+                        Sign in using your email address instead:
+                        <span id="email-address">@Model.Email</span>
+                        <a href="#" id="copy-email">[Copy email address]</a>
 
-            <div id="maintenance-warning"
+                        <span id="copy-status"
+                              class="nhsuk-u-visually-hidden"
+                              role="status"
+                              aria-live="polite"></span>
+                    </p>
+
+                    <p>Your password has not changed.</p>
+                    <p>If you use a password manager, update it to use your email address instead of your username.</p>
+                    <p>
+                        <a asp-action="BackToSignIn" asp-controller="Account" asp-route-redirectUrl="@Model.RedirectUrl" class="nhsuk-button">Back to sign in</a>
+                    </p>
+                </div>
+            </div>
+            @*    <div id="maintenance-warning"
                  class="nhsuk-warning-banner"
                  role="region"
                  aria-labelledby="maintenance-warning-title">
@@ -48,7 +71,7 @@
                         <a asp-action="BackToSignIn" asp-controller="Account" asp-route-redirectUrl="@Model.RedirectUrl">Back to sign in</a>
                     </p>
                 </div>
-            </div>
+            </div> *@
         </div>
     </div>
 </div>

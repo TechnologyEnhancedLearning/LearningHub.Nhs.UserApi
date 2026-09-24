@@ -8,8 +8,32 @@
 <div class="nhsuk-width-container app-width-container">
     <div class="nhsuk-grid-row">
         <div class="nhsuk-grid-column-full nhsuk-u-padding-top-7 nhsuk-u-padding-bottom-5">
-
-            <div id="maintenance-warning"
+            <div class="nhsuk-grid-column-full">
+                <h1 class="nhsuk-heading-xl">@ViewData["Title"]</h1>
+                <div>
+                    <p>
+                        You signed in using your username: <b>@Model.UserName</b>
+                    </p>
+                    <p>
+                        Next time, sign in with your email address:
+                        <span id="email-address">@Model.Email</span>
+                        <a href="#" id="copy-email">[Copy email address]</a>
+                        <span id="copy-status"
+                              class="nhsuk-u-visually-hidden"
+                              role="status"
+                              aria-live="polite"></span>
+                    </p>
+                    <p>Your password has not changed.</p>
+                    <p>If you use a password manager, update it to use your email address instead of your username.</p>
+                    <p>
+                        <a asp-action="BackToSignIn" asp-controller="Sso" asp-route-redirectUrl="@Model.RedirectUrl" asp-route-clientCode="@Model.ClientCode" asp-route-secretkey="@Model.SecretKey" asp-route-Email="@Model.UserName">Try email sign-in now</a>
+                    </p>
+                    <p>
+                        <a href="@Model.RedirectUrl" class="nhsuk-button nhsuk-button--secondary">Continue to Learning Hub</a>
+                    </p>
+                </div>
+            </div>
+          @*   <div id="maintenance-warning"
                  class="nhsuk-warning-banner"
                  role="region"
                  aria-labelledby="maintenance-warning-title">
@@ -46,7 +70,7 @@
                         <a href="@Model.RedirectUrl">Continue to Learning Hub</a>
                     </p>
                 </div>
-            </div>
+            </div> *@
         </div>
     </div>
 </div>

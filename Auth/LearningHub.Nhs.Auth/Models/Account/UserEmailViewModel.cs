@@ -34,5 +34,15 @@
         /// Gets or sets the password.
         /// </summary>
         public string Password { get; set; }
+
+        /// <summary>
+        /// Gets or sets the ClientCode.
+        /// </summary>
+        public string ClientCode { get; set; }
+
+        /// <summary>
+        /// Gets or sets the secret key.
+        /// </summary>
+        public string SecretKey { get; set; }
     }
 }

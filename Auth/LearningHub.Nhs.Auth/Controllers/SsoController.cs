@@ -197,6 +197,11 @@
                 }
 
                 var vm = new CreateUserViewModel().SetClientInfo(client, state);
+                if (!string.IsNullOrEmpty(this.TempData.Peek("EmailAddress")?.ToString()))
+                {
+                    this.ViewBag.EmailAddress = this.TempData.Peek("EmailAddress")?.ToString();
+                }
+
                 await this.PopulateDropdowns(vm);
                 return this.View("Create", vm);
             }
@@ -303,17 +308,17 @@
                     {
                         userBasicViewModel = await this.userService.GetUserByUserNameAsync(username);
                         var hasMultipleUsers = await this.userService.HasMultipleUsersForEmailAsync(userBasicViewModel.EmailAddress);
-                        return this.View("LoginChangeAwareness", new UserEmailViewModel { Email = userBasicViewModel.EmailAddress, HasMultipleUsers = false, RedirectUrl = redirectUrl, MyAccountUrl = this.webSettings.LearningHubWebClient + "MyAccount/ChangePersonalDetails", UserName = username });
+                        return this.View("LoginChangeAwareness", new UserEmailViewModel { Email = userBasicViewModel.EmailAddress, HasMultipleUsers = false, RedirectUrl = redirectUrl, MyAccountUrl = this.webSettings.LearningHubWebClient + "MyAccount/ChangePersonalDetails", UserName = username, ClientCode = client.Code, SecretKey = client.SecretKey });
                     }
                     else if (Convert.ToBoolean(this.emailBasedAuthenticationPhase2 && !username.Contains('@')))
                     {
                         userBasicViewModel = await this.userService.GetUserByUserNameAsync(username);
-                        return this.View("UserNameLoginTransition", new UserEmailViewModel { Email = userBasicViewModel.EmailAddress, HasMultipleUsers = false, RedirectUrl = redirectUrl, MyAccountUrl = $"{this.webSettings.LearningHubWebClient}Home/UserLogout", UserName = username });
+                        return this.View("UserNameLoginTransition", new UserEmailViewModel { Email = userBasicViewModel.EmailAddress, HasMultipleUsers = false, RedirectUrl = redirectUrl, MyAccountUrl = $"{this.webSettings.LearningHubWebClient}MyAccount/UserLogout", UserName = username, ClientCode = client.Code, SecretKey = client.SecretKey });
                     }
                     else if (Convert.ToBoolean(this.emailBasedAuthenticationPhase3 && !username.Contains('@')))
                     {
                         userBasicViewModel = await this.userService.GetUserByUserNameAsync(username);
-                        return this.View("UserNameLoginNotAllowed", new UserEmailViewModel { Email = userBasicViewModel.EmailAddress, HasMultipleUsers = false, RedirectUrl = redirectUrl, MyAccountUrl = $"{this.webSettings.LearningHubWebClient}Home/UserLogout", UserName = username });
+                        return this.View("UserNameLoginNotAllowed", new UserEmailViewModel { Email = userBasicViewModel.EmailAddress, HasMultipleUsers = false, RedirectUrl = redirectUrl, MyAccountUrl = $"{this.webSettings.LearningHubWebClient}MyAccount/UserLogout", UserName = username, ClientCode = client.Code, SecretKey = client.SecretKey });
                     }
                     else
                     {
@@ -349,6 +354,28 @@
                 this.logger.LogError(ex, "An error occured while linking LH user to Script via SSO");
                 return this.View("Error");
             }
+        }
+
+        /// <summary>
+        /// BackToSignIn.
+        /// </summary>
+        /// <param name="redirectUrl">The returnUrl.</param>
+        /// <param name="clientCode">The clientCode.</param>
+        /// <param name="secretKey">The secretKey.</param>
+        /// <param name="email">The email.</param>
+        /// <returns>The login page.</returns>
+        [HttpGet]
+        public async Task<IActionResult> BackToSignIn(string redirectUrl, string clientCode, string secretKey, string email)
+        {
+            var state = Guid.NewGuid().ToString();
+
+            var hash = SecurityHelper.GenerateHash(state, secretKey);
+            if (email != null)
+            {
+                this.TempData["EmailAddress"] = email;
+            }
+
+            return this.Redirect($"/Sso/create-user?clientcode={clientCode}&state={state}&hash={HttpUtility.UrlEncode(hash)}");
         }
 
         /// <summary>
