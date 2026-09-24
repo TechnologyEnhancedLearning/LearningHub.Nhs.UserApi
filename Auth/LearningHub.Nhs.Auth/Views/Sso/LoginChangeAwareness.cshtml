@@ -8,8 +8,30 @@
 <div class="nhsuk-width-container app-width-container">
     <div class="nhsuk-grid-row">
         <div class="nhsuk-grid-column-full nhsuk-u-padding-top-7 nhsuk-u-padding-bottom-5">
+            <div class="nhsuk-grid-column-full">
+                <h1 class="nhsuk-heading-xl">@ViewData["Title"]</h1>
+                <div>
+                    <p>
+                        You'll soon sign in using your email address instead of your username.
+                    </p>
 
-            <div id="maintenance-warning"
+                    <p>
+                        The email address on your account is: @Model.Email <a href="@Model.MyAccountUrl">[Change email]</a>
+                    </p>
+                    <p>Please make sure this email address is correct.</p>
+                    @if (Model.HasMultipleUsers)
+                    {
+                        <p>
+                            This email address is associated with more than 1 account. Only 1 account can use an email address. Other accounts using this email address will be deactivated when email sign-in is introduced.
+                        </p>
+                        <p>Update each account with a different email address to keep them active.</p>
+                    }
+                    <p>
+                        <a href="@Model.RedirectUrl" class="nhsuk-button">Continue</a>
+                    </p>
+                </div>
+            </div>
+            @* <div id="maintenance-warning"
                  class="nhsuk-warning-banner"
                  role="region"
                  aria-labelledby="maintenance-warning-title">
@@ -49,7 +71,7 @@
                     </p>
                 </div>
 
-            </div>
+            </div> *@
         </div>
     </div>
 </div>

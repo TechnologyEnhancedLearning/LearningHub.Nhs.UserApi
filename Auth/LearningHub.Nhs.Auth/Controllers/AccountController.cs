@@ -178,41 +178,27 @@
                     var username = model.Username?.Trim();
                     var password = model.Password?.Trim();
 
-                    if (this.emailBasedAuthenticationPhase1)
+                    bool isEmailLogin =
+                        this.emailBasedAuthenticationPhase4 ||
+                        ((this.emailBasedAuthenticationPhase2 || this.emailBasedAuthenticationPhase3) &&
+                         !string.IsNullOrWhiteSpace(username) &&
+                         username.Contains("@"));
+
+                    if (isEmailLogin)
                     {
-                        // Phase 1: Username/password authentication
+                        var loginResultInternal = await this.UserService.AuthenticateUserByEmailAsync(username, password);
+
+                        userId = loginResultInternal?.UserId ?? 0;
+                        loginResult = loginResultInternal;
+                        isUserNameLogin = false;
+                    }
+                    else
+                    {
                         loginResult = await this.UserService.AuthenticateUserAsync(username, password);
 
                         userBasicViewModel = await this.UserService.GetUserByUserNameAsync(username);
-                        userId = userBasicViewModel.Id;
+                        userId = userBasicViewModel?.Id ?? 0;
                         isUserNameLogin = true;
-                    }
-                    else if (this.emailBasedAuthenticationPhase2 || this.emailBasedAuthenticationPhase3)
-                    {
-                        // Phase 2/3: Support both username/password and email/password
-                        if (username.Contains('@'))
-                        {
-                            var loginResultInternal = await this.UserService.AuthenticateUserByEmailAsync(username, password);
-                            userId = loginResultInternal.UserId;
-                            loginResult = loginResultInternal;
-                            isUserNameLogin = false;
-                        }
-                        else
-                        {
-                            loginResult = await this.UserService.AuthenticateUserAsync(username, password);
-
-                            userBasicViewModel = await this.UserService.GetUserByUserNameAsync(username);
-                            userId = userBasicViewModel.Id;
-                            isUserNameLogin = true;
-                        }
-                    }
-                    else if (this.emailBasedAuthenticationPhase4)
-                    {
-                        // Phase 4: Email/password authentication only
-                        var loginResultInternal = await this.UserService.AuthenticateUserByEmailAsync(username, password);
-                        userId = loginResultInternal.UserId;
-                        loginResult = loginResultInternal;
-                        isUserNameLogin = false;
                     }
                 }
                 catch (Exception)
