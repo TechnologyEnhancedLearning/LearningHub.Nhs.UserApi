@@ -131,6 +131,7 @@
         {
             var decodeReturnUrl = WebUtility.UrlDecode(model.ReturnUrl);
             var context = await this.interaction.GetAuthorizationContextAsync(decodeReturnUrl);
+            var vm = await this.BuildLoginViewModelAsync(model);
 
             // the user clicked the "cancel" button
             if (button == "cancel")
@@ -312,8 +313,7 @@
 
 showFormWithError:
 
-// something went wrong, show form with error
-            var vm = await this.BuildLoginViewModelAsync(model);
+            // something went wrong, show form with error
             if ((vm.ClientId == "learninghubwebclient") || (vm.ClientId == "learninghubadmin") || (vm.ClientId == "digitallearningsolutions"))
             {
                 this.ViewData["Layout"] = vm.LoginClientTemplate.LayoutPath;
