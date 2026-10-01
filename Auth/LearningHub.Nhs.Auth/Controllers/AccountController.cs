@@ -165,15 +165,19 @@
             if (context == null)
             {
                 this.ModelState.AddModelError(string.Empty, "Invalid request");
-                goto showFormWithError;
+                this.ModelState.Remove(nameof(model.Username));
+                this.ModelState.AddModelError(
+                    nameof(model.Username),
+                    this.GetUsernameRequiredMessage(model.Username, false));
             }
 
+            bool isUserNameLogin = false;
             if (this.ModelState.IsValid)
             {
                 int userId = 0;
                 LoginResult loginResult = null;
                 UserBasicViewModel userBasicViewModel = null;
-                bool isUserNameLogin = false;
+                ////bool isUserNameLogin = false;
                 try
                 {
                     var username = model.Username?.Trim();
@@ -283,35 +287,21 @@
                 }
 
                 await this.Events.RaiseAsync(new UserLoginFailureEvent(model.Username.Trim(), loginResult.ErrorMessage));
-                if (this.emailBasedAuthenticationPhase4)
-                {
-                    if (!new EmailAddressAttribute().IsValid(model.Username))
-                    {
-                        this.ModelState.AddModelError(
-                            nameof(model.Username),
-                            "Enter a valid email address");
-                    }
-                    else
-                    {
-                        this.ModelState.AddModelError(
-                            nameof(model.Username),
-                            "Please enter your email address again.");
-                    }
-                }
-                else
-                {
-                    this.ModelState.AddModelError(
-                        nameof(model.Username),
-                        "Please enter your username again.");
-                }
-
-               //// var message = this.emailBasedAuthenticationPhase4 ? "Please enter your email address again." : "Please enter your username again.";
-               //// this.ModelState.AddModelError(nameof(model.Username), message);
+                this.ModelState.Remove(nameof(model.Username));
+                this.ModelState.AddModelError(
+                    nameof(model.Username),
+                    this.GetUsernameRequiredMessage(model.Username, isUserNameLogin) + " again");
                 this.ModelState.AddModelError(nameof(model.Password), "Enter your password again");
                 this.ModelState.AddModelError(string.Empty, loginResult.ErrorMessage);
             }
 
-showFormWithError:
+            if (string.IsNullOrWhiteSpace(model.Username))
+            {
+                this.ModelState.Remove(nameof(model.Username));
+                this.ModelState.AddModelError(
+                    nameof(model.Username),
+                    this.GetUsernameRequiredMessage(model.Username, isUserNameLogin));
+            }
 
             // something went wrong, show form with error
             if ((vm.ClientId == "learninghubwebclient") || (vm.ClientId == "learninghubadmin") || (vm.ClientId == "digitallearningsolutions"))
@@ -641,6 +631,51 @@ showFormWithError:
             }
 
             return vm;
+        }
+
+        /// <summary>
+        /// GetUsernameRequiredMessage.
+        /// </summary>
+        /// <returns>The string.</returns>
+        private string GetUsernameRequiredMessage(string userName, bool isUserNameLogin)
+        {
+            if (this.emailBasedAuthenticationPhase4)
+            {
+                if (!new EmailAddressAttribute().IsValid(userName))
+                {
+                   return "Enter a valid email address";
+                }
+                else
+                {
+                    return "Enter your email address";
+                }
+            }
+            else if (this.emailBasedAuthenticationPhase3)
+            {
+                if (!isUserNameLogin && !new EmailAddressAttribute().IsValid(userName))
+                {
+                    return "Enter a valid email address";
+                }
+                else
+                {
+                    return "Enter your email address";
+                }
+            }
+            else if (this.emailBasedAuthenticationPhase2)
+            {
+                if (!isUserNameLogin && !new EmailAddressAttribute().IsValid(userName))
+                {
+                    return "Enter a valid email address";
+                }
+                else
+                {
+                    return "Enter your email address or username";
+                }
+            }
+            else
+            {
+                return "Enter your username";
+            }
         }
     }
 }
