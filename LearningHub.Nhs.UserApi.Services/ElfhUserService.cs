@@ -65,6 +65,7 @@
         private readonly IMapper mapper;
         private readonly ILogger<ElfhUserService> logger;
         private readonly IOpenApiHttpClient openApiHttpClient;
+        private bool emailBasedAuthenticationPhase1;
         private bool emailBasedAuthenticationPhase3;
         private bool emailBasedAuthenticationPhase4;
 
@@ -150,6 +151,7 @@
             this.mapper = mapper;
             this.logger = logger;
             this.openApiHttpClient = openApiHttpClient;
+            this.emailBasedAuthenticationPhase1 = Convert.ToBoolean(config["FeatureManagement:EmailBasedAuthenticationPhase1"]);
             this.emailBasedAuthenticationPhase3 = Convert.ToBoolean(config["FeatureManagement:EmailBasedAuthenticationPhase3"]);
             this.emailBasedAuthenticationPhase4 = Convert.ToBoolean(config["FeatureManagement:EmailBasedAuthenticationPhase4"]);
         }
@@ -707,13 +709,17 @@
 
             var personalisation = new Dictionary<string, dynamic>();
             personalisation["name"] = user.FirstName;
-            personalisation["username"] = user.UserName;
+            if (this.emailBasedAuthenticationPhase1)
+            {
+                personalisation["username"] = user.UserName;
+            }
+
             personalisation["new password"] = userPasswordValidationToken.ValidateUrl;
 
             var emailRequest = new EmailRequest
             {
                 Recipient = user.EmailAddress,
-                TemplateId = (this.emailBasedAuthenticationPhase3 || this.emailBasedAuthenticationPhase4) ? this.settings.Value.GovNotifyTemplates.PasswordResetRequest : this.settings.Value.GovNotifyTemplates.ForgottenUsernameOrPassword,
+                TemplateId = this.emailBasedAuthenticationPhase1 ? this.settings.Value.GovNotifyTemplates.ForgottenUsernameOrPassword : this.settings.Value.GovNotifyTemplates.PasswordResetRequest,
                 Personalisation = personalisation,
             };
 
@@ -775,16 +781,22 @@
             var expiryMinutes = (int)(await this.systemSettingRepository.GetByIdAsync((int)SystemSettingEnum.PasswordValidationExpiryAdminDefault)).IntValue;
             UserPasswordValidationTokenExtended userPasswordValidationToken = this.GenerateUserPasswordValidationToken(expiryMinutes, user.Id);
             await this.userPasswordValidationTokenRepository.CreateAsync(user.Id, userPasswordValidationToken);
-
             var personalisation = new Dictionary<string, dynamic>();
             personalisation["name"] = user.FirstName;
-            personalisation["username"] = user.UserName;
-            personalisation["new password"] = userPasswordValidationToken.ValidateUrl;
+            if (this.emailBasedAuthenticationPhase1)
+            {
+                personalisation["username"] = user.UserName;
+            }
+            else
+            {
+                personalisation["email address"] = user.EmailAddress;
+            }
 
+            personalisation["new password"] = userPasswordValidationToken.ValidateUrl;
             var emailRequest = new EmailRequest
             {
                 Recipient = user.EmailAddress,
-                TemplateId = this.settings.Value.GovNotifyTemplates.ForgottenUsernameOrPassword,
+                TemplateId = this.emailBasedAuthenticationPhase1 ? this.settings.Value.GovNotifyTemplates.ForgottenUsernameOrPassword : this.settings.Value.GovNotifyTemplates.PasswordResetRequest,
                 Personalisation = personalisation,
                 TimezoneOffset = tzOffset,
             };

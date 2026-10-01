@@ -362,7 +362,7 @@
 
                     var personalisation = new Dictionary<string, dynamic>();
                     personalisation["name"] = newUser.FirstName;
-                    if (this.emailBasedAuthenticationPhase1 && this.emailBasedAuthenticationPhase2)
+                    if (this.emailBasedAuthenticationPhase1)
                     {
                         personalisation["username"] = newUser.UserName;
                     }
