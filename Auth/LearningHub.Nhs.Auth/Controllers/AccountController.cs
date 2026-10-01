@@ -177,7 +177,6 @@
                 int userId = 0;
                 LoginResult loginResult = null;
                 UserBasicViewModel userBasicViewModel = null;
-                ////bool isUserNameLogin = false;
                 try
                 {
                     var username = model.Username?.Trim();
