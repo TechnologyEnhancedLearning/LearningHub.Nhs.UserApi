@@ -3,6 +3,7 @@
     ViewData["Title"] = "Use your email address to sign in";
     Layout = "~/Views/Shared/LearningHub/_Layout.cshtml";
     ViewData["DisableValidation"] = true;
+    ViewData["RedirectUrl"] = @Model.RedirectUrl;
 }
 
 <div class="nhsuk-width-container app-width-container">
@@ -34,44 +35,6 @@
                     </p>
                 </div>
             </div>
-            @*     <div id="maintenance-warning"
-                 class="nhsuk-warning-banner"
-                 role="region"
-                 aria-labelledby="maintenance-warning-title">
-                <div class="nhsuk-warning-banner__header">
-                    <h2 class="nhsuk-warning-banner__title"
-                        id="maintenance-warning-title">
-                        Use your email address to sign in
-                    </h2>
-                    <a href="@Model.RedirectUrl"
-                       class="nhsuk-warning-banner__close"
-                       aria-label="Dismiss warning">
-                        ×
-                    </a>
-                </div>
-                <div class="nhsuk-warning-banner__content nhsuk-u-padding-top-5">
-                    <p class="nhsuk-u-padding-left-2">
-                        You signed in using your username: <b>@Model.UserName</b>
-                    </p>
-                    <p class="nhsuk-u-padding-left-2">
-                        Next time, sign in with your email address:
-                        <span id="email-address">@Model.Email</span>
-                        <a href="#" id="copy-email">[Copy email address]</a>
-                        <span id="copy-status"
-                              class="nhsuk-u-visually-hidden"
-                              role="status"
-                              aria-live="polite"></span>
-                    </p>
-                    <p class="nhsuk-u-padding-left-2">Your password has not changed.</p>
-                    <p class="nhsuk-u-padding-left-2">If you use a password manager, update it to use your email address instead of your username.</p>
-                    <p class="nhsuk-u-padding-left-2">
-                        <a asp-action="BackToSignIn" asp-controller="Account" asp-route-redirectUrl="@Model.RedirectUrl">Try email sign-in now</a>
-                    </p>
-                    <p class="nhsuk-u-padding-left-2">
-                        <a href="@Model.RedirectUrl">Continue to Learning Hub</a>
-                    </p>
-                </div>
-            </div> *@
         </div>
     </div>
 </div>
