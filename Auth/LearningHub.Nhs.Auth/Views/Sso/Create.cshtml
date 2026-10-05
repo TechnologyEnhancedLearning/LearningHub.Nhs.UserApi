@@ -5,7 +5,6 @@
     ViewBag.Title = "Registration";
     Layout = "~/Views/Shared/_SsoLayout.cshtml";
     var EmailBasedAuthenticationPhase1 = Configuration.GetValue<bool>("FeatureManagement:EmailBasedAuthenticationPhase1", false);
-    string? emailAddress = ViewBag.EmailAddress?.ToString().Contains("@") ? ViewBag.EmailAddress?.ToString() : null;
 }
 
 <div class="nhsuk-width-container app-width-container">
