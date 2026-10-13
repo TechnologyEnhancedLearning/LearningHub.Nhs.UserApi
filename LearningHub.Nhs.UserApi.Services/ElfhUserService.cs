@@ -283,23 +283,45 @@
         /// <inheritdoc/>
         public async Task SyncLHUserAsync(int userId, string userName)
         {
-            var lhUser = await this.lhUserRepository.GetByIdAsync(userId);
+            var lhUser = await this.lhUserRepository.GetByIdSnapshotAsync(userId);
 
             if (lhUser == null)
             {
-                var newLhUser = new LearningHub.Nhs.Models.Entities.User
+                var user = await this.elfhUserRepository.GetByIdAsync(userId);
+                var newLhUser = new Nhs.Models.Entities.User
                 {
                     Id = userId,
                     UserName = userName,
+
+                    // user details
+                    CountryId = user.CountryId,
+                    RegistrationCode = user.RegistrationCode,
+                    ActiveFromDate = user.ActiveFromDate,
+                    ActiveToDate = user.ActiveToDate,
+                    PasswordHash = user.PasswordHash,
+                    MustChangeNextLogin = user.MustChangeNextLogin,
+                    PasswordLifeCounter = user.PasswordLifeCounter,
+                    SecurityLifeCounter = user.SecurityLifeCounter,
+                    RemoteLoginKey = user.RemoteLoginKey,
+                    RemoteLoginGuid = user.RemoteLoginGuid,
+                    RemoteLoginStart = user.RemoteLoginStart,
+                    RestrictToSso = user.RestrictToSso,
+                    LoginTimes = user.LoginTimes,
+                    LoginWizardInProgress = user.LoginWizardInProgress,
+                    LastLoginWizardCompleted = user.LastLoginWizardCompleted,
+                    PrimaryUserEmploymentId = user.PrimaryUserEmploymentId,
+                    RegionId = user.RegionId,
+                    PreferredTenantId = user.PreferredTenantId,
+
+                    // end
                     Deleted = false,
                 };
 
                 await this.lhUserRepository.CreateAsync(userId, newLhUser);
             }
-            else if (userName != lhUser.UserName)
+            else if (userName != lhUser.Value.UserName)
             {
-                lhUser.UserName = userName;
-                await this.lhUserRepository.UpdateAsync(userId, lhUser);
+                await this.lhUserRepository.UpdateUserNameAsync(userId, userName);
             }
         }
 

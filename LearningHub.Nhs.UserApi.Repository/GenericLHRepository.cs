@@ -168,7 +168,11 @@
             this.DbContext.Entry(entity).Property("CreateDate").IsModified = false;
         }
 
-        private DateTimeOffset GetAmendDate()
+        /// <summary>
+        /// The get amend date method.
+        /// </summary>
+        /// <returns>Datetime offset.</returns>
+        protected DateTimeOffset GetAmendDate()
         {
             var tzOffset = this.TimezoneOffsetManager.UserTimezoneOffset;
             return tzOffset.HasValue ? new DateTimeOffset(DateTime.UtcNow.AddMinutes(tzOffset.Value).Ticks, TimeSpan.FromMinutes(tzOffset.Value)) : DateTimeOffset.Now;
