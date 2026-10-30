@@ -132,6 +132,10 @@
             var decodeReturnUrl = WebUtility.UrlDecode(model.ReturnUrl);
             var context = await this.interaction.GetAuthorizationContextAsync(decodeReturnUrl);
             var vm = await this.BuildLoginViewModelAsync(model);
+            vm.EmailBasedAuthenticationPhase1 = this.emailBasedAuthenticationPhase1;
+            vm.EmailBasedAuthenticationPhase2 = this.emailBasedAuthenticationPhase2;
+            vm.EmailBasedAuthenticationPhase3 = this.emailBasedAuthenticationPhase3;
+            vm.EmailBasedAuthenticationPhase4 = this.emailBasedAuthenticationPhase4;
 
             // the user clicked the "cancel" button
             if (button == "cancel")
