@@ -183,6 +183,11 @@
         public virtual DbSet<UserUserGroup> UserUserGroup { get; set; }
 
         /// <summary>
+        /// Gets or sets the user login type.
+        /// </summary>
+        public virtual DbSet<UserLoginType> UserloginType { get; set; }
+
+        /// <summary>
         /// Gets or sets the UserAuthentiate Dto.
         /// </summary>
         public virtual DbSet<UserAuthenticateDto> UserAuthenticateDto { get; set; }

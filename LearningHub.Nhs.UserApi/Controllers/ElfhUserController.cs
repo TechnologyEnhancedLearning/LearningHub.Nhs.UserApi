@@ -156,7 +156,15 @@
         [Route("LinkUserToSso")]
         public async Task<IActionResult> LinkExistingUserToSso([FromBody] LinkUserToSsoRequestViewModel request)
         {
-            var authResult = await this.authenticationService.CheckUserCredentialsAsync(new Login { Username = request.Username, Password = request.Password });
+            LoginResultInternal authResult = null;
+            if (request.Username.Contains('@'))
+            {
+                authResult = await this.authenticationService.ValidateUserCredentialsAsync(new LoginModel { EmailAddress = request.Username, Password = request.Password });
+            }
+            else
+            {
+                authResult = await this.authenticationService.CheckUserCredentialsAsync(new Login { Username = request.Username, Password = request.Password });
+            }
 
             if (!authResult.IsAuthenticated)
             {
@@ -189,6 +197,18 @@
         public async Task<IActionResult> RegisterUser([FromBody] RegistrationRequestViewModel registrationRequest)
         {
             return this.Ok(await this.registrationService.RegisterUser(registrationRequest));
+        }
+
+        /// <summary>
+        /// Create a Login To Login Type.
+        /// </summary>
+        /// <param name="userLoginType">The user login type.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
+        [HttpPost]
+        [Route("AddLoginToLoginType")]
+        public async Task<IActionResult> AddLoginToLoginType([FromBody] UserLoginType userLoginType)
+        {
+            return this.Ok(this.elfhUserService.AddLoginToLoginType(userLoginType));
         }
 
         // GET api/ElfhUser/GetCurrentUserBasicDetails/
@@ -312,7 +332,16 @@
         [Route("SyncSsoUsertoElfh")]
         public async Task<IActionResult> SyncSsoUsertoElfh([FromBody] LinkUserToSsoRequestViewModel request)
         {
-            var authResult = await this.authenticationService.CheckUserCredentialsAsync(new Login { Username = request.Username, Password = request.Password });
+            LoginResultInternal authResult = null;
+            if (request.Username.Contains('@'))
+            {
+                authResult = await this.authenticationService.ValidateUserCredentialsAsync(new LoginModel { EmailAddress = request.Username, Password = request.Password });
+            }
+            else
+            {
+                authResult = await this.authenticationService.CheckUserCredentialsAsync(new Login { Username = request.Username, Password = request.Password });
+            }
+
             await this.registrationService.SyncSsoUsertoElfh(authResult.UserId, request.ExternalSystemCode);
 
             return this.Ok();

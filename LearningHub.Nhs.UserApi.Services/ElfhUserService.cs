@@ -26,6 +26,8 @@
     using LearningHub.Nhs.UserApi.Services.Models;
     using LearningHub.Nhs.UserApi.Shared;
     using LearningHub.Nhs.UserApi.Shared.Configuration;
+    using Microsoft.AspNetCore.Http.HttpResults;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
@@ -41,6 +43,7 @@
         private readonly IElfhUserRepository elfhUserRepository;
         private readonly IUserGroupRepository userGroupRepository;
         private readonly IUserRoleUpgradeRepository userRoleUpgradeRepository;
+        private readonly IUserLoginTypeRepository userLoginTypeRepository;
         private readonly IUserUserGroupRepository userUserGroupRepository;
         private readonly IMedicalCouncilRepository medicalCouncilRepository;
         private readonly IUserSecurityQuestionRepository userSecurityQuestionRepository;
@@ -62,6 +65,9 @@
         private readonly IMapper mapper;
         private readonly ILogger<ElfhUserService> logger;
         private readonly IOpenApiHttpClient openApiHttpClient;
+        private bool emailBasedAuthenticationPhase1;
+        private bool emailBasedAuthenticationPhase3;
+        private bool emailBasedAuthenticationPhase4;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ElfhUserService"/> class.
@@ -70,6 +76,7 @@
         /// <param name="userGroupRepository">The user group repository.</param>
         /// <param name="userUserGroupRepository">The user usergroup repository.</param>
         /// <param name="userRoleUpgradeRepository">The user role upgarde repository.</param>
+        /// <param name="userLoginTypeRepository">The user login type repository.</param>
         /// <param name="lhUserRepository">The LH user repository.</param>
         /// <param name="userAttributeRepository">The user atribute repository.</param>
         /// <param name="userEmploymentRepository">The user employment repository.</param>
@@ -90,11 +97,13 @@
         /// <param name="mapper">The mapper.</param>
         /// <param name="logger">The logger.</param>
         /// <param name="openApiHttpClient">The openApiHttpClient.</param>
+        /// <param name="config">Config service config.</param>
         public ElfhUserService(
             IElfhUserRepository elfhUserRepository,
             IUserGroupRepository userGroupRepository,
             IUserUserGroupRepository userUserGroupRepository,
             IUserRoleUpgradeRepository userRoleUpgradeRepository,
+            IUserLoginTypeRepository userLoginTypeRepository,
             IUserRepository lhUserRepository,
             IUserAttributeRepository userAttributeRepository,
             IUserEmploymentRepository userEmploymentRepository,
@@ -114,12 +123,14 @@
             IElfhRedisCache elfhCache,
             IMapper mapper,
             ILogger<ElfhUserService> logger,
-            IOpenApiHttpClient openApiHttpClient)
+            IOpenApiHttpClient openApiHttpClient,
+            IConfiguration config)
         {
             this.elfhUserRepository = elfhUserRepository;
             this.userGroupRepository = userGroupRepository;
             this.userUserGroupRepository = userUserGroupRepository;
             this.userRoleUpgradeRepository = userRoleUpgradeRepository;
+            this.userLoginTypeRepository = userLoginTypeRepository;
             this.lhUserRepository = lhUserRepository;
             this.userAttributeRepository = userAttributeRepository;
             this.userEmploymentRepository = userEmploymentRepository;
@@ -140,6 +151,9 @@
             this.mapper = mapper;
             this.logger = logger;
             this.openApiHttpClient = openApiHttpClient;
+            this.emailBasedAuthenticationPhase1 = Convert.ToBoolean(config["FeatureManagement:EmailBasedAuthenticationPhase1"]);
+            this.emailBasedAuthenticationPhase3 = Convert.ToBoolean(config["FeatureManagement:EmailBasedAuthenticationPhase3"]);
+            this.emailBasedAuthenticationPhase4 = Convert.ToBoolean(config["FeatureManagement:EmailBasedAuthenticationPhase4"]);
         }
 
         /// <inheritdoc/>
@@ -194,6 +208,12 @@
         public async Task<UserAuthenticateDto> GetUserDetailForAuthenticateAsync(string userName)
         {
             return await this.elfhUserRepository.GetUserDetailForAuthentication(userName);
+        }
+
+        /// <inheritdoc/>
+        public async Task<UserAuthenticateDto> GetUserDetailForAuthenticateByEmailAsync(string emailAddress)
+        {
+            return await this.elfhUserRepository.GetUserDetailForAuthenticationByEmail(emailAddress);
         }
 
         /// <inheritdoc/>
@@ -263,23 +283,45 @@
         /// <inheritdoc/>
         public async Task SyncLHUserAsync(int userId, string userName)
         {
-            var lhUser = await this.lhUserRepository.GetByIdAsync(userId);
+            var lhUser = await this.lhUserRepository.GetByIdSnapshotAsync(userId);
 
             if (lhUser == null)
             {
-                var newLhUser = new LearningHub.Nhs.Models.Entities.User
+                var user = await this.elfhUserRepository.GetByIdAsync(userId);
+                var newLhUser = new Nhs.Models.Entities.User
                 {
                     Id = userId,
                     UserName = userName,
+
+                    // user details
+                    CountryId = user.CountryId,
+                    RegistrationCode = user.RegistrationCode,
+                    ActiveFromDate = user.ActiveFromDate,
+                    ActiveToDate = user.ActiveToDate,
+                    PasswordHash = user.PasswordHash,
+                    MustChangeNextLogin = user.MustChangeNextLogin,
+                    PasswordLifeCounter = user.PasswordLifeCounter,
+                    SecurityLifeCounter = user.SecurityLifeCounter,
+                    RemoteLoginKey = user.RemoteLoginKey,
+                    RemoteLoginGuid = user.RemoteLoginGuid,
+                    RemoteLoginStart = user.RemoteLoginStart,
+                    RestrictToSso = user.RestrictToSso,
+                    LoginTimes = user.LoginTimes,
+                    LoginWizardInProgress = user.LoginWizardInProgress,
+                    LastLoginWizardCompleted = user.LastLoginWizardCompleted,
+                    PrimaryUserEmploymentId = user.PrimaryUserEmploymentId,
+                    RegionId = user.RegionId,
+                    PreferredTenantId = user.PreferredTenantId,
+
+                    // end
                     Deleted = false,
                 };
 
                 await this.lhUserRepository.CreateAsync(userId, newLhUser);
             }
-            else if (userName != lhUser.UserName)
+            else if (userName != lhUser.Value.UserName)
             {
-                lhUser.UserName = userName;
-                await this.lhUserRepository.UpdateAsync(userId, lhUser);
+                await this.lhUserRepository.UpdateUserNameAsync(userId, userName);
             }
         }
 
@@ -356,6 +398,20 @@
             {
                 var medicalCouncil = await this.medicalCouncilRepository.GetByIdAsync(medicalCouncilId);
                 return (medicalCouncil.UploadPrefix.Trim() + medicalCouncilNumber.StripUnicodeCharactersFromString()).ToUpper();
+            }
+        }
+
+        /// <inheritdoc/>
+        public async Task AddLoginToLoginType(UserLoginType userLoginType)
+        {
+            try
+            {
+                await this.userLoginTypeRepository.CreateAsync(userLoginType.UserId, userLoginType);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                throw;
             }
         }
 
@@ -675,13 +731,17 @@
 
             var personalisation = new Dictionary<string, dynamic>();
             personalisation["name"] = user.FirstName;
-            personalisation["username"] = user.UserName;
+            if (this.emailBasedAuthenticationPhase1)
+            {
+                personalisation["username"] = user.UserName;
+            }
+
             personalisation["new password"] = userPasswordValidationToken.ValidateUrl;
 
             var emailRequest = new EmailRequest
             {
                 Recipient = user.EmailAddress,
-                TemplateId = this.settings.Value.GovNotifyTemplates.ForgottenUsernameOrPassword,
+                TemplateId = this.emailBasedAuthenticationPhase1 ? this.settings.Value.GovNotifyTemplates.ForgottenUsernameOrPassword : this.settings.Value.GovNotifyTemplates.PasswordResetRequest,
                 Personalisation = personalisation,
             };
 
@@ -743,16 +803,22 @@
             var expiryMinutes = (int)(await this.systemSettingRepository.GetByIdAsync((int)SystemSettingEnum.PasswordValidationExpiryAdminDefault)).IntValue;
             UserPasswordValidationTokenExtended userPasswordValidationToken = this.GenerateUserPasswordValidationToken(expiryMinutes, user.Id);
             await this.userPasswordValidationTokenRepository.CreateAsync(user.Id, userPasswordValidationToken);
-
             var personalisation = new Dictionary<string, dynamic>();
             personalisation["name"] = user.FirstName;
-            personalisation["username"] = user.UserName;
-            personalisation["new password"] = userPasswordValidationToken.ValidateUrl;
+            if (this.emailBasedAuthenticationPhase1)
+            {
+                personalisation["username"] = user.UserName;
+            }
+            else
+            {
+                personalisation["email address"] = user.EmailAddress;
+            }
 
+            personalisation["new password"] = userPasswordValidationToken.ValidateUrl;
             var emailRequest = new EmailRequest
             {
                 Recipient = user.EmailAddress,
-                TemplateId = this.settings.Value.GovNotifyTemplates.ForgottenUsernameOrPassword,
+                TemplateId = this.emailBasedAuthenticationPhase1 ? this.settings.Value.GovNotifyTemplates.ForgottenUsernameOrPassword : this.settings.Value.GovNotifyTemplates.PasswordResetRequest,
                 Personalisation = personalisation,
                 TimezoneOffset = tzOffset,
             };

@@ -102,6 +102,7 @@ namespace LearningHub.Nhs.UserApi
             services.AddSingleton<ElfhMap.IEntityTypeMap, ElfhMap.UserSecurityQuestionMap>();
             services.AddSingleton<ElfhMap.IEntityTypeMap, ElfhMap.UserTermsAndConditionsMap>();
             services.AddSingleton<ElfhMap.IEntityTypeMap, ElfhMap.UserUserGroupMap>();
+            services.AddSingleton<ElfhMap.IEntityTypeMap, ElfhMap.UserLoginTypeMap>();
 
             services.AddScoped<ICountryRepository, CountryRepository>();
             services.AddScoped<IElfhUserRepository, ElfhUserRepository>();
@@ -139,6 +140,7 @@ namespace LearningHub.Nhs.UserApi
             services.AddScoped<IUserSecurityQuestionRepository, UserSecurityQuestionRepository>();
             services.AddScoped<IUserTermsAndConditionsRepository, UserTermsAndConditionsRepository>();
             services.AddScoped<IUserUserGroupRepository, UserUserGroupRepository>();
+            services.AddScoped<IUserLoginTypeRepository, UserLoginTypeRepository>();
 
             var elfhCacheOptions = Options.Create(new Microsoft.Extensions.Caching.Redis.RedisCacheOptions
             {

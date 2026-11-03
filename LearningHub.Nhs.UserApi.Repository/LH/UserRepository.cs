@@ -1,5 +1,6 @@
 ﻿namespace LearningHub.Nhs.UserApi.Repository.LH
 {
+    using System.Linq;
     using System.Threading.Tasks;
     using LearningHub.Nhs.Models.Entities;
     using LearningHub.Nhs.UserApi.Repository;
@@ -25,6 +26,32 @@
         public async Task<User> GetByIdAsync(int id)
         {
             return await this.DbContext.User.FirstOrDefaultWithNoLockAsync(n => n.Id == id);
+        }
+
+        /// <inheritdoc/>
+        public async Task<(int Id, string UserName)?> GetByIdSnapshotAsync(int id)
+        {
+            var user = await this.DbContext.User
+                                 .AsNoTracking()
+                                 .Where(n => n.Id == id)
+                                 .Select(u => new
+                                 {
+                                     u.Id,
+                                     u.UserName,
+                                 })
+                                 .FirstOrDefaultAsync();
+            return user == null ? null : (user.Id, user.UserName);
+        }
+
+        /// <inheritdoc/>
+        public async Task<int> UpdateUserNameAsync(int userId, string userName)
+        {
+            var amendDate = this.GetAmendDate();
+            return await this.DbContext.User.Where(u => u.Id == userId)
+                                             .ExecuteUpdateAsync(s => s
+                                                    .SetProperty(u => u.UserName, userName)
+                                                    .SetProperty(u => u.AmendDate, amendDate)
+                                                    .SetProperty(u => u.AmendUserId, userId));
         }
     }
 }
