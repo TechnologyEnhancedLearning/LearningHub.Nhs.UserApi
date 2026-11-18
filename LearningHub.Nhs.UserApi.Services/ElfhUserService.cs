@@ -735,6 +735,10 @@
             {
                 personalisation["username"] = user.UserName;
             }
+            else
+            {
+                personalisation["email address"] = user.EmailAddress;
+            }
 
             personalisation["new password"] = userPasswordValidationToken.ValidateUrl;
 
